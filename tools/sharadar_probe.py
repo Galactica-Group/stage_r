@@ -1,20 +1,25 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-A — Sharadar Free-Tier Probe (2026-09-15)
+Last Sprint:  Sprint R0-B-0 — Snapshot Diff Tool; probe date-range assert (2026-09-17)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
 --env-path; it is never written to disk, logs, or stdout. Every HTTP request is
 budget-counted (shared across invocations of one snapshot label), rate-limited,
 logged with the key redacted, and saved raw beside a parquet rendering.
+
+Every request that names a date window has its returned span checked against the
+window it asked for: the vendor clips a long request to about a year and returns
+HTTP 200, so a shortfall halts the probe with both ranges printed rather than
+banking a silently partial snapshot.
 ================================================================================
 """
 
@@ -38,6 +43,51 @@ SLEEP_BETWEEN_S = 1.0
 RETRY_WAIT_S = 30.0
 KEY_PARAM = "api_key"
 RATE_HEADER_HINTS = ("ratelimit", "rate-limit", "retry-after", "x-rate")
+# A requested window edge may legitimately fall on a non-trading day; anything
+# beyond this many calendar days short of the request is a clip, not a weekend.
+MAX_EDGE_GAP_DAYS = 5
+DATE_PARAM_FROM = "from"
+DATE_PARAM_TO = "to"
+
+
+def check_date_range(params, df):
+    """Compare a request's date window against the span actually returned.
+
+    Returns a dict with status "ok", "not_applicable" or "SHORTFALL". Pure:
+    takes the request params and the parsed frame, touches nothing else.
+    """
+    params = params or {}
+    want_from = params.get(DATE_PARAM_FROM)
+    want_to = params.get(DATE_PARAM_TO)
+    if not want_from and not want_to:
+        return {"status": "not_applicable", "reason": "no date window requested"}
+    if df is None or "date" not in getattr(df, "columns", []):
+        return {"status": "not_applicable", "reason": "no date column returned"}
+    dates = pd.to_datetime(pd.Series(df["date"]).astype(str), errors="coerce").dropna()
+    if not len(dates):
+        return {
+            "status": "SHORTFALL",
+            "requested": [want_from, want_to],
+            "returned": [None, None],
+            "reason": "window requested but no dated rows returned",
+        }
+    got_from, got_to = dates.min(), dates.max()
+    gaps = {}
+    if want_from:
+        gaps["start_days_short"] = int((got_from - pd.to_datetime(want_from)).days)
+    if want_to:
+        gaps["end_days_short"] = int((pd.to_datetime(want_to) - got_to).days)
+    short = [k for k, v in gaps.items() if v > MAX_EDGE_GAP_DAYS]
+    out = {
+        "requested": [want_from, want_to],
+        "returned": [got_from.strftime("%Y-%m-%d"), got_to.strftime("%Y-%m-%d")],
+        "gaps_days": gaps,
+        "tolerance_days": MAX_EDGE_GAP_DAYS,
+    }
+    out["status"] = "SHORTFALL" if short else "ok"
+    if short:
+        out["reason"] = "returned span falls short at: %s" % ",".join(sorted(short))
+    return out
 
 
 def utc_now():
@@ -194,6 +244,7 @@ class Probe:
         if resp is None:
             return None, None
         df, ext = self.to_frame(resp)
+        check = check_date_range(params, df)
         raw_path = self.save_raw(name, resp.content, ext)
         pq_path = None
         pq_sha = None
@@ -218,7 +269,18 @@ class Probe:
             "parquet_file": os.path.relpath(pq_path, self.snap_dir) if pq_path else None,
             "parquet_sha256": pq_sha,
             "fetched_at_utc": utc_now(),
+            "date_range_check": check,
         })
+        if check.get("status") == "SHORTFALL":
+            self.log("DATE RANGE SHORTFALL on %s: requested %s..%s, returned %s..%s (%s)" % (
+                name, check["requested"][0], check["requested"][1],
+                check["returned"][0], check["returned"][1], check.get("reason")))
+            print("HALT: date range shortfall on %s" % name)
+            print("  requested: %s .. %s" % (check["requested"][0], check["requested"][1]))
+            print("  returned:  %s .. %s" % (check["returned"][0], check["returned"][1]))
+            print("  gaps_days: %s (tolerance %s)" % (check.get("gaps_days"),
+                                                      check.get("tolerance_days")))
+            raise SystemExit(2)
         return resp, df
 
 
