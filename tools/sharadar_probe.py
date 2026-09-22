@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.3.0
+Version:      1.4.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-B — Replay clip adjudication and resume (2026-09-22)
+Last Sprint:  Sprint R0-B — Retention roll-off allowance (2026-09-22)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -33,6 +33,12 @@ mode the date assertion is adjudicated against the span the source snapshot itse
 received: reproducing a known clip is recorded and allowed through, while a span
 shorter than last time's is a regression and halts. The requested-window check is
 written to the manifest either way, so the clip never stops being visible.
+
+The vendor serves a rolling window, so the oldest bars age out between snapshots.
+--replay-allow-rolloff states how many days of start-edge loss that accounts for
+— the calendar days between the two fetches. A start edge that recedes by no more
+than that is retention, recorded as ROLLOFF; further than that, or any loss at the
+end edge, is still a regression and still halts.
 ================================================================================
 """
 
@@ -133,12 +139,14 @@ def span_of_parquet(path):
     return [dates.min().strftime("%Y-%m-%d"), dates.max().strftime("%Y-%m-%d")]
 
 
-def classify_replay_shortfall(check, source_span, tolerance=MAX_EDGE_GAP_DAYS):
+def classify_replay_shortfall(check, source_span, tolerance=MAX_EDGE_GAP_DAYS,
+                              rolloff_days=0):
     """Judge a replay shortfall against what the source snapshot itself received.
 
     Halting again on a clip the source already carried measures nothing; a span
-    shorter than last time's is the regression worth stopping for. Returns a dict
-    whose "verdict" is "ok", "REPRODUCED_CLIP" or "REGRESSION".
+    shorter than last time's is the regression worth stopping for. rolloff_days
+    budgets the start edge for the vendor's rolling retention window. Returns a
+    dict whose "verdict" is "ok", "REPRODUCED_CLIP", "ROLLOFF" or "REGRESSION".
     """
     if check.get("status") != "SHORTFALL":
         return {"verdict": "ok"}
@@ -152,17 +160,26 @@ def classify_replay_shortfall(check, source_span, tolerance=MAX_EDGE_GAP_DAYS):
                 "source_span": list(source_span), "replay_span": list(got)}
     start_short = int((pd.to_datetime(got[0]) - pd.to_datetime(source_span[0])).days)
     end_short = int((pd.to_datetime(source_span[1]) - pd.to_datetime(got[1])).days)
-    worse = [k for k, v in (("start", start_short), ("end", end_short)) if v > tolerance]
+    start_budget = max(tolerance, rolloff_days)
+    worse = [k for k, v, lim in (("start", start_short, start_budget),
+                                 ("end", end_short, tolerance)) if v > lim]
     out = {
         "source_span": list(source_span),
         "replay_span": list(got),
         "start_days_short_vs_source": start_short,
         "end_days_short_vs_source": end_short,
         "tolerance_days": tolerance,
-        "verdict": "REGRESSION" if worse else "REPRODUCED_CLIP",
+        "rolloff_days_allowed": rolloff_days,
     }
     if worse:
+        out["verdict"] = "REGRESSION"
         out["reason"] = "replay span is shorter than the source at: %s" % ",".join(worse)
+    elif start_short > tolerance:
+        out["verdict"] = "ROLLOFF"
+        out["reason"] = ("start edge receded %d day(s), within the %d day(s) of "
+                         "retention allowed" % (start_short, rolloff_days))
+    else:
+        out["verdict"] = "REPRODUCED_CLIP"
     return out
 
 
@@ -422,7 +439,7 @@ class Probe:
                  % (entry["name"], ",".join(entry.get("derived_from") or []), len(df)))
         return df
 
-    def replay_manifest(self, entries, source_dir=None, resume=False):
+    def replay_manifest(self, entries, source_dir=None, resume=False, rolloff_days=0):
         """Re-issue every entry of a manifest, in order, under this label."""
         summary = []
         done = set(self._manifest_parquets()) if resume else set()
@@ -459,7 +476,8 @@ class Probe:
             if check.get("status") == "SHORTFALL":
                 src = os.path.join(source_dir, entry["parquet_file"]) \
                     if source_dir and entry.get("parquet_file") else None
-                verdict = classify_replay_shortfall(check, span_of_parquet(src))
+                verdict = classify_replay_shortfall(check, span_of_parquet(src),
+                                                    rolloff_days=rolloff_days)
                 row["shortfall"] = verdict
                 if verdict["verdict"] == "REGRESSION":
                     self.log("REPLAY REGRESSION on %s: %s" % (name, json.dumps(verdict)))
@@ -468,8 +486,9 @@ class Probe:
                     print("  replay span: %s" % verdict.get("replay_span"))
                     print("  %s" % verdict.get("reason"))
                     raise SystemExit(2)
-                self.log("REPRODUCED CLIP on %s: source %s, replay %s - allowed through"
-                         % (name, verdict.get("source_span"), verdict.get("replay_span")))
+                self.log("%s on %s: source %s, replay %s - allowed through"
+                         % (verdict["verdict"], name, verdict.get("source_span"),
+                            verdict.get("replay_span")))
             summary.append(row)
         return summary
 
@@ -486,6 +505,9 @@ def main():
     ap.add_argument("--replay-source-dir", default=None,
                     help="snapshot directory the manifest came from; enables "
                          "adjudicating a shortfall against the span it received")
+    ap.add_argument("--replay-allow-rolloff", type=int, default=0,
+                    help="days of start-edge loss attributable to the vendor's "
+                         "rolling window; normally the calendar days between fetches")
     ap.add_argument("--replay-resume", action="store_true",
                     help="continue a replay into an existing label, skipping "
                          "entries already recorded in its manifest")
@@ -510,13 +532,15 @@ def main():
         p.log("REPLAY of %s (%d entries) into snapshot %s"
               % (os.path.basename(args.replay), len(entries), args.snapshot))
         summary = p.replay_manifest(entries, source_dir=args.replay_source_dir,
-                                    resume=args.replay_resume)
+                                    resume=args.replay_resume,
+                                    rolloff_days=args.replay_allow_rolloff)
         report = {
             "replayed_from": os.path.abspath(args.replay),
             "replayed_from_sha256": sha256_file(args.replay),
             "snapshot": args.snapshot,
             "replay_source_dir": args.replay_source_dir,
             "resumed": bool(args.replay_resume),
+            "rolloff_days_allowed": args.replay_allow_rolloff,
             "entries": len(entries),
             "requests_used": p.budget_used(),
             "request_budget": REQUEST_BUDGET,

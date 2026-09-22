@@ -392,3 +392,48 @@ def test_resume_skips_entries_already_recorded_and_fetches_the_rest(tmp_path, mo
     assert summary[1]["kind"] == "capture"
     names = [e["name"] for e in json.loads(pathlib.Path(p.manifest_path).read_text())]
     assert names == ["page_a", "page_b"], "resume must not duplicate an entry"
+
+
+# ---------------------------------------------------------------------------
+# v1.4: the vendor's rolling window recedes the start edge between snapshots
+# ---------------------------------------------------------------------------
+
+def test_start_edge_loss_within_the_rolloff_budget_is_retention(tmp_path):
+    """The measured case: 7 days elapsed, 7 days of history aged off the front."""
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=["2025-09-19", "2026-09-11"]), SRC_SPAN, rolloff_days=7)
+    assert out["verdict"] == "ROLLOFF"
+    assert out["start_days_short_vs_source"] == 7
+    assert out["rolloff_days_allowed"] == 7
+
+
+def test_one_day_beyond_the_rolloff_budget_still_halts(tmp_path):
+    """The budget is load-bearing: 8 days lost against a 7-day budget regresses."""
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=["2025-09-20", "2026-09-11"]), SRC_SPAN, rolloff_days=7)
+    assert out["verdict"] == "REGRESSION"
+    assert out["start_days_short_vs_source"] == 8
+
+
+def test_the_rolloff_budget_never_excuses_the_end_edge(tmp_path):
+    """Retention takes bars off the front; a missing tail is a different animal."""
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=["2025-09-12", "2026-06-30"]), SRC_SPAN, rolloff_days=400)
+    assert out["verdict"] == "REGRESSION" and "end" in out["reason"]
+
+
+def test_without_a_budget_a_receding_start_is_still_a_regression(tmp_path):
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=["2025-09-19", "2026-09-11"]), SRC_SPAN)
+    assert out["verdict"] == "REGRESSION"
+
+
+def test_an_exactly_reproduced_span_is_not_relabelled_rolloff(tmp_path):
+    """A budget must not turn a clean reproduction into a retention event."""
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(CLIPPED, SRC_SPAN, rolloff_days=7)
+    assert out["verdict"] == "REPRODUCED_CLIP"
