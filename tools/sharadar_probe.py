@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.1.0
+Version:      1.2.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-B-0 — Snapshot Diff Tool; probe date-range assert (2026-09-17)
+Last Sprint:  Sprint R0-B — Snapshot 2 by replay (2026-09-22)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -20,6 +20,13 @@ Every request that names a date window has its returned span checked against the
 window it asked for: the vendor clips a long request to about a year and returns
 HTTP 200, so a shortfall halts the probe with both ranges printed rather than
 banking a silently partial snapshot.
+
+--replay re-issues an earlier snapshot's manifest under a new label: the same
+entries, in the same order, with the same names, endpoints and params, so the two
+snapshots differ only by the day they were fetched. A manifest entry that records
+no URL is a derived row, not a request; it is rebuilt from its named sources
+instead of being fetched. A vendor error payload is replayed like any other entry,
+because its status is itself part of what the comparison measures.
 ================================================================================
 """
 
@@ -33,6 +40,7 @@ import re
 import sys
 import time
 from datetime import datetime, timezone
+from urllib.parse import parse_qs, urlsplit, urlunsplit
 
 import pandas as pd
 import requests
@@ -88,6 +96,38 @@ def check_date_range(params, df):
     if short:
         out["reason"] = "returned span falls short at: %s" % ",".join(sorted(short))
     return out
+
+
+def endpoint_of(url):
+    """The request URL with its query string removed.
+
+    A manifest records the resolved URL (key redacted), which carries the command
+    and the table in its path. Replaying that endpoint reproduces the original
+    request more exactly than reconstructing a command name would.
+    """
+    parts = urlsplit(url)
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
+
+
+def replay_used_auth(url):
+    """True when the recorded request carried the key parameter."""
+    return KEY_PARAM in parse_qs(urlsplit(url).query, keep_blank_values=True)
+
+
+def is_derived_entry(entry):
+    """A derived row is computed from other entries, never fetched."""
+    return entry.get("url_redacted") is None or entry.get("derived_from") is not None
+
+
+def assert_label_is_new(root, label):
+    """Refuse to replay into a label that already has anything on disk."""
+    snap = os.path.join(root, "data", "sharadar", "snapshot_%s" % label)
+    budget = os.path.join(root, "logs", "budget_%s.json" % label)
+    for path, what in ((snap, "snapshot directory"), (budget, "budget file")):
+        if os.path.exists(path):
+            raise SystemExit(
+                "REFUSED: %s already exists for label %s (%s); "
+                "a replay must write a virgin label" % (what, label, path))
 
 
 def utc_now():
@@ -283,6 +323,77 @@ class Probe:
             raise SystemExit(2)
         return resp, df
 
+    # ---- replay -----------------------------------------------------------
+    def _manifest_parquets(self):
+        """name -> parquet_file for what this snapshot has written so far."""
+        if not os.path.exists(self.manifest_path):
+            return {}
+        with open(self.manifest_path) as fh:
+            return {e["name"]: e.get("parquet_file") for e in json.load(fh)}
+
+    def replay_derived(self, entry):
+        """Rebuild a derived row from the entries it names. Spends no budget."""
+        written = self._manifest_parquets()
+        frames = []
+        for src in entry.get("derived_from") or []:
+            rel = written.get(src) or ("%s.parquet" % src)
+            path = os.path.join(self.snap_dir, rel)
+            if not os.path.exists(path):
+                raise SystemExit(
+                    "HALT: derived entry %s needs %s, which this replay did not produce"
+                    % (entry["name"], rel))
+            frames.append(pd.read_parquet(path))
+        df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+        key = [c for c in ("ticker", "date") if c in df.columns]
+        if len(key) == 2:
+            df = df.drop_duplicates(subset=key, keep="first")
+        rel = entry.get("parquet_file") or ("%s.parquet" % entry["name"])
+        pq_path = os.path.join(self.snap_dir, rel)
+        df.astype(str).to_parquet(pq_path, index=False)
+        self.manifest_add({
+            "name": entry["name"],
+            "derived_from": list(entry.get("derived_from") or []),
+            "url_redacted": None,
+            "params": dict(entry.get("params") or {}),
+            "http_status": None,
+            "rows": int(len(df)),
+            "columns": list(df.columns),
+            "raw_file": None,
+            "raw_sha256": None,
+            "raw_bytes": None,
+            "parquet_file": rel,
+            "parquet_sha256": sha256_file(pq_path),
+            "fetched_at_utc": None,
+        })
+        self.log("DERIVED %s from %s -> %d rows"
+                 % (entry["name"], ",".join(entry.get("derived_from") or []), len(df)))
+        return df
+
+    def replay_manifest(self, entries):
+        """Re-issue every entry of a manifest, in order, under this label."""
+        summary = []
+        for i, entry in enumerate(entries):
+            name = entry["name"]
+            params = dict(entry.get("params") or {})
+            if is_derived_entry(entry):
+                df = self.replay_derived(entry)
+                summary.append({"name": name, "kind": "derived", "http_status": None,
+                                "rows": int(len(df)), "was_status": entry.get("http_status"),
+                                "was_rows": entry.get("rows")})
+                continue
+            url = endpoint_of(entry["url_redacted"])
+            auth = replay_used_auth(entry["url_redacted"])
+            self.log("REPLAY %d/%d %s -> %s (auth=%s)"
+                     % (i + 1, len(entries), name, url, auth))
+            resp, df = self.capture(name, url, params, tag=name, auth=auth)
+            summary.append({
+                "name": name, "kind": "capture",
+                "http_status": None if resp is None else resp.status_code,
+                "rows": None if df is None else int(len(df)),
+                "was_status": entry.get("http_status"), "was_rows": entry.get("rows"),
+            })
+        return summary
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -290,7 +401,9 @@ def main():
     ap.add_argument("--env-path", required=True)
     ap.add_argument("--env-var", default="SHARADAR_API_KEY")
     ap.add_argument("--base-url", default="https://api.sharadar.com/v1.0")
-    ap.add_argument("--cmd", required=True)
+    ap.add_argument("--cmd", default=None)
+    ap.add_argument("--replay", default=None,
+                    help="path to a manifest.json to re-issue under --snapshot")
     ap.add_argument("--url", default=None)
     ap.add_argument("--name", default=None)
     ap.add_argument("--table", default=None)
@@ -298,7 +411,37 @@ def main():
     ap.add_argument("--noauth", action="store_true")
     args = ap.parse_args()
 
+    if bool(args.cmd) == bool(args.replay):
+        raise SystemExit("supply exactly one of --cmd or --replay")
+
     key = read_api_key(args.env_path, args.env_var)
+
+    if args.replay:
+        assert_label_is_new(REPO_ROOT, args.snapshot)
+        with open(args.replay, "r", encoding="utf-8") as fh:
+            entries = json.load(fh)
+        p = Probe(args.snapshot, key, args.base_url)
+        p.log("REPLAY of %s (%d entries) into snapshot %s"
+              % (os.path.basename(args.replay), len(entries), args.snapshot))
+        summary = p.replay_manifest(entries)
+        report = {
+            "replayed_from": os.path.abspath(args.replay),
+            "replayed_from_sha256": sha256_file(args.replay),
+            "snapshot": args.snapshot,
+            "entries": len(entries),
+            "requests_used": p.budget_used(),
+            "request_budget": REQUEST_BUDGET,
+            "completed_at_utc": utc_now(),
+            "captures": summary,
+        }
+        out = os.path.join(REPO_ROOT, "logs", "replay_report_%s.json" % args.snapshot)
+        with open(out, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2)
+        print("REPLAY COMPLETE: %d entries, %d/%d requests used"
+              % (len(entries), p.budget_used(), REQUEST_BUDGET))
+        print("report %s" % os.path.relpath(out, REPO_ROOT))
+        return
+
     p = Probe(args.snapshot, key, args.base_url)
 
     if args.cmd == "budget":
