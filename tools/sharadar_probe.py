@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.2.0
+Version:      1.3.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-B — Snapshot 2 by replay (2026-09-22)
+Last Sprint:  Sprint R0-B — Replay clip adjudication and resume (2026-09-22)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -27,6 +27,12 @@ snapshots differ only by the day they were fetched. A manifest entry that record
 no URL is a derived row, not a request; it is rebuilt from its named sources
 instead of being fetched. A vendor error payload is replayed like any other entry,
 because its status is itself part of what the comparison measures.
+
+A replayed manifest may contain a request the vendor already clipped, so in replay
+mode the date assertion is adjudicated against the span the source snapshot itself
+received: reproducing a known clip is recorded and allowed through, while a span
+shorter than last time's is a regression and halts. The requested-window check is
+written to the manifest either way, so the clip never stops being visible.
 ================================================================================
 """
 
@@ -112,6 +118,52 @@ def endpoint_of(url):
 def replay_used_auth(url):
     """True when the recorded request carried the key parameter."""
     return KEY_PARAM in parse_qs(urlsplit(url).query, keep_blank_values=True)
+
+
+def span_of_parquet(path):
+    """The date span a banked capture actually returned, or None if undated."""
+    if not path or not os.path.exists(path):
+        return None
+    df = pd.read_parquet(path)
+    if "date" not in df.columns:
+        return None
+    dates = pd.to_datetime(pd.Series(df["date"]).astype(str), errors="coerce").dropna()
+    if not len(dates):
+        return None
+    return [dates.min().strftime("%Y-%m-%d"), dates.max().strftime("%Y-%m-%d")]
+
+
+def classify_replay_shortfall(check, source_span, tolerance=MAX_EDGE_GAP_DAYS):
+    """Judge a replay shortfall against what the source snapshot itself received.
+
+    Halting again on a clip the source already carried measures nothing; a span
+    shorter than last time's is the regression worth stopping for. Returns a dict
+    whose "verdict" is "ok", "REPRODUCED_CLIP" or "REGRESSION".
+    """
+    if check.get("status") != "SHORTFALL":
+        return {"verdict": "ok"}
+    got = check.get("returned") or [None, None]
+    if not source_span:
+        return {"verdict": "REGRESSION",
+                "reason": "shortfall with no source span to compare against",
+                "replay_span": list(got)}
+    if got[0] is None or got[1] is None:
+        return {"verdict": "REGRESSION", "reason": "no dated rows returned",
+                "source_span": list(source_span), "replay_span": list(got)}
+    start_short = int((pd.to_datetime(got[0]) - pd.to_datetime(source_span[0])).days)
+    end_short = int((pd.to_datetime(source_span[1]) - pd.to_datetime(got[1])).days)
+    worse = [k for k, v in (("start", start_short), ("end", end_short)) if v > tolerance]
+    out = {
+        "source_span": list(source_span),
+        "replay_span": list(got),
+        "start_days_short_vs_source": start_short,
+        "end_days_short_vs_source": end_short,
+        "tolerance_days": tolerance,
+        "verdict": "REGRESSION" if worse else "REPRODUCED_CLIP",
+    }
+    if worse:
+        out["reason"] = "replay span is shorter than the source at: %s" % ",".join(worse)
+    return out
 
 
 def is_derived_entry(entry):
@@ -279,7 +331,8 @@ class Probe:
         with open(self.manifest_path, "w") as fh:
             json.dump(items, fh, indent=2)
 
-    def capture(self, name, url, params, tag=None, auth=True, write_parquet=True):
+    def capture(self, name, url, params, tag=None, auth=True, write_parquet=True,
+                halt_on_shortfall=True):
         resp = self.request(url, params=params, auth=auth, tag=tag or name)
         if resp is None:
             return None, None
@@ -311,7 +364,7 @@ class Probe:
             "fetched_at_utc": utc_now(),
             "date_range_check": check,
         })
-        if check.get("status") == "SHORTFALL":
+        if check.get("status") == "SHORTFALL" and halt_on_shortfall:
             self.log("DATE RANGE SHORTFALL on %s: requested %s..%s, returned %s..%s (%s)" % (
                 name, check["requested"][0], check["requested"][1],
                 check["returned"][0], check["returned"][1], check.get("reason")))
@@ -369,12 +422,21 @@ class Probe:
                  % (entry["name"], ",".join(entry.get("derived_from") or []), len(df)))
         return df
 
-    def replay_manifest(self, entries):
+    def replay_manifest(self, entries, source_dir=None, resume=False):
         """Re-issue every entry of a manifest, in order, under this label."""
         summary = []
+        done = set(self._manifest_parquets()) if resume else set()
+        if done:
+            self.log("RESUME: %d entries already present, skipping them" % len(done))
         for i, entry in enumerate(entries):
             name = entry["name"]
             params = dict(entry.get("params") or {})
+            if name in done:
+                summary.append({"name": name, "kind": "skipped (already present)",
+                                "http_status": None, "rows": None,
+                                "was_status": entry.get("http_status"),
+                                "was_rows": entry.get("rows")})
+                continue
             if is_derived_entry(entry):
                 df = self.replay_derived(entry)
                 summary.append({"name": name, "kind": "derived", "http_status": None,
@@ -385,13 +447,30 @@ class Probe:
             auth = replay_used_auth(entry["url_redacted"])
             self.log("REPLAY %d/%d %s -> %s (auth=%s)"
                      % (i + 1, len(entries), name, url, auth))
-            resp, df = self.capture(name, url, params, tag=name, auth=auth)
-            summary.append({
+            resp, df = self.capture(name, url, params, tag=name, auth=auth,
+                                    halt_on_shortfall=False)
+            row = {
                 "name": name, "kind": "capture",
                 "http_status": None if resp is None else resp.status_code,
                 "rows": None if df is None else int(len(df)),
                 "was_status": entry.get("http_status"), "was_rows": entry.get("rows"),
-            })
+            }
+            check = check_date_range(params, df)
+            if check.get("status") == "SHORTFALL":
+                src = os.path.join(source_dir, entry["parquet_file"]) \
+                    if source_dir and entry.get("parquet_file") else None
+                verdict = classify_replay_shortfall(check, span_of_parquet(src))
+                row["shortfall"] = verdict
+                if verdict["verdict"] == "REGRESSION":
+                    self.log("REPLAY REGRESSION on %s: %s" % (name, json.dumps(verdict)))
+                    print("HALT: replay span regressed on %s" % name)
+                    print("  source span: %s" % verdict.get("source_span"))
+                    print("  replay span: %s" % verdict.get("replay_span"))
+                    print("  %s" % verdict.get("reason"))
+                    raise SystemExit(2)
+                self.log("REPRODUCED CLIP on %s: source %s, replay %s - allowed through"
+                         % (name, verdict.get("source_span"), verdict.get("replay_span")))
+            summary.append(row)
         return summary
 
 
@@ -404,6 +483,12 @@ def main():
     ap.add_argument("--cmd", default=None)
     ap.add_argument("--replay", default=None,
                     help="path to a manifest.json to re-issue under --snapshot")
+    ap.add_argument("--replay-source-dir", default=None,
+                    help="snapshot directory the manifest came from; enables "
+                         "adjudicating a shortfall against the span it received")
+    ap.add_argument("--replay-resume", action="store_true",
+                    help="continue a replay into an existing label, skipping "
+                         "entries already recorded in its manifest")
     ap.add_argument("--url", default=None)
     ap.add_argument("--name", default=None)
     ap.add_argument("--table", default=None)
@@ -417,17 +502,21 @@ def main():
     key = read_api_key(args.env_path, args.env_var)
 
     if args.replay:
-        assert_label_is_new(REPO_ROOT, args.snapshot)
+        if not args.replay_resume:
+            assert_label_is_new(REPO_ROOT, args.snapshot)
         with open(args.replay, "r", encoding="utf-8") as fh:
             entries = json.load(fh)
         p = Probe(args.snapshot, key, args.base_url)
         p.log("REPLAY of %s (%d entries) into snapshot %s"
               % (os.path.basename(args.replay), len(entries), args.snapshot))
-        summary = p.replay_manifest(entries)
+        summary = p.replay_manifest(entries, source_dir=args.replay_source_dir,
+                                    resume=args.replay_resume)
         report = {
             "replayed_from": os.path.abspath(args.replay),
             "replayed_from_sha256": sha256_file(args.replay),
             "snapshot": args.snapshot,
+            "replay_source_dir": args.replay_source_dir,
+            "resumed": bool(args.replay_resume),
             "entries": len(entries),
             "requests_used": p.budget_used(),
             "request_budget": REQUEST_BUDGET,

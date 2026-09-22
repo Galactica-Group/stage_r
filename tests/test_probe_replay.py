@@ -261,3 +261,134 @@ def test_a_derived_row_with_a_missing_source_halts(tmp_path, monkeypatch):
         p.replay_derived({"name": "combined", "derived_from": ["never_fetched"],
                           "params": {}, "parquet_file": "combined.parquet"})
     assert "HALT" in str(exc.value)
+
+
+# ---------------------------------------------------------------------------
+# v1.3: a replayed shortfall is judged against the span the source received
+# ---------------------------------------------------------------------------
+
+SRC_SPAN = ["2025-09-12", "2026-09-11"]
+CLIPPED = {
+    "status": "SHORTFALL",
+    "requested": ["2021-09-15", "2026-09-12"],
+    "returned": ["2025-09-12", "2026-09-11"],
+}
+
+
+def test_reproducing_the_sources_own_clip_is_not_a_regression(tmp_path):
+    """The R0-A one-year clip: snapshot 1 carried it, so replaying it measures nothing."""
+    mod = _load(tmp_path)
+    out = mod.classify_replay_shortfall(CLIPPED, SRC_SPAN)
+    assert out["verdict"] == "REPRODUCED_CLIP"
+    assert out["start_days_short_vs_source"] == 0
+    assert out["end_days_short_vs_source"] == 0
+
+
+def test_a_span_shorter_than_the_sources_is_a_regression(tmp_path):
+    mod = _load(tmp_path)
+    worse = dict(CLIPPED, returned=["2026-01-01", "2026-09-11"])
+    out = mod.classify_replay_shortfall(worse, SRC_SPAN)
+    assert out["verdict"] == "REGRESSION"
+    assert out["start_days_short_vs_source"] > mod.MAX_EDGE_GAP_DAYS
+    assert "start" in out["reason"]
+
+
+def test_a_truncated_tail_is_also_a_regression(tmp_path):
+    mod = _load(tmp_path)
+    worse = dict(CLIPPED, returned=["2025-09-12", "2026-06-30"])
+    out = mod.classify_replay_shortfall(worse, SRC_SPAN)
+    assert out["verdict"] == "REGRESSION" and "end" in out["reason"]
+
+
+def test_the_source_comparison_tolerance_is_load_bearing(tmp_path):
+    """At tolerance it reproduces; one day beyond it regresses."""
+    mod = _load(tmp_path)
+    tol = mod.MAX_EDGE_GAP_DAYS
+    ok = (pd.Timestamp(SRC_SPAN[0]) + pd.Timedelta(days=tol)).strftime("%Y-%m-%d")
+    bad = (pd.Timestamp(SRC_SPAN[0]) + pd.Timedelta(days=tol + 1)).strftime("%Y-%m-%d")
+    assert mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=[ok, SRC_SPAN[1]]), SRC_SPAN)["verdict"] == "REPRODUCED_CLIP"
+    assert mod.classify_replay_shortfall(
+        dict(CLIPPED, returned=[bad, SRC_SPAN[1]]), SRC_SPAN)["verdict"] == "REGRESSION"
+
+
+def test_a_longer_span_than_the_source_is_never_a_regression(tmp_path):
+    mod = _load(tmp_path)
+    better = dict(CLIPPED, returned=["2021-09-15", "2026-09-12"])
+    assert mod.classify_replay_shortfall(better, SRC_SPAN)["verdict"] == "REPRODUCED_CLIP"
+
+
+def test_no_source_span_leaves_the_shortfall_a_regression(tmp_path):
+    """Without a baseline the tool must not wave a shortfall through."""
+    mod = _load(tmp_path)
+    assert mod.classify_replay_shortfall(CLIPPED, None)["verdict"] == "REGRESSION"
+
+
+def test_a_clean_check_is_not_adjudicated_at_all(tmp_path):
+    mod = _load(tmp_path)
+    assert mod.classify_replay_shortfall({"status": "ok"}, SRC_SPAN)["verdict"] == "ok"
+    assert mod.classify_replay_shortfall(
+        {"status": "not_applicable"}, None)["verdict"] == "ok"
+
+
+def test_span_of_parquet_reads_the_banked_span(tmp_path):
+    mod = _load(tmp_path)
+    path = tmp_path / "x.parquet"
+    pd.DataFrame({"ticker": ["A", "A"], "date": ["2025-09-12", "2026-09-11"]}).to_parquet(path)
+    assert mod.span_of_parquet(str(path)) == SRC_SPAN
+    assert mod.span_of_parquet(str(tmp_path / "absent.parquet")) is None
+    undated = tmp_path / "u.parquet"
+    pd.DataFrame({"ticker": ["A"]}).to_parquet(undated)
+    assert mod.span_of_parquet(str(undated)) is None
+
+
+def test_replay_halts_on_a_regression_but_not_on_a_reproduced_clip(tmp_path, monkeypatch):
+    """End to end: the same manifest entry passes with a baseline and halts without one."""
+    mod = _load(tmp_path)
+    src_dir = tmp_path / "source"
+    src_dir.mkdir()
+    pd.DataFrame({"ticker": ["A", "A"], "date": SRC_SPAN}).to_parquet(
+        src_dir / "clipped.parquet")
+    entry = {"name": "clipped",
+             "url_redacted": ("https://api.sharadar.com/v1.0/data/stocks"
+                              "?from=2021-09-15&to=2026-09-12&api_key=<REDACTED>"),
+             "params": {"from": "2021-09-15", "to": "2026-09-12"},
+             "http_status": 200, "rows": 2, "parquet_file": "clipped.parquet"}
+    body = json.dumps({"count": 2, "data": [
+        {"ticker": "A", "date": SRC_SPAN[0]}, {"ticker": "A", "date": SRC_SPAN[1]}]})
+    monkeypatch.setattr(mod.requests, "get",
+                        lambda url, params=None, timeout=None, headers=None:
+                        FakeResp(url, params, 200, body, "application/json"))
+
+    p_ok = mod.Probe("withbase", "K", "https://api.sharadar.com/v1.0")
+    summary = p_ok.replay_manifest([entry], source_dir=str(src_dir))
+    assert summary[0]["shortfall"]["verdict"] == "REPRODUCED_CLIP"
+
+    p_bad = mod.Probe("nobase", "K", "https://api.sharadar.com/v1.0")
+    with pytest.raises(SystemExit):
+        p_bad.replay_manifest([entry], source_dir=None)
+
+
+def test_resume_skips_entries_already_recorded_and_fetches_the_rest(tmp_path, monkeypatch):
+    mod = _load(tmp_path)
+    calls = []
+
+    def fake_get(url, params=None, timeout=None, headers=None):
+        calls.append(url)
+        return FakeResp(url, params, 200, "<html>page</html>", "text/html")
+
+    monkeypatch.setattr(mod.requests, "get", fake_get)
+    src = [{"name": "page_a", "url_redacted": "https://sharadar.com/a", "params": {},
+            "http_status": 200, "rows": None, "parquet_file": None},
+           {"name": "page_b", "url_redacted": "https://sharadar.com/b", "params": {},
+            "http_status": 200, "rows": None, "parquet_file": None}]
+    p = mod.Probe("part", "K", "https://api.sharadar.com/v1.0")
+    p.replay_manifest(src[:1])                      # first pass: one entry
+    assert calls == ["https://sharadar.com/a"]
+
+    summary = p.replay_manifest(src, resume=True)   # resumed: only the missing one
+    assert calls == ["https://sharadar.com/a", "https://sharadar.com/b"]
+    assert summary[0]["kind"] == "skipped (already present)"
+    assert summary[1]["kind"] == "capture"
+    names = [e["name"] for e in json.loads(pathlib.Path(p.manifest_path).read_text())]
+    assert names == ["page_a", "page_b"], "resume must not duplicate an entry"
