@@ -1,0 +1,2126 @@
+{
+  "entries_only_in_a": [],
+  "entries_only_in_b": [],
+  "entries_unmapped_to_a_table": [
+    "schema_index"
+  ],
+  "examples_file": {
+    "cap": 10,
+    "path": "data/sharadar/diff_examples_20260915_vs_20260922.csv",
+    "rows": 10
+  },
+  "fetched_at_utc_range": {
+    "20260915": [
+      "2026-09-15T20:30:07Z",
+      "2026-09-15T20:36:32Z"
+    ],
+    "20260922": [
+      "2026-09-22T16:10:24Z",
+      "2026-09-22T17:10:06Z"
+    ]
+  },
+  "manifest_entries": {
+    "20260915": 63,
+    "20260922": 63
+  },
+  "manifest_sha256": {
+    "20260915": "ee0c5e84df89e743a056615d5a2cac5b4ecd76c7d516bb9288a40eb783b1de4f",
+    "20260922": "10fc17e293c904d4419080e94b4acb0b1fa967b9727d8dd6e6bf9032b7177f3b"
+  },
+  "snapshot_a": "20260915",
+  "snapshot_b": "20260922",
+  "tables": {
+    "actions": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_actions_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_actions_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_actions_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_actions_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "action",
+        "contraname",
+        "contraticker",
+        "date",
+        "name",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "action": 0,
+        "contraname": 0,
+        "contraticker": 0,
+        "date": 0,
+        "name": 0,
+        "ticker": 0,
+        "value": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "date",
+        "action",
+        "ticker",
+        "name",
+        "value",
+        "contraticker",
+        "contraname"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_actions",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_actions",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "action",
+        "contraname",
+        "contraticker",
+        "date",
+        "name",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "daily": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_daily_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_daily_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_daily_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_daily_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "date": 0,
+        "ev": 0,
+        "evebit": 0,
+        "evebitda": 0,
+        "lastupdated": 0,
+        "marketcap": 0,
+        "pb": 0,
+        "pe": 0,
+        "ps": 0,
+        "ticker": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "lastupdated",
+        "ev",
+        "evebit",
+        "evebitda",
+        "marketcap",
+        "pb",
+        "pe",
+        "ps"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_daily",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_daily",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "descriptions": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "table",
+        "indicator"
+      ],
+      "key_source": "sprint brief (vendor declares: indicator,table)",
+      "per_field_changed": {
+        "description": 25,
+        "indicator": 0,
+        "isfilter": 0,
+        "isprimarykey": 0,
+        "table": 0,
+        "title": 1,
+        "unittype": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 384,
+        "20260922": 384
+      },
+      "rows_before_dedupe": {
+        "20260915": 389,
+        "20260922": 389
+      },
+      "rows_in_both": 384,
+      "rows_in_both_differing_any_shared_field": 25,
+      "rows_in_both_differing_vendor_fields": 25,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "table",
+        "indicator",
+        "isfilter",
+        "isprimarykey",
+        "title",
+        "description",
+        "unittype"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_descriptions",
+          "rows": 5
+        },
+        {
+          "entry": "desc_all",
+          "rows": 384
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_descriptions",
+          "rows": 5
+        },
+        {
+          "entry": "desc_all",
+          "rows": 384
+        }
+      ],
+      "vendor_declared_key": [
+        "indicator",
+        "table"
+      ],
+      "watermark_only_changes": 0
+    },
+    "events": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_events_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_events_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_events_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_events_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "date": 0,
+        "eventcodes": 0,
+        "ticker": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 3,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 2,
+      "rows_only_in_b": 2,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "eventcodes"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_events",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_events",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "fundamentals": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_fundamentals_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_fundamentals_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_fundamentals_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_fundamentals_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "dimension",
+        "reportperiod",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "accoci": 0,
+        "assets": 0,
+        "assetsavg": 0,
+        "assetsc": 0,
+        "assetsnc": 0,
+        "assetturnover": 0,
+        "bvps": 0,
+        "calendardate": 0,
+        "capex": 0,
+        "cashneq": 0,
+        "cashnequsd": 0,
+        "consolinc": 0,
+        "cor": 0,
+        "currentratio": 0,
+        "date": 0,
+        "de": 0,
+        "debt": 0,
+        "debtc": 0,
+        "debtnc": 0,
+        "debtusd": 0,
+        "deferredrev": 0,
+        "depamor": 0,
+        "deposits": 0,
+        "dimension": 0,
+        "divyield": 0,
+        "dps": 0,
+        "ebit": 0,
+        "ebitda": 0,
+        "ebitdamargin": 0,
+        "ebitdausd": 0,
+        "ebitusd": 0,
+        "ebt": 0,
+        "eps": 0,
+        "epsdil": 0,
+        "epsusd": 0,
+        "equity": 0,
+        "equityavg": 0,
+        "equityusd": 0,
+        "ev": 0,
+        "evebit": 0,
+        "evebitda": 0,
+        "fcf": 0,
+        "fcfps": 0,
+        "fiscalperiod": 0,
+        "fxusd": 0,
+        "gp": 0,
+        "grossmargin": 0,
+        "intangibles": 0,
+        "intexp": 0,
+        "invcap": 0,
+        "invcapavg": 0,
+        "inventory": 0,
+        "investments": 0,
+        "investmentsc": 0,
+        "investmentsnc": 0,
+        "lastupdated": 0,
+        "liabilities": 0,
+        "liabilitiesc": 0,
+        "liabilitiesnc": 0,
+        "marketcap": 0,
+        "ncf": 0,
+        "ncfbus": 0,
+        "ncfcommon": 0,
+        "ncfdebt": 0,
+        "ncfdiv": 0,
+        "ncff": 0,
+        "ncfi": 0,
+        "ncfinv": 0,
+        "ncfo": 0,
+        "ncfx": 0,
+        "netinc": 0,
+        "netinccmn": 0,
+        "netinccmnusd": 0,
+        "netincdis": 0,
+        "netincnci": 0,
+        "netmargin": 0,
+        "opex": 0,
+        "opinc": 0,
+        "payables": 0,
+        "payoutratio": 0,
+        "pb": 0,
+        "pe": 0,
+        "pe1": 0,
+        "ppnenet": 0,
+        "prefdivis": 0,
+        "price": 0,
+        "ps": 0,
+        "ps1": 0,
+        "receivables": 0,
+        "reportperiod": 0,
+        "retearn": 0,
+        "revenue": 0,
+        "revenueusd": 0,
+        "rnd": 0,
+        "roa": 0,
+        "roe": 0,
+        "roic": 0,
+        "ros": 0,
+        "sbcomp": 0,
+        "sgna": 0,
+        "sharefactor": 0,
+        "sharesbas": 0,
+        "shareswa": 0,
+        "shareswadil": 0,
+        "sps": 0,
+        "tangibles": 0,
+        "taxassets": 0,
+        "taxexp": 0,
+        "taxliabilities": 0,
+        "tbvps": 0,
+        "ticker": 0,
+        "workingcapital": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 5,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "ticker",
+        "dimension",
+        "calendardate",
+        "date",
+        "reportperiod",
+        "fiscalperiod",
+        "lastupdated",
+        "accoci",
+        "assets",
+        "assetsavg",
+        "assetsc",
+        "assetsnc",
+        "assetturnover",
+        "bvps",
+        "capex",
+        "cashneq",
+        "cashnequsd",
+        "cor",
+        "consolinc",
+        "currentratio",
+        "de",
+        "debt",
+        "debtc",
+        "debtnc",
+        "debtusd",
+        "deferredrev",
+        "depamor",
+        "deposits",
+        "divyield",
+        "dps",
+        "ebit",
+        "ebitda",
+        "ebitdamargin",
+        "ebitdausd",
+        "ebitusd",
+        "ebt",
+        "eps",
+        "epsdil",
+        "epsusd",
+        "equity",
+        "equityavg",
+        "equityusd",
+        "ev",
+        "evebit",
+        "evebitda",
+        "fcf",
+        "fcfps",
+        "fxusd",
+        "gp",
+        "grossmargin",
+        "intangibles",
+        "intexp",
+        "invcap",
+        "invcapavg",
+        "inventory",
+        "investments",
+        "investmentsc",
+        "investmentsnc",
+        "liabilities",
+        "liabilitiesc",
+        "liabilitiesnc",
+        "marketcap",
+        "ncf",
+        "ncfbus",
+        "ncfcommon",
+        "ncfdebt",
+        "ncfdiv",
+        "ncff",
+        "ncfi",
+        "ncfinv",
+        "ncfo",
+        "ncfx",
+        "netinc",
+        "netinccmn",
+        "netinccmnusd",
+        "netincdis",
+        "netincnci",
+        "netmargin",
+        "opex",
+        "opinc",
+        "payables",
+        "payoutratio",
+        "pb",
+        "pe",
+        "pe1",
+        "ppnenet",
+        "prefdivis",
+        "price",
+        "ps",
+        "ps1",
+        "receivables",
+        "retearn",
+        "revenue",
+        "revenueusd",
+        "rnd",
+        "roa",
+        "roe",
+        "roic",
+        "ros",
+        "sbcomp",
+        "sgna",
+        "sharefactor",
+        "sharesbas",
+        "shareswa",
+        "shareswadil",
+        "sps",
+        "tangibles",
+        "taxassets",
+        "taxexp",
+        "taxliabilities",
+        "tbvps",
+        "workingcapital"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_fundamentals",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_fundamentals",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "dimension",
+        "reportperiod",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "funds": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_funds_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_funds_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_funds_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_funds_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "ticker",
+        "date"
+      ],
+      "key_source": "sprint brief (vendor declares: date,ticker)",
+      "per_field_changed": {
+        "close": 0,
+        "closeadj": 0,
+        "closeunadj": 0,
+        "date": 0,
+        "high": 0,
+        "lastupdated": 0,
+        "low": 0,
+        "open": 0,
+        "ticker": 0,
+        "volume": 0
+      },
+      "price_analysis": {
+        "class_tally": {},
+        "fields": {
+          "close": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "closeadj": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "closeunadj": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "high": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "low": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "open": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "volume": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          }
+        },
+        "revision_tickers": {},
+        "tickers_compared": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "closeadj",
+        "closeunadj",
+        "lastupdated"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_funds",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_funds",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "holdings": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_holdings_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "investorid",
+        "securitytype",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "date": 0,
+        "investorid": 0,
+        "securitytype": 0,
+        "ticker": 0,
+        "units": 0,
+        "value": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "investorid",
+        "securitytype",
+        "date",
+        "value",
+        "units"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_holdings",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_holdings",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "investorid",
+        "securitytype",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "holdings_investor": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "investorid"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "cllholdings": 0,
+        "cllunits": 0,
+        "cllvalue": 0,
+        "date": 0,
+        "dbtholdings": 0,
+        "dbtunits": 0,
+        "dbtvalue": 0,
+        "fndholdings": 0,
+        "fndunits": 0,
+        "fndvalue": 0,
+        "investorid": 0,
+        "investorname": 0,
+        "percentoftotal": 0,
+        "prfholdings": 0,
+        "prfunits": 0,
+        "prfvalue": 0,
+        "putholdings": 0,
+        "putunits": 0,
+        "putvalue": 0,
+        "shrholdings": 0,
+        "shrunits": 0,
+        "shrvalue": 0,
+        "totalvalue": 0,
+        "undholdings": 0,
+        "undunits": 0,
+        "undvalue": 0,
+        "wntholdings": 0,
+        "wntunits": 0,
+        "wntvalue": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 4,
+        "20260922": 4
+      },
+      "rows_before_dedupe": {
+        "20260915": 4,
+        "20260922": 4
+      },
+      "rows_in_both": 4,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "date",
+        "investorid",
+        "investorname",
+        "shrholdings",
+        "cllholdings",
+        "putholdings",
+        "wntholdings",
+        "dbtholdings",
+        "prfholdings",
+        "fndholdings",
+        "undholdings",
+        "shrunits",
+        "cllunits",
+        "putunits",
+        "wntunits",
+        "dbtunits",
+        "prfunits",
+        "fndunits",
+        "undunits",
+        "shrvalue",
+        "cllvalue",
+        "putvalue",
+        "wntvalue",
+        "dbtvalue",
+        "prfvalue",
+        "fndvalue",
+        "undvalue",
+        "totalvalue",
+        "percentoftotal"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_holdings_investor",
+          "rows": 4
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_holdings_investor",
+          "rows": 4
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "investorid"
+      ],
+      "watermark_only_changes": 0
+    },
+    "holdings_ticker": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_holdings_ticker_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_ticker_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_ticker_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_holdings_ticker_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "cllholders": 0,
+        "cllunits": 0,
+        "cllvalue": 0,
+        "date": 0,
+        "dbtholders": 0,
+        "dbtunits": 0,
+        "dbtvalue": 0,
+        "fndholders": 0,
+        "fndunits": 0,
+        "fndvalue": 0,
+        "name": 0,
+        "percentoftotal": 0,
+        "prfholders": 0,
+        "prfunits": 0,
+        "prfvalue": 0,
+        "putholders": 0,
+        "putunits": 0,
+        "putvalue": 0,
+        "shrholders": 5,
+        "shrunits": 5,
+        "shrvalue": 5,
+        "ticker": 0,
+        "totalvalue": 5,
+        "undholders": 0,
+        "undunits": 0,
+        "undvalue": 0,
+        "wntholders": 0,
+        "wntunits": 0,
+        "wntvalue": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 5,
+      "rows_in_both_differing_any_shared_field": 5,
+      "rows_in_both_differing_vendor_fields": 5,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "date",
+        "ticker",
+        "name",
+        "shrholders",
+        "cllholders",
+        "putholders",
+        "wntholders",
+        "dbtholders",
+        "prfholders",
+        "fndholders",
+        "undholders",
+        "shrunits",
+        "cllunits",
+        "putunits",
+        "wntunits",
+        "dbtunits",
+        "prfunits",
+        "fndunits",
+        "undunits",
+        "shrvalue",
+        "cllvalue",
+        "putvalue",
+        "wntvalue",
+        "dbtvalue",
+        "prfvalue",
+        "fndvalue",
+        "undvalue",
+        "totalvalue",
+        "percentoftotal"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_holdings_ticker",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_holdings_ticker",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "insiders": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_insiders_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_insiders_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_insiders_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_insiders_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "date",
+        "formtype",
+        "ownername",
+        "rownum",
+        "ticker"
+      ],
+      "key_source": "vendor isprimarykey (desc_all)",
+      "per_field_changed": {
+        "date": 0,
+        "dateexercisable": 0,
+        "directorindirect": 0,
+        "expirationdate": 0,
+        "formtype": 0,
+        "isdirector": 0,
+        "isofficer": 0,
+        "istenpercentowner": 0,
+        "natureofownership": 0,
+        "officertitle": 0,
+        "ownername": 0,
+        "priceexercisable": 0,
+        "rownum": 0,
+        "securityadcode": 0,
+        "securitytitle": 0,
+        "sharesownedbeforetransaction": 0,
+        "sharesownedfollowingtransaction": 0,
+        "ticker": 0,
+        "transactioncode": 0,
+        "transactiondate": 0,
+        "transactionpricepershare": 0,
+        "transactionshares": 0,
+        "transactionvalue": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "formtype",
+        "ownername",
+        "officertitle",
+        "isdirector",
+        "isofficer",
+        "istenpercentowner",
+        "transactiondate",
+        "securityadcode",
+        "transactioncode",
+        "sharesownedbeforetransaction",
+        "transactionshares",
+        "sharesownedfollowingtransaction",
+        "transactionpricepershare",
+        "transactionvalue",
+        "securitytitle",
+        "directorindirect",
+        "natureofownership",
+        "dateexercisable",
+        "priceexercisable",
+        "expirationdate",
+        "rownum"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_insiders",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_insiders",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "formtype",
+        "ownername",
+        "rownum",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "metrics": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_metrics_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_metrics_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_metrics_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_metrics_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "ticker",
+        "date"
+      ],
+      "key_source": "sprint brief (vendor declares: date,ticker)",
+      "per_field_changed": {
+        "beta1y": 0,
+        "beta5y": 0,
+        "date": 0,
+        "dividendyieldforward": 0,
+        "dividendyieldtrailing": 0,
+        "high52w": 0,
+        "high5y": 0,
+        "lastupdated": 0,
+        "low52w": 0,
+        "low5y": 0,
+        "ma200d": 0,
+        "ma200w": 0,
+        "ma50d": 0,
+        "ma50w": 0,
+        "price": 0,
+        "return1y": 0,
+        "return5y": 0,
+        "returnytd": 0,
+        "ticker": 0,
+        "volume": 0,
+        "volumeavg1m": 0,
+        "volumeavg3m": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_before_dedupe": {
+        "20260915": 5,
+        "20260922": 5
+      },
+      "rows_in_both": 0,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "lastupdated",
+        "beta1y",
+        "beta5y",
+        "dividendyieldforward",
+        "dividendyieldtrailing",
+        "high52w",
+        "high5y",
+        "low52w",
+        "low5y",
+        "ma200d",
+        "ma200w",
+        "ma50d",
+        "ma50w",
+        "price",
+        "return1y",
+        "return5y",
+        "returnytd",
+        "volume",
+        "volumeavg1m",
+        "volumeavg3m"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_metrics",
+          "rows": 5
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_metrics",
+          "rows": 5
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "sp500": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_sp500_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_sp500_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_sp500_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_sp500_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "ticker",
+        "date",
+        "action"
+      ],
+      "key_source": "sprint brief (vendor declares: action,date,ticker)",
+      "per_field_changed": {
+        "action": 0,
+        "contraname": 0,
+        "contraticker": 0,
+        "date": 0,
+        "name": 0,
+        "note": 0,
+        "ticker": 0
+      },
+      "rows_after_dedupe": {
+        "20260915": 150,
+        "20260922": 150
+      },
+      "rows_before_dedupe": {
+        "20260915": 155,
+        "20260922": 155
+      },
+      "rows_in_both": 120,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 30,
+      "rows_only_in_b": 30,
+      "shared_columns": [
+        "date",
+        "action",
+        "ticker",
+        "name",
+        "contraticker",
+        "contraname",
+        "note"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_sp500",
+          "rows": 5
+        },
+        {
+          "entry": "sp500_all_0",
+          "rows": 150
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_sp500",
+          "rows": 5
+        },
+        {
+          "entry": "sp500_all_0",
+          "rows": 150
+        }
+      ],
+      "vendor_declared_key": [
+        "action",
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 0
+    },
+    "stocks": {
+      "columns_only_in_a": [
+        "lag"
+      ],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [
+        {
+          "entry": "restrict_stocks_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_stocks_ATVI",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_stocks_TSLA",
+          "reason": "vendor error payload"
+        },
+        {
+          "entry": "restrict_stocks_ATVI",
+          "reason": "vendor error payload"
+        }
+      ],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 0,
+        "20260922": 0
+      },
+      "key_fields": [
+        "ticker",
+        "date"
+      ],
+      "key_source": "sprint brief (vendor declares: date,ticker)",
+      "per_field_changed": {
+        "close": 0,
+        "closeadj": 3744,
+        "closeunadj": 0,
+        "date": 0,
+        "high": 0,
+        "lastupdated": 3744,
+        "low": 0,
+        "open": 0,
+        "ticker": 0,
+        "volume": 0
+      },
+      "price_analysis": {
+        "class_tally": {
+          "ADJUSTMENT": 3,
+          "UNCHANGED": 27
+        },
+        "fields": {
+          "close": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "closeadj": {
+            "abs": {
+              "max": 0.9189999999999827,
+              "median": 0.42500000000001137,
+              "min": 0.22799999999999443,
+              "n": 3744,
+              "p95": 0.6880000000000024
+            },
+            "by_age_bucket": {
+              "31-365": {
+                "abs": {
+                  "max": 0.7980000000000018,
+                  "median": 0.4590000000000032,
+                  "min": 0.271000000000015,
+                  "n": 693,
+                  "p95": 0.7212000000000016
+                },
+                "changed": 693,
+                "rel": {
+                  "max": 0.005952210206247556,
+                  "median": 0.005876108561732599,
+                  "min": 0.001804247081906449,
+                  "n": 693,
+                  "p95": 0.005945304288621248
+                }
+              },
+              "8-30": {
+                "abs": {
+                  "max": 0.9189999999999827,
+                  "median": 0.5289999999999964,
+                  "min": 0.34499999999999886,
+                  "n": 45,
+                  "p95": 0.895800000000014
+                },
+                "changed": 45,
+                "rel": {
+                  "max": 0.005944607070479528,
+                  "median": 0.005875016410660432,
+                  "min": 0.0018065664764099014,
+                  "n": 45,
+                  "p95": 0.005943519397423668
+                }
+              },
+              "<=7": {
+                "abs": {
+                  "max": 0.8720000000000141,
+                  "median": 0.5229999999999961,
+                  "min": 0.43899999999999295,
+                  "n": 12,
+                  "p95": 0.869250000000001
+                },
+                "changed": 12,
+                "rel": {
+                  "max": 0.0059432995559602795,
+                  "median": 0.005875293712493594,
+                  "min": 0.0018065843621398888,
+                  "n": 12,
+                  "p95": 0.005942366194478223
+                }
+              },
+              ">365": {
+                "abs": {
+                  "max": 0.7319999999999993,
+                  "median": 0.40800000000000125,
+                  "min": 0.22799999999999443,
+                  "n": 2994,
+                  "p95": 0.6439999999999912
+                },
+                "changed": 2994,
+                "rel": {
+                  "max": 0.005958055290753042,
+                  "median": 0.0058767412545700495,
+                  "min": 0.0018020829270196104,
+                  "n": 2994,
+                  "p95": 0.005946796748158182
+                }
+              }
+            },
+            "changed": 3744,
+            "rel": {
+              "max": 0.005958055290753042,
+              "median": 0.005876621589830008,
+              "min": 0.0018020829270196104,
+              "n": 3744,
+              "p95": 0.0059465150739182
+            }
+          },
+          "closeunadj": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "high": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "low": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "open": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "volume": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          }
+        },
+        "revision_tickers": {},
+        "tickers_compared": 30
+      },
+      "rows_after_dedupe": {
+        "20260915": 37595,
+        "20260922": 37445
+      },
+      "rows_before_dedupe": {
+        "20260915": 90527,
+        "20260922": 90227
+      },
+      "rows_in_both": 37440,
+      "rows_in_both_differing_any_shared_field": 3744,
+      "rows_in_both_differing_vendor_fields": 3744,
+      "rows_only_in_a": 155,
+      "rows_only_in_b": 5,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "closeadj",
+        "closeunadj",
+        "lastupdated"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_stocks",
+          "rows": 5
+        },
+        {
+          "entry": "stocks_5y_0",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_boundary_2024",
+          "rows": 252
+        },
+        {
+          "entry": "stocks_y2024",
+          "rows": 7560
+        },
+        {
+          "entry": "stocks_w_2021-09-15",
+          "rows": 7560
+        },
+        {
+          "entry": "stocks_w_2022-09-15",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_w_2023-09-15",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_w_2024-09-15",
+          "rows": 7470
+        },
+        {
+          "entry": "stocks_w_2025-09-15",
+          "rows": 7500
+        },
+        {
+          "entry": "stocks_5y_dow30_combined",
+          "rows": 37590
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_stocks",
+          "rows": 5
+        },
+        {
+          "entry": "stocks_5y_0",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_boundary_2024",
+          "rows": 252
+        },
+        {
+          "entry": "stocks_y2024",
+          "rows": 7560
+        },
+        {
+          "entry": "stocks_w_2021-09-15",
+          "rows": 7410
+        },
+        {
+          "entry": "stocks_w_2022-09-15",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_w_2023-09-15",
+          "rows": 7530
+        },
+        {
+          "entry": "stocks_w_2024-09-15",
+          "rows": 7470
+        },
+        {
+          "entry": "stocks_w_2025-09-15",
+          "rows": 7500
+        },
+        {
+          "entry": "stocks_5y_dow30_combined",
+          "rows": 37440
+        }
+      ],
+      "vendor_declared_key": [
+        "date",
+        "ticker"
+      ],
+      "watermark_only_changes": 3744
+    },
+    "tickers": {
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260915": 2,
+        "20260922": 2
+      },
+      "key_fields": [
+        "permaticker"
+      ],
+      "key_source": "sprint brief (vendor declares: permaticker,table,ticker)",
+      "per_field_changed": {
+        "category": 7,
+        "companysite": 8,
+        "currency": 0,
+        "cusips": 56,
+        "exchange": 2,
+        "famaindustry": 0,
+        "figi": 52,
+        "firstadded": 0,
+        "firstpricedate": 7872,
+        "firstquarter": 26,
+        "industry": 17,
+        "isdelisted": 9,
+        "lastpricedate": 6347,
+        "lastquarter": 80,
+        "lastupdated": 6430,
+        "location": 0,
+        "name": 15,
+        "permaticker": 0,
+        "relatedtickers": 3264,
+        "scalemarketcap": 11,
+        "scalerevenue": 1,
+        "secfilings": 0,
+        "sector": 0,
+        "siccode": 0,
+        "sicindustry": 0,
+        "sicsector": 0,
+        "table": 0,
+        "ticker": 18
+      },
+      "rows_after_dedupe": {
+        "20260915": 20976,
+        "20260922": 20991
+      },
+      "rows_before_dedupe": {
+        "20260915": 20982,
+        "20260922": 20997
+      },
+      "rows_in_both": 20971,
+      "rows_in_both_differing_any_shared_field": 14711,
+      "rows_in_both_differing_vendor_fields": 14678,
+      "rows_only_in_a": 5,
+      "rows_only_in_b": 20,
+      "shared_columns": [
+        "table",
+        "permaticker",
+        "ticker",
+        "name",
+        "exchange",
+        "isdelisted",
+        "category",
+        "cusips",
+        "siccode",
+        "sicsector",
+        "sicindustry",
+        "figi",
+        "famaindustry",
+        "sector",
+        "industry",
+        "scalemarketcap",
+        "scalerevenue",
+        "relatedtickers",
+        "currency",
+        "location",
+        "lastupdated",
+        "firstadded",
+        "firstpricedate",
+        "lastpricedate",
+        "firstquarter",
+        "lastquarter",
+        "secfilings",
+        "companysite"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "probe5_tickers",
+          "rows": 5
+        },
+        {
+          "entry": "restrict_tickers_TSLA",
+          "rows": 3
+        },
+        {
+          "entry": "restrict_tickers_ATVI",
+          "rows": 3
+        },
+        {
+          "entry": "tickers_stocks_0",
+          "rows": 10000
+        },
+        {
+          "entry": "tickers_stocks_10000",
+          "rows": 10000
+        },
+        {
+          "entry": "tickers_stocks_20000",
+          "rows": 971
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "probe5_tickers",
+          "rows": 5
+        },
+        {
+          "entry": "restrict_tickers_TSLA",
+          "rows": 3
+        },
+        {
+          "entry": "restrict_tickers_ATVI",
+          "rows": 3
+        },
+        {
+          "entry": "tickers_stocks_0",
+          "rows": 10000
+        },
+        {
+          "entry": "tickers_stocks_10000",
+          "rows": 10000
+        },
+        {
+          "entry": "tickers_stocks_20000",
+          "rows": 986
+        }
+      ],
+      "vendor_declared_key": [
+        "permaticker",
+        "table",
+        "ticker"
+      ],
+      "watermark_only_changes": 6430
+    }
+  },
+  "tables_only_in_a": [],
+  "tables_only_in_b": [],
+  "tool": "sharadar_snapshot_diff.py",
+  "version": "1.0.0"
+}

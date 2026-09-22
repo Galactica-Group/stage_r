@@ -1,0 +1,2117 @@
+[
+  {
+    "name": "docs_index",
+    "url_redacted": "https://sharadar.com/docs",
+    "params": {},
+    "http_status": 200,
+    "rows": null,
+    "columns": null,
+    "raw_file": "raw/docs_index.html",
+    "raw_sha256": "25869f637712a46e1604a4cf5bb09c93652c8ad82a52770f02911d520798217e",
+    "raw_bytes": 58363,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:10:24Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "docs_intro",
+    "url_redacted": "https://sharadar.com/docs/intro",
+    "params": {},
+    "http_status": 200,
+    "rows": null,
+    "columns": null,
+    "raw_file": "raw/docs_intro.html",
+    "raw_sha256": "062beb1068e1be595a1b9def13e16cfb80c12d8ff41d789b35ef2f7d6c4f5ada",
+    "raw_bytes": 76969,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:10:25Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "llms_txt",
+    "url_redacted": "https://sharadar.com/llms.txt",
+    "params": {},
+    "http_status": 200,
+    "rows": null,
+    "columns": null,
+    "raw_file": "raw/llms_txt.csv",
+    "raw_sha256": "e66cb895ba8fe2eb3209795963ce33049b997d578ca901dbe5f74bc2c47545af",
+    "raw_bytes": 9065,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:10:27Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "schema_index",
+    "url_redacted": "https://api.sharadar.com/v1.0/schema",
+    "params": {},
+    "http_status": 200,
+    "rows": 1,
+    "columns": [
+      "format",
+      "count",
+      "tables",
+      "urls"
+    ],
+    "raw_file": "raw/schema_index.json",
+    "raw_sha256": "bb1092f57577afe58460a58eb7ab552080c4664394ba2eb5ef7fcea2a2ed6b76",
+    "raw_bytes": 2542,
+    "parquet_file": "schema_index.parquet",
+    "parquet_sha256": "05e9a3313e7ab6caf76e1e7146afe93511717a98f8dc571f00d62b021ca5fa0a",
+    "fetched_at_utc": "2026-09-22T16:10:28Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_descriptions",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/descriptions?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "table",
+      "indicator",
+      "isfilter",
+      "isprimarykey",
+      "title",
+      "description",
+      "unittype"
+    ],
+    "raw_file": "raw/probe5_descriptions.json",
+    "raw_sha256": "618fe9a757a481112416c33e826f5026da6cb236d9745dde41953b0f3f8ba4fc",
+    "raw_bytes": 1327,
+    "parquet_file": "probe5_descriptions.parquet",
+    "parquet_sha256": "e48b72c9e9b7a99ebd988c88a3da06eae601aba4c275002c52e4317936067ac4",
+    "fetched_at_utc": "2026-09-22T16:10:29Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_tickers",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/probe5_tickers.json",
+    "raw_sha256": "dc7b77f157dcfd7c8d06c8b4e5dc7f1c6e8f06a4a5177d0733181b57ff21ee30",
+    "raw_bytes": 3239,
+    "parquet_file": "probe5_tickers.parquet",
+    "parquet_sha256": "2bd5cd79bcbee4dd396be324a57d3c7e7421be30a4a5529805c02125aa15bd72",
+    "fetched_at_utc": "2026-09-22T16:10:30Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_fundamentals",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/fundamentals?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "dimension",
+      "calendardate",
+      "date",
+      "reportperiod",
+      "fiscalperiod",
+      "lastupdated",
+      "accoci",
+      "assets",
+      "assetsavg",
+      "assetsc",
+      "assetsnc",
+      "assetturnover",
+      "bvps",
+      "capex",
+      "cashneq",
+      "cashnequsd",
+      "cor",
+      "consolinc",
+      "currentratio",
+      "de",
+      "debt",
+      "debtc",
+      "debtnc",
+      "debtusd",
+      "deferredrev",
+      "depamor",
+      "deposits",
+      "divyield",
+      "dps",
+      "ebit",
+      "ebitda",
+      "ebitdamargin",
+      "ebitdausd",
+      "ebitusd",
+      "ebt",
+      "eps",
+      "epsdil",
+      "epsusd",
+      "equity",
+      "equityavg",
+      "equityusd",
+      "ev",
+      "evebit",
+      "evebitda",
+      "fcf",
+      "fcfps",
+      "fxusd",
+      "gp",
+      "grossmargin",
+      "intangibles",
+      "intexp",
+      "invcap",
+      "invcapavg",
+      "inventory",
+      "investments",
+      "investmentsc",
+      "investmentsnc",
+      "liabilities",
+      "liabilitiesc",
+      "liabilitiesnc",
+      "marketcap",
+      "ncf",
+      "ncfbus",
+      "ncfcommon",
+      "ncfdebt",
+      "ncfdiv",
+      "ncff",
+      "ncfi",
+      "ncfinv",
+      "ncfo",
+      "ncfx",
+      "netinc",
+      "netinccmn",
+      "netinccmnusd",
+      "netincdis",
+      "netincnci",
+      "netmargin",
+      "opex",
+      "opinc",
+      "payables",
+      "payoutratio",
+      "pb",
+      "pe",
+      "pe1",
+      "ppnenet",
+      "prefdivis",
+      "price",
+      "ps",
+      "ps1",
+      "receivables",
+      "retearn",
+      "revenue",
+      "revenueusd",
+      "rnd",
+      "roa",
+      "roe",
+      "roic",
+      "ros",
+      "sbcomp",
+      "sgna",
+      "sharefactor",
+      "sharesbas",
+      "shareswa",
+      "shareswadil",
+      "sps",
+      "tangibles",
+      "taxassets",
+      "taxexp",
+      "taxliabilities",
+      "tbvps",
+      "workingcapital"
+    ],
+    "raw_file": "raw/probe5_fundamentals.json",
+    "raw_sha256": "705672e2735dac9c4e1f6d2346e5929ff6ec9434c554a51f963dd53f8945728f",
+    "raw_bytes": 11707,
+    "parquet_file": "probe5_fundamentals.parquet",
+    "parquet_sha256": "6cd8fe54e94fef6df7b46a8ccc0ca428b84922ab34e53696c7ce8363ca60fb7f",
+    "fetched_at_utc": "2026-09-22T16:10:32Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_daily",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/daily?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "lastupdated",
+      "ev",
+      "evebit",
+      "evebitda",
+      "marketcap",
+      "pb",
+      "pe",
+      "ps"
+    ],
+    "raw_file": "raw/probe5_daily.json",
+    "raw_sha256": "9818b7f2c137bd4d51fa44af8d1f1d16ea7de62a14f3bbe72c4c0b691514605f",
+    "raw_bytes": 792,
+    "parquet_file": "probe5_daily.parquet",
+    "parquet_sha256": "f584a6efcadbc2636c5e0771e4dd73c91cc62222c8001bba0e0fc87e083a6cce",
+    "fetched_at_utc": "2026-09-22T16:10:33Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_actions",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/actions?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "date",
+      "action",
+      "ticker",
+      "name",
+      "value",
+      "contraticker",
+      "contraname"
+    ],
+    "raw_file": "raw/probe5_actions.json",
+    "raw_sha256": "c285238a16fe60d44de2852ce60696f02ff9b90c2199f1b2bf2453459f508f29",
+    "raw_bytes": 810,
+    "parquet_file": "probe5_actions.parquet",
+    "parquet_sha256": "b3665fe3449ddcba760cf254de5851ed0c0dd21143d65941df29d9d74ae61d82",
+    "fetched_at_utc": "2026-09-22T16:10:34Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_events",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/events?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "eventcodes"
+    ],
+    "raw_file": "raw/probe5_events.json",
+    "raw_sha256": "43ce38ea353592bbac7fb81c3555852d12e8c422ab60af6ed06033f7ffae0810",
+    "raw_bytes": 314,
+    "parquet_file": "probe5_events.parquet",
+    "parquet_sha256": "5e82146ab3e193b62876e70ed27efcd31b57246b446ede0b0d95b3680c5cd75e",
+    "fetched_at_utc": "2026-09-22T16:10:36Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_sp500",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/sp500?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "date",
+      "action",
+      "ticker",
+      "name",
+      "contraticker",
+      "contraname",
+      "note"
+    ],
+    "raw_file": "raw/probe5_sp500.json",
+    "raw_sha256": "bed90977f1be6f32545e73165cc1271bec30b4dc7740d392735d42f8bdc9e712",
+    "raw_bytes": 697,
+    "parquet_file": "probe5_sp500.parquet",
+    "parquet_sha256": "62d390b930195786f6b2bdf12aea5c5952612df703497c3a87f905b724f887ba",
+    "fetched_at_utc": "2026-09-22T16:10:37Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_stocks",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/probe5_stocks.json",
+    "raw_sha256": "aa8630024d209f4b25f5e13d30c695758f50d92c71e6b529c7c77a374251d767",
+    "raw_bytes": 887,
+    "parquet_file": "probe5_stocks.parquet",
+    "parquet_sha256": "c037af757630ddbba76c78e4d4fd79d069a0b410daacb3ab60393e77101cc970",
+    "fetched_at_utc": "2026-09-22T16:10:38Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_funds",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/probe5_funds.json",
+    "raw_sha256": "cf0fc427e0b0686d45cda69fa723b0b58a9ccfc48e3affc4bb27375209412d30",
+    "raw_bytes": 895,
+    "parquet_file": "probe5_funds.parquet",
+    "parquet_sha256": "ea88091affb6de363d45d5a45010eac92790d5bcd9def3b318d328576705656b",
+    "fetched_at_utc": "2026-09-22T16:10:39Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_metrics",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/metrics?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "lastupdated",
+      "beta1y",
+      "beta5y",
+      "dividendyieldforward",
+      "dividendyieldtrailing",
+      "high52w",
+      "high5y",
+      "low52w",
+      "low5y",
+      "ma200d",
+      "ma200w",
+      "ma50d",
+      "ma50w",
+      "price",
+      "return1y",
+      "return5y",
+      "returnytd",
+      "volume",
+      "volumeavg1m",
+      "volumeavg3m"
+    ],
+    "raw_file": "raw/probe5_metrics.json",
+    "raw_sha256": "e694a1cd172e2f0700dd3be23488ad079206774ab717e89b15102f556b501c44",
+    "raw_bytes": 2059,
+    "parquet_file": "probe5_metrics.parquet",
+    "parquet_sha256": "ac98c7e31e3631a1f89f179219c1276048720dda9f4a7296baadac12d75e8d54",
+    "fetched_at_utc": "2026-09-22T16:10:40Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_insiders",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/insiders?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "formtype",
+      "ownername",
+      "officertitle",
+      "isdirector",
+      "isofficer",
+      "istenpercentowner",
+      "transactiondate",
+      "securityadcode",
+      "transactioncode",
+      "sharesownedbeforetransaction",
+      "transactionshares",
+      "sharesownedfollowingtransaction",
+      "transactionpricepershare",
+      "transactionvalue",
+      "securitytitle",
+      "directorindirect",
+      "natureofownership",
+      "dateexercisable",
+      "priceexercisable",
+      "expirationdate",
+      "rownum"
+    ],
+    "raw_file": "raw/probe5_insiders.json",
+    "raw_sha256": "4b364664c66809bab271965da45aba697125ff0813191af1fc509f56bc0ef573",
+    "raw_bytes": 2860,
+    "parquet_file": "probe5_insiders.parquet",
+    "parquet_sha256": "a66b0275c81476d1714c80351e9733aeb2d05f3d7faf59f380aa8b4ab74b5a67",
+    "fetched_at_utc": "2026-09-22T16:10:42Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_holdings",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "investorid",
+      "securitytype",
+      "date",
+      "value",
+      "units"
+    ],
+    "raw_file": "raw/probe5_holdings.json",
+    "raw_sha256": "17678d22454a39315ca826537690d6cc599928bde88572e347f6821670c310f0",
+    "raw_bytes": 528,
+    "parquet_file": "probe5_holdings.parquet",
+    "parquet_sha256": "fb49cfa4733b25787713ea82ef82dc70f9222686bacb551f0aee1c5016f723a3",
+    "fetched_at_utc": "2026-09-22T16:10:43Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_holdings_ticker",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings_ticker?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "date",
+      "ticker",
+      "name",
+      "shrholders",
+      "cllholders",
+      "putholders",
+      "wntholders",
+      "dbtholders",
+      "prfholders",
+      "fndholders",
+      "undholders",
+      "shrunits",
+      "cllunits",
+      "putunits",
+      "wntunits",
+      "dbtunits",
+      "prfunits",
+      "fndunits",
+      "undunits",
+      "shrvalue",
+      "cllvalue",
+      "putvalue",
+      "wntvalue",
+      "dbtvalue",
+      "prfvalue",
+      "fndvalue",
+      "undvalue",
+      "totalvalue",
+      "percentoftotal"
+    ],
+    "raw_file": "raw/probe5_holdings_ticker.json",
+    "raw_sha256": "3848a20f40a0c29d34b92761958206bea296f12f4143b60e4586d7210fb975aa",
+    "raw_bytes": 2475,
+    "parquet_file": "probe5_holdings_ticker.parquet",
+    "parquet_sha256": "c590eda1acfe6a9c3bdd2853d0aed235d9337ffbc6d7bb0dac17d5382f1a33fc",
+    "fetched_at_utc": "2026-09-22T16:10:45Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "probe5_holdings_investor",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings_investor?limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 4,
+    "columns": [
+      "date",
+      "investorid",
+      "investorname",
+      "shrholdings",
+      "cllholdings",
+      "putholdings",
+      "wntholdings",
+      "dbtholdings",
+      "prfholdings",
+      "fndholdings",
+      "undholdings",
+      "shrunits",
+      "cllunits",
+      "putunits",
+      "wntunits",
+      "dbtunits",
+      "prfunits",
+      "fndunits",
+      "undunits",
+      "shrvalue",
+      "cllvalue",
+      "putvalue",
+      "wntvalue",
+      "dbtvalue",
+      "prfvalue",
+      "fndvalue",
+      "undvalue",
+      "totalvalue",
+      "percentoftotal"
+    ],
+    "raw_file": "raw/probe5_holdings_investor.json",
+    "raw_sha256": "a5b991b5ba3898d6129d5cb6ad1da67752d200d980c94182a4d27a3fd94f5623",
+    "raw_bytes": 2008,
+    "parquet_file": "probe5_holdings_investor.parquet",
+    "parquet_sha256": "fcdab14aa138859c4d9b6f9f29f6b5dbfaddb19a0d13c70b3d618bd50c3bbe06",
+    "fetched_at_utc": "2026-09-22T16:10:46Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_tickers_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 3,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/restrict_tickers_TSLA.json",
+    "raw_sha256": "0c4c4a5b7f0e48981972bf26ab22d2ce7a6d3e7d67b7232a0acfde8121544d4b",
+    "raw_bytes": 2461,
+    "parquet_file": "restrict_tickers_TSLA.parquet",
+    "parquet_sha256": "ada46562fa40ab6e37e17ae7c8db6f643f3e8bb635b3cd1e6aedaef43fb93caf",
+    "fetched_at_utc": "2026-09-22T16:10:47Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_tickers_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 3,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/restrict_tickers_ATVI.json",
+    "raw_sha256": "9ac07500e6e1850f8f872dac68e9d1a7e3a9ef490fd675870518bb2e0ce2d589",
+    "raw_bytes": 2470,
+    "parquet_file": "restrict_tickers_ATVI.parquet",
+    "parquet_sha256": "bdbf6d6d94bf341986293d63a167681834af378fd4d595f118a0e5af856f1cff",
+    "fetched_at_utc": "2026-09-22T16:10:48Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_fundamentals_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/fundamentals?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_fundamentals_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_fundamentals_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:49Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_fundamentals_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/fundamentals?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_fundamentals_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_fundamentals_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:51Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_daily_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/daily?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_daily_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_daily_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:52Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_daily_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/daily?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_daily_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_daily_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:53Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_actions_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/actions?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_actions_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_actions_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:54Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_actions_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/actions?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_actions_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_actions_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:56Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_events_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/events?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_events_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_events_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:57Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_events_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/events?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_events_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_events_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:58Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_sp500_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/sp500?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_sp500_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_sp500_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:10:59Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_sp500_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/sp500?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_sp500_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_sp500_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:00Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_stocks_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_stocks_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_stocks_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:01Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_stocks_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_stocks_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_stocks_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:03Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_funds_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error"
+    ],
+    "raw_file": "raw/restrict_funds_TSLA.json",
+    "raw_sha256": "04ce854c6aaa7445dc2eae9ce41949cdbac6033f11599e7d6d2b69ceb1e78b76",
+    "raw_bytes": 29,
+    "parquet_file": "restrict_funds_TSLA.parquet",
+    "parquet_sha256": "d70e6ce38197061fbd954709fd6f180aba203b3d0de7abb713330f526fd6a50c",
+    "fetched_at_utc": "2026-09-22T16:11:04Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_funds_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error"
+    ],
+    "raw_file": "raw/restrict_funds_ATVI.json",
+    "raw_sha256": "04ce854c6aaa7445dc2eae9ce41949cdbac6033f11599e7d6d2b69ceb1e78b76",
+    "raw_bytes": 29,
+    "parquet_file": "restrict_funds_ATVI.parquet",
+    "parquet_sha256": "d70e6ce38197061fbd954709fd6f180aba203b3d0de7abb713330f526fd6a50c",
+    "fetched_at_utc": "2026-09-22T16:11:05Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_metrics_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/metrics?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_metrics_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_metrics_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:06Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_metrics_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/metrics?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_metrics_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_metrics_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:07Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_insiders_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/insiders?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_insiders_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_insiders_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:09Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_insiders_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/insiders?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_insiders_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_insiders_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:10Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_holdings_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_holdings_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_holdings_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:11Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_holdings_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_holdings_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_holdings_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:12Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_holdings_ticker_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings_ticker?ticker=TSLA&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_holdings_ticker_TSLA.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_holdings_ticker_TSLA.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:13Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "restrict_holdings_ticker_ATVI",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/holdings_ticker?ticker=ATVI&limit=5&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "ATVI",
+      "limit": 5,
+      "format": "json"
+    },
+    "http_status": 403,
+    "rows": 1,
+    "columns": [
+      "error",
+      "description"
+    ],
+    "raw_file": "raw/restrict_holdings_ticker_ATVI.json",
+    "raw_sha256": "c9d75041113101c94b1fb9f7141f0c35d281e2d966d52510dd193b8031f114ff",
+    "raw_bytes": 75,
+    "parquet_file": "restrict_holdings_ticker_ATVI.parquet",
+    "parquet_sha256": "fabb9f585e2a3b8b50c34147a0987640a5eb4212c8c7368fddddbc1eb8ebc6af",
+    "fetched_at_utc": "2026-09-22T16:11:15Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "desc_all",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/descriptions?limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 384,
+    "columns": [
+      "table",
+      "indicator",
+      "isfilter",
+      "isprimarykey",
+      "title",
+      "description",
+      "unittype"
+    ],
+    "raw_file": "raw/desc_all.json",
+    "raw_sha256": "83f23dd760d4d6ac97c885b0819a4a2dac6798a956a6426aeb4e3b07b4c4771a",
+    "raw_bytes": 131561,
+    "parquet_file": "desc_all.parquet",
+    "parquet_sha256": "5872daa34537ae629a9d3b4f8030dcd0694b166a8d4298842efcee7c44328402",
+    "fetched_at_utc": "2026-09-22T16:11:16Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "tickers_stocks_0",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?table=stocks&limit=10000&offset=0&format=json&api_key=<REDACTED>",
+    "params": {
+      "table": "stocks",
+      "limit": 10000,
+      "offset": 0,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 10000,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/tickers_stocks_0.json",
+    "raw_sha256": "e1038387123c4fff1f71495139d07c7d3e4deb5213c0683e653cabd237361fe2",
+    "raw_bytes": 8128699,
+    "parquet_file": "tickers_stocks_0.parquet",
+    "parquet_sha256": "318d07ca4716ac401bb7d0d164f9afb84827c01b682f7dede72481c410f621d2",
+    "fetched_at_utc": "2026-09-22T16:11:18Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "tickers_stocks_10000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?table=stocks&limit=10000&offset=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "table": "stocks",
+      "limit": 10000,
+      "offset": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 10000,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/tickers_stocks_10000.json",
+    "raw_sha256": "b131b08643e68a6157aa761eeb90945364ebc26764fc71195ec025b73c607a9e",
+    "raw_bytes": 7900779,
+    "parquet_file": "tickers_stocks_10000.parquet",
+    "parquet_sha256": "c48a3de3706d9a4508d09299f584c84cf6bd862794ebc81a7040e1510c67b058",
+    "fetched_at_utc": "2026-09-22T16:11:20Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "tickers_stocks_20000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?table=stocks&limit=10000&offset=20000&format=json&api_key=<REDACTED>",
+    "params": {
+      "table": "stocks",
+      "limit": 10000,
+      "offset": 20000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 986,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "raw_file": "raw/tickers_stocks_20000.json",
+    "raw_sha256": "87bf37b82d563443ae80856c44a438e3cb2524e5d5421057e20909b85cd775d2",
+    "raw_bytes": 772031,
+    "parquet_file": "tickers_stocks_20000.parquet",
+    "parquet_sha256": "0bb7af2fc8534ab8244f193497df722953fb02ea1a0b3e08595f3f6c1d8b09c0",
+    "fetched_at_utc": "2026-09-22T16:11:21Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "tickers_stocks_30000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?table=stocks&limit=10000&offset=30000&format=json&api_key=<REDACTED>",
+    "params": {
+      "table": "stocks",
+      "limit": 10000,
+      "offset": 30000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 0,
+    "columns": [],
+    "raw_file": "raw/tickers_stocks_30000.json",
+    "raw_sha256": "2d89d22ece49414976a5b77bbbe54af051d791fbe060dee51b82f9b8dca2868a",
+    "raw_bytes": 21,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:11:23Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "sp500_all_0",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/sp500?limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 150,
+    "columns": [
+      "date",
+      "action",
+      "ticker",
+      "name",
+      "contraticker",
+      "contraname",
+      "note"
+    ],
+    "raw_file": "raw/sp500_all_0.json",
+    "raw_sha256": "acf912bf97c864ef7ad25ea7408cc28e801db59a0b13bff62df48b1dbf41e21d",
+    "raw_bytes": 20442,
+    "parquet_file": "sp500_all_0.parquet",
+    "parquet_sha256": "7ac69a2d8b98a18bb38665f8189703267c68a0c98d14f7489436f57938873c64",
+    "fetched_at_utc": "2026-09-22T16:11:24Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "stocks_5y_0",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2026-09-12&limit=10000&offset=0&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "offset": 0,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7530,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_5y_0.json",
+    "raw_sha256": "c467c387827f56abf264c53c110a425143eb15ab41323564cf52a9942278ae0f",
+    "raw_bytes": 1314154,
+    "parquet_file": "stocks_5y_0.parquet",
+    "parquet_sha256": "e9d5cfebfe70c57f1baa2945877b9633efb01ca69ae6f46e85b58d27306714d4",
+    "fetched_at_utc": "2026-09-22T16:11:27Z",
+    "date_range_check": {
+      "requested": [
+        "2021-09-15",
+        "2026-09-12"
+      ],
+      "returned": [
+        "2025-09-12",
+        "2026-09-11"
+      ],
+      "gaps_days": {
+        "start_days_short": 1458,
+        "end_days_short": 1
+      },
+      "tolerance_days": 5,
+      "status": "SHORTFALL",
+      "reason": "returned span falls short at: start_days_short"
+    }
+  },
+  {
+    "name": "stocks_5y_10000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2026-09-12&limit=10000&offset=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "offset": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 0,
+    "columns": [],
+    "raw_file": "raw/stocks_5y_10000.json",
+    "raw_sha256": "2d89d22ece49414976a5b77bbbe54af051d791fbe060dee51b82f9b8dca2868a",
+    "raw_bytes": 21,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:22:14Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date column returned"
+    }
+  },
+  {
+    "name": "stocks_5y_20000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2026-09-12&limit=10000&offset=20000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "offset": 20000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 0,
+    "columns": [],
+    "raw_file": "raw/stocks_5y_20000.json",
+    "raw_sha256": "2d89d22ece49414976a5b77bbbe54af051d791fbe060dee51b82f9b8dca2868a",
+    "raw_bytes": 21,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:22:16Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date column returned"
+    }
+  },
+  {
+    "name": "stocks_5y_30000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2026-09-12&limit=10000&offset=30000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "offset": 30000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 0,
+    "columns": [],
+    "raw_file": "raw/stocks_5y_30000.json",
+    "raw_sha256": "2d89d22ece49414976a5b77bbbe54af051d791fbe060dee51b82f9b8dca2868a",
+    "raw_bytes": 21,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:22:17Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date column returned"
+    }
+  },
+  {
+    "name": "stocks_5y_40000",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2026-09-12&limit=10000&offset=40000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "offset": 40000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 0,
+    "columns": [],
+    "raw_file": "raw/stocks_5y_40000.json",
+    "raw_sha256": "2d89d22ece49414976a5b77bbbe54af051d791fbe060dee51b82f9b8dca2868a",
+    "raw_bytes": 21,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T16:22:18Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date column returned"
+    }
+  },
+  {
+    "name": "stocks_boundary_2024",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?ticker=AAPL&from=2024-01-01&to=2024-12-31&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "AAPL",
+      "from": "2024-01-01",
+      "to": "2024-12-31",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 252,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_boundary_2024.json",
+    "raw_sha256": "67123cc207e802770b36de392d5655f31232c6c97dc4dfd71198d35f5ef6a19a",
+    "raw_bytes": 44697,
+    "parquet_file": "stocks_boundary_2024.parquet",
+    "parquet_sha256": "988d1230e3f06dbd0dd33eb15426a51fd60f7f5a2b93d6969406cdb8a2fbdfaf",
+    "fetched_at_utc": "2026-09-22T16:22:19Z",
+    "date_range_check": {
+      "requested": [
+        "2024-01-01",
+        "2024-12-31"
+      ],
+      "returned": [
+        "2024-01-02",
+        "2024-12-31"
+      ],
+      "gaps_days": {
+        "start_days_short": 1,
+        "end_days_short": 0
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "stocks_y2024",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2024-01-01&to=2024-12-31&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2024-01-01",
+      "to": "2024-12-31",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7560,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_y2024.json",
+    "raw_sha256": "1f644f658e298c43e34de354df87efb6937f2b0efcd6761c347629b235df1884",
+    "raw_bytes": 1316570,
+    "parquet_file": "stocks_y2024.parquet",
+    "parquet_sha256": "0dcc2add8ad71a0b50a5600f496c55e57c8084e4833b173018c695759a9463e3",
+    "fetched_at_utc": "2026-09-22T16:22:22Z",
+    "date_range_check": {
+      "requested": [
+        "2024-01-01",
+        "2024-12-31"
+      ],
+      "returned": [
+        "2024-01-02",
+        "2024-12-31"
+      ],
+      "gaps_days": {
+        "start_days_short": 1,
+        "end_days_short": 0
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "stocks_w_2021-09-15",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2021-09-15&to=2022-09-14&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2021-09-15",
+      "to": "2022-09-14",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7410,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_w_2021-09-15.json",
+    "raw_sha256": "7dc18325c1c6b46c24e95cb1bffd5643a74cf589ff17b4b84c176830d8929036",
+    "raw_bytes": 1294091,
+    "parquet_file": "stocks_w_2021-09-15.parquet",
+    "parquet_sha256": "f33589daf9d08de340d43148a4ac5a0d89c2ea5dea03bd5de21cf4435b450d31",
+    "fetched_at_utc": "2026-09-22T16:22:27Z",
+    "date_range_check": {
+      "requested": [
+        "2021-09-15",
+        "2022-09-14"
+      ],
+      "returned": [
+        "2021-09-22",
+        "2022-09-14"
+      ],
+      "gaps_days": {
+        "start_days_short": 7,
+        "end_days_short": 0
+      },
+      "tolerance_days": 5,
+      "status": "SHORTFALL",
+      "reason": "returned span falls short at: start_days_short"
+    }
+  },
+  {
+    "name": "stocks_w_2022-09-15",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2022-09-15&to=2023-09-14&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2022-09-15",
+      "to": "2023-09-14",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7530,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_w_2022-09-15.json",
+    "raw_sha256": "151d1358f5e8d95349b127fd3a6133c72d38b2d5cac2eebd566553627fc254ea",
+    "raw_bytes": 1313217,
+    "parquet_file": "stocks_w_2022-09-15.parquet",
+    "parquet_sha256": "8b64f8a47f26b9a20c4da9fe0f4f01af1f378078062c429d860c559062145af8",
+    "fetched_at_utc": "2026-09-22T17:09:54Z",
+    "date_range_check": {
+      "requested": [
+        "2022-09-15",
+        "2023-09-14"
+      ],
+      "returned": [
+        "2022-09-15",
+        "2023-09-14"
+      ],
+      "gaps_days": {
+        "start_days_short": 0,
+        "end_days_short": 0
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "stocks_w_2023-09-15",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2023-09-15&to=2024-09-14&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2023-09-15",
+      "to": "2024-09-14",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7530,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_w_2023-09-15.json",
+    "raw_sha256": "9d9f228ac5d1f821e63741c51a802b6a6333fc83db630bdaba52e20a80dbefa4",
+    "raw_bytes": 1311951,
+    "parquet_file": "stocks_w_2023-09-15.parquet",
+    "parquet_sha256": "d5a4ee2ca6256828d30eb0798b0ee4e6859cb2bc5d505550cad898d86c96d7da",
+    "fetched_at_utc": "2026-09-22T17:09:56Z",
+    "date_range_check": {
+      "requested": [
+        "2023-09-15",
+        "2024-09-14"
+      ],
+      "returned": [
+        "2023-09-15",
+        "2024-09-13"
+      ],
+      "gaps_days": {
+        "start_days_short": 0,
+        "end_days_short": 1
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "stocks_w_2024-09-15",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2024-09-15&to=2025-09-14&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2024-09-15",
+      "to": "2025-09-14",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7470,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_w_2024-09-15.json",
+    "raw_sha256": "a726cce3141bc935d382dcf2658a89b2195328430127ec52724905d34983a9c1",
+    "raw_bytes": 1301159,
+    "parquet_file": "stocks_w_2024-09-15.parquet",
+    "parquet_sha256": "23d96cbf2249fb5a75c664a8190c8d6e71e7b2491b87031550209241caa67d77",
+    "fetched_at_utc": "2026-09-22T17:09:59Z",
+    "date_range_check": {
+      "requested": [
+        "2024-09-15",
+        "2025-09-14"
+      ],
+      "returned": [
+        "2024-09-16",
+        "2025-09-12"
+      ],
+      "gaps_days": {
+        "start_days_short": 1,
+        "end_days_short": 2
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "stocks_w_2025-09-15",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?from=2025-09-15&to=2026-09-12&limit=10000&format=json&api_key=<REDACTED>",
+    "params": {
+      "from": "2025-09-15",
+      "to": "2026-09-12",
+      "limit": 10000,
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7500,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/stocks_w_2025-09-15.json",
+    "raw_sha256": "894221cf137ef4927ff9098bf1429860692d387410a42bd8985dbd080aa30abf",
+    "raw_bytes": 1308925,
+    "parquet_file": "stocks_w_2025-09-15.parquet",
+    "parquet_sha256": "966efd54d0fc19a41b8ed818bb9817fff6f9ae3a795b7fed664902220abcd052",
+    "fetched_at_utc": "2026-09-22T17:10:04Z",
+    "date_range_check": {
+      "requested": [
+        "2025-09-15",
+        "2026-09-12"
+      ],
+      "returned": [
+        "2025-09-15",
+        "2026-09-11"
+      ],
+      "gaps_days": {
+        "start_days_short": 0,
+        "end_days_short": 1
+      },
+      "tolerance_days": 5,
+      "status": "ok"
+    }
+  },
+  {
+    "name": "page_subscribe",
+    "url_redacted": "https://sharadar.com/subscribe",
+    "params": {},
+    "http_status": 200,
+    "rows": null,
+    "columns": null,
+    "raw_file": "raw/page_subscribe.html",
+    "raw_sha256": "3f51cb899808e88e485f15a7c9a5e5257145a8d887cba88ef2179ecfc5f7d7e5",
+    "raw_bytes": 107575,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T17:10:05Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "page_terms",
+    "url_redacted": "https://sharadar.com/terms",
+    "params": {},
+    "http_status": 200,
+    "rows": null,
+    "columns": null,
+    "raw_file": "raw/page_terms.html",
+    "raw_sha256": "2e76dd778cf01c3d462fd6450b9c9f50e8957010b909b08e175aa1c143bc8a35",
+    "raw_bytes": 88476,
+    "parquet_file": null,
+    "parquet_sha256": null,
+    "fetched_at_utc": "2026-09-22T17:10:06Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "stocks_5y_dow30_combined",
+    "derived_from": [
+      "stocks_w_2021-09-15",
+      "stocks_w_2022-09-15",
+      "stocks_w_2023-09-15",
+      "stocks_w_2024-09-15",
+      "stocks_w_2025-09-15"
+    ],
+    "url_redacted": null,
+    "params": {
+      "from": "2021-09-15",
+      "to": "2026-09-12",
+      "note": "five 1-year windows concatenated, deduped on (ticker,date)"
+    },
+    "http_status": null,
+    "rows": 37440,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": null,
+    "raw_sha256": null,
+    "raw_bytes": null,
+    "parquet_file": "stocks_5y_dow30.parquet",
+    "parquet_sha256": "346b48316b2da55ea3b5b8b40ab2b74ccb296ebd9ee2daf9c5249f6811795ec2",
+    "fetched_at_utc": null
+  }
+]
