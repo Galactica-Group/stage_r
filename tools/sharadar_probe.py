@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.4.0
+Version:      1.5.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-B — Retention roll-off allowance (2026-09-22)
+Last Sprint:  Sprint R0-C — Paid-tier verification (2026-09-26)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -108,6 +108,66 @@ def check_date_range(params, df):
     if short:
         out["reason"] = "returned span falls short at: %s" % ",".join(sorted(short))
     return out
+
+
+# The three requests that separate a paid key from a free one. Each carries the
+# verdict R0-A/R0-B recorded for it under the free key, so a rerun is judged
+# against measured history rather than an assumption.
+TIER_PROBES = (
+    {"name": "tier_tickers_free", "path": "data/tickers",
+     "params": {"limit": 5, "format": "json"},
+     "paid_gated": False, "free_tier_observed": "200 (R0-A/R0-B)"},
+    {"name": "tier_stocks_TSLA", "path": "data/stocks",
+     "params": {"ticker": "TSLA", "limit": 5, "format": "json"},
+     "paid_gated": True, "free_tier_observed": "403 Exceeds free tier (R0-A/R0-B)"},
+    {"name": "tier_sp500", "path": "data/sp500",
+     "params": {"limit": 5, "format": "json"},
+     "paid_gated": True, "free_tier_observed": "200 (R0-B manifest: probe5_sp500, 5 rows)"},
+)
+# Response headers worth surfacing when asking what plan a key is on.
+PLAN_HEADER_HINTS = ("plan", "tier", "subscription", "quota", "entitle", "limit",
+                     "credit", "ratelimit", "rate-limit")
+
+
+def plan_headers(headers):
+    """The subset of response headers that could name a plan, tier or quota."""
+    return {k: v for k, v in dict(headers or {}).items()
+            if any(h in k.lower() for h in PLAN_HEADER_HINTS)}
+
+
+def classify_tier(results):
+    """Judge whether a key is on the paid tier from the tier-probe results.
+
+    results: list of dicts with keys name, paid_gated, http_status, rows.
+    Pure: no I/O, no network. Verdict is one of PAID, FREE, BASELINE_FAILED,
+    INDETERMINATE. A 403 on any paid-gated probe is FREE and must halt; the
+    baseline failing means the key or endpoint is wrong, not that the tier is.
+    """
+    by_name = {r["name"]: r for r in results}
+    baseline = [r for r in results if not r.get("paid_gated")]
+    gated = [r for r in results if r.get("paid_gated")]
+    if not gated:
+        return {"verdict": "INDETERMINATE", "reason": "no paid-gated probe ran",
+                "probes": by_name}
+    if any(r.get("http_status") != 200 for r in baseline):
+        bad = [r["name"] for r in baseline if r.get("http_status") != 200]
+        return {"verdict": "BASELINE_FAILED",
+                "reason": "free-tier baseline did not return 200: %s" % ",".join(bad),
+                "probes": by_name}
+    forbidden = [r["name"] for r in gated if r.get("http_status") == 403]
+    if forbidden:
+        return {"verdict": "FREE",
+                "reason": "paid-gated endpoint(s) still 403: %s" % ",".join(forbidden),
+                "probes": by_name}
+    unhealthy = [r["name"] for r in gated
+                 if r.get("http_status") != 200 or not (r.get("rows") or 0) > 0]
+    if unhealthy:
+        return {"verdict": "INDETERMINATE",
+                "reason": "paid-gated endpoint(s) not 200-with-rows: %s" % ",".join(unhealthy),
+                "probes": by_name}
+    return {"verdict": "PAID",
+            "reason": "every paid-gated endpoint returned 200 with rows",
+            "probes": by_name}
 
 
 def endpoint_of(url):
@@ -393,6 +453,38 @@ class Probe:
             raise SystemExit(2)
         return resp, df
 
+    # ---- tier check -------------------------------------------------------
+    def tier_check(self):
+        """Issue the tier probes and return (verdict_dict, per-probe detail).
+
+        Every probe is captured and manifested like any other request, so the
+        evidence for the verdict is banked rather than merely printed.
+        """
+        results = []
+        detail = []
+        for spec in TIER_PROBES:
+            url = "%s/%s" % (self.base_url, spec["path"])
+            resp, df = self.capture(spec["name"], url, dict(spec["params"]),
+                                    tag=spec["name"])
+            status = None if resp is None else resp.status_code
+            rows = None if df is None else int(len(df))
+            body = "" if resp is None else self.redact(resp.text[:400])
+            results.append({"name": spec["name"], "paid_gated": spec["paid_gated"],
+                            "http_status": status, "rows": rows})
+            detail.append({
+                "name": spec["name"],
+                "url": "%s?%s" % (url, "&".join("%s=%s" % kv for kv in spec["params"].items())),
+                "paid_gated": spec["paid_gated"],
+                "free_tier_observed": spec["free_tier_observed"],
+                "http_status": status,
+                "rows": rows,
+                "columns": None if df is None else list(df.columns),
+                "body_first_400": body,
+                "plan_headers": {} if resp is None else plan_headers(resp.headers),
+                "all_headers": {} if resp is None else dict(resp.headers),
+            })
+        return classify_tier(results), detail
+
     # ---- replay -----------------------------------------------------------
     def _manifest_parquets(self):
         """name -> parquet_file for what this snapshot has written so far."""
@@ -556,6 +648,36 @@ def main():
         return
 
     p = Probe(args.snapshot, key, args.base_url)
+
+    if args.cmd == "tier-check":
+        verdict, detail = p.tier_check()
+        report = {
+            "snapshot": args.snapshot,
+            "base_url": p.base_url,
+            "api_key_length": len(key),
+            "checked_at_utc": utc_now(),
+            "verdict": verdict["verdict"],
+            "reason": verdict["reason"],
+            "probes": detail,
+            "requests_used": p.budget_used(),
+            "request_budget": REQUEST_BUDGET,
+        }
+        out = os.path.join(REPO_ROOT, "logs", "tier_check_%s.json" % args.snapshot)
+        with open(out, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2)
+        for d in detail:
+            print("%-20s gated=%-5s -> %s rows=%s  (free tier: %s)"
+                  % (d["name"], d["paid_gated"], d["http_status"], d["rows"],
+                     d["free_tier_observed"]))
+            if d["http_status"] != 200:
+                print("    BODY: %s" % d["body_first_400"])
+            if d["plan_headers"]:
+                print("    PLAN HEADERS: %s" % json.dumps(d["plan_headers"]))
+        print("VERDICT: %s - %s" % (verdict["verdict"], verdict["reason"]))
+        print("report %s" % os.path.relpath(out, REPO_ROOT))
+        if verdict["verdict"] != "PAID":
+            raise SystemExit(3)
+        return
 
     if args.cmd == "budget":
         print(json.dumps({"used": p.budget_used(), "budget": REQUEST_BUDGET}))

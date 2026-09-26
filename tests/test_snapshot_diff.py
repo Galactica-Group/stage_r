@@ -295,10 +295,21 @@ def test_examples_file_holds_the_values_and_is_capped(synthetic):
 
 
 def test_examples_file_path_is_gitignored():
-    """The examples file must sit outside the tracked tree — proven by git."""
+    """The examples file must sit outside the tracked tree — proven by git.
+
+    R0-C moved data/ onto the external volume behind a symlink, and git refuses
+    to resolve a path that lies beyond one. The property is asserted at the
+    symlink instead, which is strictly stronger: the whole data entry is
+    ignored, so nothing beneath it can be tracked.
+    """
     rel = "data/sharadar/diff_examples_20260915_vs_20260922.csv"
-    rc = subprocess.run(["git", "check-ignore", "-q", rel], cwd=str(REPO)).returncode
-    assert rc == 0, "%s is not gitignored" % rel
+    root = rel.split("/")[0]
+    rc = subprocess.run(["git", "check-ignore", "-q", root], cwd=str(REPO)).returncode
+    assert rc == 0, "%s is not gitignored, so %s could be tracked" % (root, rel)
+    tracked = subprocess.run(["git", "ls-files", "-z"], cwd=str(REPO),
+                             capture_output=True, text=True, check=True).stdout
+    under = [f for f in tracked.split("\0") if f.startswith(root + "/")]
+    assert not under, "tracked file(s) live under %s/: %s" % (root, under[:5])
 
 
 def test_reports_directory_is_tracked_not_ignored():
