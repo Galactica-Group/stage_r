@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.5.0
+Version:      1.6.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-C — Paid-tier verification (2026-09-26)
+Last Sprint:  Sprint R0-C — Paid tier verified; bulk full-history pull (2026-09-27)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -108,6 +108,129 @@ def check_date_range(params, df):
     if short:
         out["reason"] = "returned span falls short at: %s" % ",".join(sorted(short))
     return out
+
+
+# ---------------------------------------------------------------------------
+# Bulk downloads (paid tier). GET /data/{table}?years=full answers 302 to a
+# pre-signed zip. The redirect is captured deliberately rather than followed
+# automatically, so the manifest records the vendor's own answer to the bulk
+# request separately from the bytes that answer points at.
+# ---------------------------------------------------------------------------
+BULK_TABLES = ("stocks", "tickers", "actions", "sp500")
+BULK_YEARS = "full"
+# Tables the vendor publishes only as a whole-table snapshot, so a full-history
+# request is answered by the same file a 5- or 10-year request would get.
+BULK_SNAPSHOT_ONLY = ("tickers", "descriptions")
+# Full history must reach at least this far back for the stocks table; Sharadar
+# documents nearly 30 years and R1 designs against a pre-2000 start.
+FULL_HISTORY_MIN_YEAR = 1998
+# Rows per parquet write. Bounded so a multi-gigabyte table converts in fixed
+# memory instead of being materialised whole.
+BULK_CHUNK_ROWS = 250_000
+
+
+def redact_url_query(url):
+    """Drop a URL's query string. Pre-signed bulk links carry a signature that
+    is a credential in its own right, so only the path is ever recorded."""
+    if not url:
+        return url
+    parts = urlsplit(str(url))
+    if not parts.query:
+        return url
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, "<REDACTED_QUERY>", ""))
+
+
+def classify_bulk_response(status, location, content_type=""):
+    """Judge a bulk request's first response. Pure: no I/O.
+
+    REDIRECT   — 3xx naming a download location, the documented happy path.
+    FORBIDDEN  — 401/403; this plan does not carry the table.
+    DIRECT_ZIP — 200 already carrying the archive, no redirect hop needed.
+    UNEXPECTED — anything else, including a 3xx with no location.
+    """
+    ct = (content_type or "").lower()
+    if status in (301, 302, 303, 307, 308):
+        if location:
+            return {"verdict": "REDIRECT", "reason": "%d to a download location" % status}
+        return {"verdict": "UNEXPECTED", "reason": "%d with no Location header" % status}
+    if status in (401, 403):
+        return {"verdict": "FORBIDDEN", "reason": "%d — table not on this plan" % status}
+    if status == 200 and ("zip" in ct or "octet-stream" in ct):
+        return {"verdict": "DIRECT_ZIP", "reason": "200 carrying %s" % ct}
+    return {"verdict": "UNEXPECTED", "reason": "status %d ct=%s" % (status, ct)}
+
+
+def check_full_history_range(earliest, latest, run_date, min_year=FULL_HISTORY_MIN_YEAR,
+                            tol_days=MAX_EDGE_GAP_DAYS):
+    """Assert a full-history pull actually spans full history. Pure.
+
+    A bulk file matches the purchased history, so a plan sold as five years
+    answers years=full with five years and HTTP 200. The only way to tell is to
+    read the span back: the start must reach min_year or earlier and the end must
+    sit within tol_days of the run date.
+    """
+    out = {"earliest": earliest, "latest": latest, "run_date": run_date,
+           "min_year": min_year, "tolerance_days": tol_days}
+    if not earliest or not latest:
+        out["status"] = "SHORTFALL"
+        out["reason"] = "no dated rows to check"
+        return out
+    first = pd.to_datetime(earliest)
+    last = pd.to_datetime(latest)
+    end_gap = int((pd.to_datetime(run_date) - last).days)
+    out["start_year"] = int(first.year)
+    out["end_days_behind"] = end_gap
+    fails = []
+    if first.year > min_year:
+        fails.append("start %d is later than %d" % (first.year, min_year))
+    if end_gap > tol_days:
+        fails.append("end %s is %d days behind the run date" % (latest, end_gap))
+    out["status"] = "SHORTFALL" if fails else "ok"
+    if fails:
+        out["reason"] = "; ".join(fails)
+    return out
+
+
+def zip_member_to_parquet(zip_path, out_path, chunk_rows=BULK_CHUNK_ROWS):
+    """Convert the single CSV inside a bulk zip to parquet in bounded memory.
+
+    Everything is written as string, matching the probe's existing convention,
+    so the schema cannot drift between chunks and a snapshot compares byte-wise
+    against its replay. Returns a stats dict; raises if the zip holds no CSV.
+    """
+    import zipfile
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    with zipfile.ZipFile(zip_path) as zf:
+        members = [n for n in zf.namelist() if not n.endswith("/")]
+        csvs = [n for n in members if n.lower().endswith((".csv", ".txt"))] or members
+        if not csvs:
+            raise SystemExit("HALT: bulk archive %s holds no member" % zip_path)
+        member = csvs[0]
+        rows = 0
+        chunks = 0
+        columns = None
+        writer = None
+        try:
+            with zf.open(member) as fh:
+                reader = pd.read_csv(fh, dtype=str, keep_default_na=False,
+                                     chunksize=chunk_rows, low_memory=False)
+                for chunk in reader:
+                    if columns is None:
+                        columns = list(chunk.columns)
+                    table = pa.Table.from_pandas(chunk, preserve_index=False)
+                    if writer is None:
+                        writer = pq.ParquetWriter(out_path, table.schema,
+                                                  compression="snappy")
+                    writer.write_table(table)
+                    rows += len(chunk)
+                    chunks += 1
+        finally:
+            if writer is not None:
+                writer.close()
+    return {"member": member, "members": members, "rows": rows,
+            "chunks": chunks, "columns": columns or []}
 
 
 # The three requests that separate a paid key from a free one. Each carries the
@@ -485,6 +608,128 @@ class Probe:
             })
         return classify_tier(results), detail
 
+    # ---- bulk downloads ---------------------------------------------------
+    def bulk_table(self, table, years=BULK_YEARS, run_date=None,
+                   assert_full_history=False):
+        """Pull one whole table over the bulk route and bank it.
+
+        Two hops: the data route answers 302 with a pre-signed location, which is
+        then streamed straight into the snapshot directory — no staging anywhere
+        else, because the snapshot lives on the external volume and the boot disk
+        has no room for a full-history archive. The archive is banked exactly as
+        delivered; the parquet beside it is a rendering, not the record.
+        """
+        name = "bulk_%s" % table
+        url = "%s/data/%s" % (self.base_url, table)
+        params = {"years": years}
+        n = self._spend()
+        t0 = time.time()
+        resp = requests.get(url, params=dict(params, **{KEY_PARAM: self.api_key}),
+                            timeout=120, allow_redirects=False,
+                            headers={"User-Agent": "StageR-probe/1.0"})
+        location = resp.headers.get("Location")
+        ct = resp.headers.get("Content-Type", "")
+        verdict = classify_bulk_response(resp.status_code, location, ct)
+        self.log("BULK#%d %s GET %s?years=%s -> %d %s ct=%s loc=%s"
+                 % (n, table, self.redact(url), years, resp.status_code,
+                    verdict["verdict"], ct, redact_url_query(location)))
+
+        entry = {
+            "name": name,
+            "url_redacted": self.redact(resp.url),
+            "params": dict(params),
+            "http_status": resp.status_code,
+            "bulk_verdict": verdict["verdict"],
+            "bulk_verdict_reason": verdict["reason"],
+            "redirect_location_redacted": redact_url_query(location),
+            "snapshot_only_table": table in BULK_SNAPSHOT_ONLY,
+            "fetched_at_utc": utc_now(),
+        }
+
+        if verdict["verdict"] == "FORBIDDEN":
+            body = self.redact(resp.text[:400])
+            self.log("BULK %s REFUSED: %s" % (table, body))
+            entry.update({"rows": None, "columns": None, "raw_file": None,
+                          "raw_sha256": None, "raw_bytes": None,
+                          "parquet_file": None, "parquet_sha256": None,
+                          "error_body_first_400": body})
+            self.manifest_add(entry)
+            return entry
+        if verdict["verdict"] == "UNEXPECTED":
+            body = self.redact(resp.text[:400])
+            self.log("BULK %s UNEXPECTED: %s" % (table, verdict["reason"]))
+            entry.update({"rows": None, "columns": None, "raw_file": None,
+                          "raw_sha256": None, "raw_bytes": None,
+                          "parquet_file": None, "parquet_sha256": None,
+                          "error_body_first_400": body})
+            self.manifest_add(entry)
+            return entry
+
+        raw_rel = os.path.join("raw", "%s.zip" % name)
+        raw_path = os.path.join(self.snap_dir, raw_rel)
+        if verdict["verdict"] == "DIRECT_ZIP":
+            with open(raw_path, "wb") as fh:
+                fh.write(resp.content)
+        else:
+            n2 = self._spend()
+            with requests.get(location, stream=True, timeout=600) as dl:
+                dl.raise_for_status()
+                with open(raw_path, "wb") as fh:
+                    for chunk in dl.iter_content(1 << 22):
+                        if chunk:
+                            fh.write(chunk)
+            self.log("BULK#%d %s downloaded %d bytes from the pre-signed location"
+                     % (n2, table, os.path.getsize(raw_path)))
+        time.sleep(SLEEP_BETWEEN_S)
+
+        pq_rel = "%s.parquet" % name
+        stats = zip_member_to_parquet(raw_path, os.path.join(self.snap_dir, pq_rel))
+        secs = time.time() - t0
+        self.log("BULK %s -> %s rows=%d chunks=%d zip=%dB parquet=%dB %.1fs"
+                 % (table, stats["member"], stats["rows"], stats["chunks"],
+                    os.path.getsize(raw_path),
+                    os.path.getsize(os.path.join(self.snap_dir, pq_rel)), secs))
+
+        span = self.parquet_date_span(pq_rel)
+        check = {"status": "not_applicable", "reason": "no full-history assertion asked"}
+        if assert_full_history:
+            check = check_full_history_range(span[0], span[1],
+                                             run_date or utc_now()[:10])
+        entry.update({
+            "rows": stats["rows"],
+            "columns": stats["columns"],
+            "zip_member": stats["member"],
+            "zip_members": stats["members"],
+            "raw_file": raw_rel,
+            "raw_sha256": sha256_file(raw_path),
+            "raw_bytes": os.path.getsize(raw_path),
+            "parquet_file": pq_rel,
+            "parquet_sha256": sha256_file(os.path.join(self.snap_dir, pq_rel)),
+            "date_span": list(span),
+            "full_history_check": check,
+            "wall_seconds": round(secs, 1),
+        })
+        self.manifest_add(entry)
+        if check.get("status") == "SHORTFALL":
+            print("HALT: %s is not full history — %s" % (table, check.get("reason")))
+            raise SystemExit(2)
+        return entry
+
+    def parquet_date_span(self, rel):
+        """Earliest and latest date in a banked parquet, read one column only."""
+        import pyarrow.parquet as pq
+        path = os.path.join(self.snap_dir, rel)
+        cols = pq.ParquetFile(path).schema_arrow.names
+        date_col = "date" if "date" in cols else None
+        if date_col is None:
+            return (None, None)
+        s = pd.to_datetime(
+            pq.read_table(path, columns=[date_col])[date_col].to_pandas(),
+            errors="coerce").dropna()
+        if not len(s):
+            return (None, None)
+        return (s.min().strftime("%Y-%m-%d"), s.max().strftime("%Y-%m-%d"))
+
     # ---- replay -----------------------------------------------------------
     def _manifest_parquets(self):
         """name -> parquet_file for what this snapshot has written so far."""
@@ -608,6 +853,15 @@ def main():
     ap.add_argument("--table", default=None)
     ap.add_argument("--params", default="{}")
     ap.add_argument("--noauth", action="store_true")
+    ap.add_argument("--bulk-tables", default=",".join(BULK_TABLES),
+                    help="comma-separated tables to pull over the bulk route")
+    ap.add_argument("--bulk-years", default=BULK_YEARS)
+    ap.add_argument("--assert-full-history", default="stocks",
+                    help="comma-separated tables whose returned span must reach "
+                         "full history; a short span halts")
+    ap.add_argument("--run-date", default=None,
+                    help="date the full-history end edge is measured against "
+                         "(default: today, UTC)")
     args = ap.parse_args()
 
     if bool(args.cmd) == bool(args.replay):
@@ -677,6 +931,44 @@ def main():
         print("report %s" % os.path.relpath(out, REPO_ROOT))
         if verdict["verdict"] != "PAID":
             raise SystemExit(3)
+        return
+
+    if args.cmd == "bulk":
+        tables = [t.strip() for t in args.bulk_tables.split(",") if t.strip()]
+        must_span = {t.strip() for t in (args.assert_full_history or "").split(",") if t.strip()}
+        run_date = args.run_date or utc_now()[:10]
+        p.log("BULK PULL %s years=%s run_date=%s (full-history asserted on: %s)"
+              % (",".join(tables), args.bulk_years, run_date,
+                 ",".join(sorted(must_span)) or "none"))
+        results = []
+        for table in tables:
+            results.append(p.bulk_table(table, years=args.bulk_years,
+                                        run_date=run_date,
+                                        assert_full_history=table in must_span))
+        report = {
+            "snapshot": args.snapshot,
+            "years": args.bulk_years,
+            "run_date": run_date,
+            "tables": tables,
+            "full_history_asserted": sorted(must_span),
+            "completed_at_utc": utc_now(),
+            "requests_used": p.budget_used(),
+            "request_budget": REQUEST_BUDGET,
+            "entries": results,
+        }
+        out = os.path.join(REPO_ROOT, "logs", "bulk_report_%s.json" % args.snapshot)
+        with open(out, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2)
+        for e in results:
+            print("%-16s %-11s status=%s rows=%s zip=%sB span=%s full_history=%s"
+                  % (e["name"], e["bulk_verdict"], e["http_status"], e.get("rows"),
+                     e.get("raw_bytes"), e.get("date_span"),
+                     (e.get("full_history_check") or {}).get("status")))
+        refused = [e["name"] for e in results if e["bulk_verdict"] != "REDIRECT"
+                   and e["bulk_verdict"] != "DIRECT_ZIP"]
+        if refused:
+            print("FINDING: bulk refused for %s" % ",".join(refused))
+        print("report %s" % os.path.relpath(out, REPO_ROOT))
         return
 
     if args.cmd == "budget":

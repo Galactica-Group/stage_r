@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_snapshot_diff.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Diff two Sharadar snapshots and classify per-ticker price changes
               as ADJUSTMENT, REVISION or TAIL; emit statistics-only reports.
 Entry Point:  Yes — python tools/sharadar_snapshot_diff.py <label_a> <label_b>
 Dependencies: stdlib, pandas, pyarrow. Makes no network request and imports
               nothing from any other repository.
-Last Sprint:  Sprint R0-B-0 — Sharadar Snapshot Diff Tool (2026-09-17)
+Last Sprint:  Sprint R0-C — Chunked-by-ticker comparison (2026-09-27)
 ================================================================================
 
 Reads data/sharadar/snapshot_<label>/manifest.json in each snapshot, groups the
@@ -23,12 +23,14 @@ example file for human inspection is written outside the tracked tree.
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import re
 import sys
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -69,6 +71,12 @@ _NAME_RULES = (
     (r"^sp500_all_\d+$", "sp500"),
     (r"^stocks_.*$", "stocks"),
     (r"^funds_.*$", "funds"),
+    # R0-C bulk pull: one entry per whole table.
+    (r"^bulk_(.+)$", r"\1"),
+    # R0-C tier probes: small samples of real tables, not separate tables.
+    (r"^tier_tickers_free$", "tickers"),
+    (r"^tier_stocks_[A-Z0-9.]+$", "stocks"),
+    (r"^tier_sp500$", "sp500"),
 )
 
 MISSING = "\x00<missing>"
@@ -262,8 +270,13 @@ def _dist(values):
     }
 
 
-def price_analysis(ab, bb, key, examples):
-    """Per-field magnitudes by age bucket and a per-ticker class for each ticker."""
+def price_analysis(ab, bb, key, examples, pooled=None):
+    """Per-field magnitudes by age bucket and a per-ticker class for each ticker.
+
+    When `pooled` is supplied, the raw abs/rel magnitudes are appended to it as
+    well as summarised. A chunked run pools across partitions and recomputes the
+    distribution once, so its numbers equal an unchunked run's rather than being
+    an average of per-partition summaries."""
     ages = (pd.to_datetime(ab["__fetched_at"], errors="coerce", utc=True).dt.tz_localize(None)
             - pd.to_datetime(ab["date"], errors="coerce")).dt.days
     buckets = ages.map(lambda d: bucket_age(int(d)) if pd.notna(d) else "unknown")
@@ -295,6 +308,15 @@ def price_analysis(ab, bb, key, examples):
             "rel": _dist(rel[mask].tolist()),
             "by_age_bucket": by_bucket,
         }
+        if pooled is not None:
+            slot = pooled.setdefault(col, {"abs": [], "rel": [], "by_bucket": {}})
+            slot["abs"].extend(absd[mask].tolist())
+            slot["rel"].extend(rel[mask].tolist())
+            for label, _lo, _hi in AGE_BUCKETS:
+                sel = mask & (buckets.values == label)
+                bslot = slot["by_bucket"].setdefault(label, {"abs": [], "rel": []})
+                bslot["abs"].extend(absd[sel].tolist())
+                bslot["rel"].extend(rel[sel].tolist())
         if len(examples) < EXAMPLE_ROW_CAP:
             for i in ab.index[mask][: EXAMPLE_ROW_CAP - len(examples)]:
                 examples.append({
@@ -353,7 +375,255 @@ def price_analysis(ab, bb, key, examples):
     }
 
 
-def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP):
+# ---------------------------------------------------------------------------
+# Chunked comparison. The full-history price table does not fit in memory twice,
+# so it is compared one ticker partition at a time. The key is (ticker, date),
+# so partitioning the ticker space yields independent sub-problems whose results
+# merge exactly — no approximation, and no cross-partition row can be missed.
+# ---------------------------------------------------------------------------
+
+def ticker_bucket(ticker, n_buckets):
+    """Stable partition index for a ticker. Pure.
+
+    md5, not hash(): the built-in is salted per process, which would put the same
+    ticker in different partitions on the two sides of a comparison.
+    """
+    if n_buckets <= 1:
+        return 0
+    digest = hashlib.md5(str(ticker).encode("utf-8")).hexdigest()
+    return int(digest[:8], 16) % n_buckets
+
+
+def partition_column(table, key):
+    """Which column may a table be partitioned on? Pure.
+
+    Partitioning is only exact when the partition column is a component of the
+    comparison key: two rows sharing a key must land in the same partition, or
+    per-partition dedupe keeps both and inflates the row count. `tickers` keys on
+    permaticker and 239 permatickers carry more than one ticker string, so
+    partitioning that table by ticker would over-count by exactly those rows.
+
+    Price tables must partition on ticker, because their per-ticker
+    classification needs every bar of a ticker in one partition; ticker is a
+    component of their (ticker, date) key, so that is also exact.
+    """
+    if table in PRICE_TABLES:
+        return "ticker" if key and "ticker" in key else None
+    if key:
+        return "ticker" if "ticker" in key else key[0]
+    # No declared key: the comparison is a whole-row set, whose signature
+    # includes ticker, so identical rows cannot straddle a ticker partition.
+    return "ticker"
+
+
+def table_has_column(snap_dir, manifest, table, column):
+    """Does this table's first parquet carry `column`? Reads metadata only."""
+    for entry in manifest:
+        if not entry.get("parquet_file") or is_error_payload(entry):
+            continue
+        if entry_table(entry["name"]) != table:
+            continue
+        path = os.path.join(snap_dir, entry["parquet_file"])
+        if os.path.exists(path):
+            return column in pq.ParquetFile(path).schema_arrow.names
+    return False
+
+
+def load_table_bucket(snap_dir, manifest, table, bucket, n_buckets,
+                      column="ticker"):
+    """Load only the rows of `table` whose `column` value falls in `bucket`.
+
+    Reads one parquet row group at a time and discards the rest immediately, so
+    peak memory is one row group plus the retained partition — not the table.
+    """
+    frames, provenance, skipped = [], [], []
+    for entry in manifest:
+        if not entry.get("parquet_file"):
+            continue
+        if entry_table(entry["name"]) != table:
+            continue
+        if is_error_payload(entry):
+            skipped.append({"entry": entry["name"], "reason": "vendor error payload"})
+            continue
+        path = os.path.join(snap_dir, entry["parquet_file"])
+        if not os.path.exists(path):
+            skipped.append({"entry": entry["name"], "reason": "parquet absent"})
+            continue
+        pf = pq.ParquetFile(path)
+        if column not in pf.schema_arrow.names:
+            skipped.append({"entry": entry["name"],
+                            "reason": "no %s column to partition on" % column})
+            continue
+        kept, total = [], 0
+        for i in range(pf.metadata.num_row_groups):
+            part = pf.read_row_group(i).to_pandas()
+            total += len(part)
+            if not len(part.columns):
+                continue
+            sel = part[column].map(lambda t: ticker_bucket(t, n_buckets) == bucket)
+            part = part[sel.values]
+            if len(part):
+                kept.append(part)
+            del sel
+        if not kept:
+            provenance.append({"entry": entry["name"], "rows": 0,
+                               "rows_in_entry": total})
+            continue
+        df = pd.concat(kept, ignore_index=True)
+        df["__src"] = entry["name"]
+        df["__fetched_at"] = entry.get("fetched_at_utc")
+        frames.append(df)
+        provenance.append({"entry": entry["name"], "rows": int(len(df)),
+                           "rows_in_entry": total})
+    if not frames:
+        return None, provenance, skipped
+    return pd.concat(frames, ignore_index=True), provenance, skipped
+
+
+def _sum_or_none(values):
+    """Sum, treating None as unknown: any None makes the total unknown."""
+    vals = list(values)
+    if any(v is None for v in vals):
+        return None
+    return sum(vals)
+
+
+def merge_table_entries(entries, pooled=None):
+    """Combine per-partition comparison entries into one. Pure.
+
+    Integer counts add, because the partitions are disjoint row sets. Per-ticker
+    maps union, because a ticker lives in exactly one partition. Magnitude
+    distributions are recomputed from `pooled` raw values rather than averaged
+    out of per-partition summaries, so a chunked run reports the same numbers an
+    unchunked run would.
+    """
+    if not entries:
+        return {}
+    if len(entries) == 1 and pooled is None:
+        return dict(entries[0])
+    out = dict(entries[0])
+    out["partitions"] = len(entries)
+
+    for field in ("rows_only_in_a", "rows_only_in_b", "rows_in_both",
+                  "rows_in_both_differing_vendor_fields",
+                  "rows_in_both_differing_any_shared_field",
+                  "watermark_only_changes"):
+        if any(field in e for e in entries):
+            out[field] = _sum_or_none(e.get(field) for e in entries)
+
+    per_field = {}
+    for e in entries:
+        for col, n in (e.get("per_field_changed") or {}).items():
+            per_field[col] = per_field.get(col, 0) + n
+    out["per_field_changed"] = per_field
+
+    for field, side in (("rows_before_dedupe", None), ("rows_after_dedupe", None),
+                        ("intra_snapshot_key_conflicts", None)):
+        if field in entries[0] and isinstance(entries[0][field], dict):
+            merged = {}
+            for e in entries:
+                for k, v in (e.get(field) or {}).items():
+                    if v is None:
+                        merged[k] = None
+                    elif merged.get(k, 0) is not None:
+                        merged[k] = merged.get(k, 0) + v
+            out[field] = merged
+
+    prov_a, prov_b, skipped = [], [], []
+    for e in entries:
+        prov_a.extend(e.get("source_entries_a") or [])
+        prov_b.extend(e.get("source_entries_b") or [])
+        skipped.extend(e.get("entries_skipped") or [])
+    out["source_entries_a"] = _fold_provenance(prov_a)
+    out["source_entries_b"] = _fold_provenance(prov_b)
+    out["entries_skipped"] = _dedupe_dicts(skipped)
+
+    pas = [e["price_analysis"] for e in entries if e.get("price_analysis")]
+    if pas:
+        out["price_analysis"] = _merge_price_analysis(pas, pooled)
+    return out
+
+
+def _fold_provenance(items):
+    """Sum a partition's per-entry row counts back into one row per entry."""
+    acc = {}
+    for it in items:
+        cur = acc.setdefault(it["entry"], {"entry": it["entry"], "rows": 0})
+        cur["rows"] += it.get("rows", 0)
+        if "rows_in_entry" in it:
+            cur["rows_in_entry"] = it["rows_in_entry"]
+    return list(acc.values())
+
+
+def _dedupe_dicts(items):
+    seen, out = set(), []
+    for it in items:
+        k = json.dumps(it, sort_keys=True)
+        if k not in seen:
+            seen.add(k)
+            out.append(it)
+    return out
+
+
+def _merge_price_analysis(pas, pooled=None):
+    """Merge per-partition price analyses; disjoint tickers make it exact."""
+    out = {"tickers_compared": sum(p["tickers_compared"] for p in pas)}
+    tally = {}
+    for p in pas:
+        for cls, n in (p.get("class_tally") or {}).items():
+            tally[cls] = tally.get(cls, 0) + n
+    out["class_tally"] = tally
+
+    classes = {}
+    revisions = {}
+    for p in pas:
+        classes.update(p.get("classes_by_ticker") or {})
+        revisions.update(p.get("revision_tickers") or {})
+    out["classes_by_ticker"] = classes
+    out["revision_tickers"] = revisions
+
+    fields = {}
+    cols = []
+    for p in pas:
+        for col in (p.get("fields") or {}):
+            if col not in cols:
+                cols.append(col)
+    for col in cols:
+        changed = sum((p.get("fields") or {}).get(col, {}).get("changed", 0)
+                      for p in pas)
+        ent = {"changed": changed}
+        pool = (pooled or {}).get(col, {})
+        ent["abs"] = _dist(pool.get("abs", [])) if pool else None
+        ent["rel"] = _dist(pool.get("rel", [])) if pool else None
+        by_bucket = {}
+        for label, _lo, _hi in AGE_BUCKETS:
+            bchanged = sum(((p.get("fields") or {}).get(col, {})
+                            .get("by_age_bucket", {}).get(label, {}) or {})
+                           .get("changed", 0) for p in pas)
+            bpool = (pool.get("by_bucket") or {}).get(label, {})
+            by_bucket[label] = {
+                "changed": bchanged,
+                "abs": _dist(bpool.get("abs", [])) if bpool else None,
+                "rel": _dist(bpool.get("rel", [])) if bpool else None,
+            }
+        ent["by_age_bucket"] = by_bucket
+        fields[col] = ent
+    out["fields"] = fields
+    return out
+
+
+def peak_rss_gib():
+    """Peak resident set size of this process, in GiB."""
+    import resource
+    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    # Darwin reports bytes; Linux reports kilobytes.
+    if sys.platform != "darwin":
+        rss *= 1024
+    return round(rss / 1024 ** 3, 3)
+
+
+def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
+                   chunk_by_ticker=None):
     dir_a, dir_b = snapshot_dir(root, label_a), snapshot_dir(root, label_b)
     man_a, man_b = read_manifest(root, label_a), read_manifest(root, label_b)
     _ind_a, keys_a = declared_schema(dir_a)
@@ -378,7 +648,7 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP):
 
     report = {
         "tool": "sharadar_snapshot_diff.py",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "snapshot_a": label_a,
         "snapshot_b": label_b,
         "manifest_entries": {label_a: len(man_a), label_b: len(man_b)},
@@ -396,12 +666,9 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP):
         "tables": {},
     }
     examples = []
-    for table in both_tables:
-        a, prov_a, skip_a = load_table(dir_a, man_a, table)
-        b, prov_b, skip_b = load_table(dir_b, man_b, table)
-        if a is None or b is None:
-            report["tables"][table] = {"status": "no data on one side"}
-            continue
+
+    def compare_one(table, a, prov_a, skip_a, b, prov_b, skip_b, pooled=None):
+        """Compare one table, or one ticker partition of it, and return its entry."""
         key, key_source = resolve_key(table, keys_a)
         shared = [c for c in a.columns if c in set(b.columns) and not c.startswith("__")]
         declared_cols = set(indicators.get(table, []))
@@ -430,10 +697,65 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP):
             entry.update(counts)
             if table in PRICE_TABLES and "date" in shared and "ticker" in shared:
                 entry["price_analysis"] = price_analysis(
-                    ab, bb, key, examples if len(examples) < examples_cap else [])
+                    ab, bb, key, examples if len(examples) < examples_cap else [],
+                    pooled=pooled)
         else:
             entry.update(compare_rowsets(a, b, vendor_cols))
+        return entry
+
+    for table in both_tables:
+        n_chunks = chunk_by_ticker or 0
+        part_key, _ks = resolve_key(table, keys_a)
+        part_col = partition_column(table, part_key)
+        chunkable = (n_chunks > 1 and part_col is not None
+                     and table_has_column(dir_a, man_a, table, part_col)
+                     and table_has_column(dir_b, man_b, table, part_col))
+        if not chunkable:
+            a, prov_a, skip_a = load_table(dir_a, man_a, table)
+            b, prov_b, skip_b = load_table(dir_b, man_b, table)
+            if a is None or b is None:
+                report["tables"][table] = {"status": "no data on one side"}
+                continue
+            entry = compare_one(table, a, prov_a, skip_a, b, prov_b, skip_b)
+            if n_chunks > 1:
+                entry["chunking"] = {
+                    "mode": "whole table",
+                    "reason": ("no column that is both present and a component "
+                               "of the comparison key %s" % (part_key or "[]")),
+                    "partition_column": part_col}
+            report["tables"][table] = entry
+            del a, b
+            continue
+
+        parts, pooled, empty = [], {}, 0
+        for bucket in range(n_chunks):
+            a, prov_a, skip_a = load_table_bucket(dir_a, man_a, table, bucket,
+                                                 n_chunks, column=part_col)
+            b, prov_b, skip_b = load_table_bucket(dir_b, man_b, table, bucket,
+                                                 n_chunks, column=part_col)
+            if a is None or b is None:
+                empty += 1
+                del a, b
+                continue
+            parts.append(compare_one(table, a, prov_a, skip_a, b, prov_b, skip_b,
+                                     pooled=pooled))
+            del a, b
+        if not parts:
+            report["tables"][table] = {"status": "no data on one side"}
+            continue
+        entry = merge_table_entries(parts, pooled=pooled)
+        entry["chunking"] = {
+            "mode": "key-component partition",
+            "partition_column": part_col,
+            "buckets": n_chunks,
+            "buckets_compared": len(parts),
+            "buckets_empty_on_a_side": empty,
+            "peak_rss_gib": peak_rss_gib(),
+        }
         report["tables"][table] = entry
+
+    report["chunk_by_ticker"] = chunk_by_ticker
+    report["peak_rss_gib"] = peak_rss_gib()
     return report, examples[:examples_cap]
 
 
@@ -561,8 +883,9 @@ def sha256_file(path):
     return h.hexdigest()
 
 
-def run(root, label_a, label_b):
-    report, examples = diff_snapshots(root, label_a, label_b)
+def run(root, label_a, label_b, chunk_by_ticker=None):
+    report, examples = diff_snapshots(root, label_a, label_b,
+                                      chunk_by_ticker=chunk_by_ticker)
     report["manifest_sha256"] = {}
     for lbl in (label_a, label_b):
         mp = os.path.join(snapshot_dir(root, lbl), "manifest.json")
@@ -579,6 +902,8 @@ def run(root, label_a, label_b):
     rep_dir = os.path.join(root, "reports")
     os.makedirs(rep_dir, exist_ok=True)
     base = "sharadar_stability_%s_vs_%s" % (label_a, label_b)
+    if chunk_by_ticker:
+        base += "_chunked%d" % chunk_by_ticker
     json_path = os.path.join(rep_dir, base + ".json")
     md_path = os.path.join(rep_dir, base + ".md")
     persisted = copy.deepcopy(report)
@@ -597,8 +922,13 @@ def main(argv=None):
     ap.add_argument("label_a")
     ap.add_argument("label_b")
     ap.add_argument("--root", default=REPO_ROOT)
+    ap.add_argument("--chunk-by-ticker", type=int, default=None,
+                    help="compare ticker-keyed tables in N disjoint ticker "
+                         "partitions; bounds peak memory on a table too large "
+                         "to hold twice")
     args = ap.parse_args(argv)
-    report, json_path, md_path, ex_path = run(args.root, args.label_a, args.label_b)
+    report, json_path, md_path, ex_path = run(args.root, args.label_a, args.label_b,
+                                             chunk_by_ticker=args.chunk_by_ticker)
     print("wrote %s" % os.path.relpath(json_path, args.root))
     print("wrote %s" % os.path.relpath(md_path, args.root))
     print("examples %s (%d rows, untracked)" % (os.path.relpath(ex_path, args.root),
@@ -607,6 +937,9 @@ def main(argv=None):
         pa = e.get("price_analysis")
         if pa:
             print("%s: %s" % (t, ", ".join("%s=%d" % kv for kv in sorted(pa["class_tally"].items()))))
+    if args.chunk_by_ticker:
+        print("chunked by ticker into %d partitions; peak RSS %.3f GiB"
+              % (args.chunk_by_ticker, report["peak_rss_gib"]))
     return 0
 
 

@@ -1,0 +1,575 @@
+{
+  "chunk_by_ticker": 32,
+  "entries_only_in_a": [],
+  "entries_only_in_b": [],
+  "entries_unmapped_to_a_table": [],
+  "examples_file": {
+    "cap": 10,
+    "path": "data/sharadar/diff_examples_20260927p_vs_20260927pCOPY.csv",
+    "rows": 0
+  },
+  "fetched_at_utc_range": {
+    "20260927p": [
+      "2026-09-27T06:53:11Z",
+      "2026-09-27T07:01:08Z"
+    ],
+    "20260927pCOPY": [
+      "2026-09-27T06:53:11Z",
+      "2026-09-27T07:01:08Z"
+    ]
+  },
+  "manifest_entries": {
+    "20260927p": 7,
+    "20260927pCOPY": 7
+  },
+  "manifest_sha256": {
+    "20260927p": "ffa889a0c0974a2a607ab7b59d3b6141a7801cff0979992e3f0af7447337800c",
+    "20260927pCOPY": "ffa889a0c0974a2a607ab7b59d3b6141a7801cff0979992e3f0af7447337800c"
+  },
+  "peak_rss_gib": 3.229,
+  "snapshot_a": "20260927p",
+  "snapshot_b": "20260927pCOPY",
+  "tables": {
+    "actions": {
+      "chunking": {
+        "buckets": 32,
+        "buckets_compared": 32,
+        "buckets_empty_on_a_side": 0,
+        "mode": "key-component partition",
+        "partition_column": "ticker",
+        "peak_rss_gib": 0.474
+      },
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "key_fields": [],
+      "key_source": "none (whole-row set comparison)",
+      "partitions": 32,
+      "per_field_changed": {},
+      "rows_in_both": 709246,
+      "rows_in_both_differing_any_shared_field": null,
+      "rows_in_both_differing_vendor_fields": null,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "date",
+        "action",
+        "ticker",
+        "name",
+        "value",
+        "contraticker",
+        "contraname"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "bulk_actions",
+          "rows": 709246,
+          "rows_in_entry": 709246
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "bulk_actions",
+          "rows": 709246,
+          "rows_in_entry": 709246
+        }
+      ],
+      "vendor_declared_key": [],
+      "watermark_only_changes": null
+    },
+    "sp500": {
+      "chunking": {
+        "buckets": 32,
+        "buckets_compared": 32,
+        "buckets_empty_on_a_side": 0,
+        "mode": "key-component partition",
+        "partition_column": "ticker",
+        "peak_rss_gib": 0.474
+      },
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260927p": 0,
+        "20260927pCOPY": 0
+      },
+      "key_fields": [
+        "ticker",
+        "date",
+        "action"
+      ],
+      "key_source": "sprint brief (vendor declares: none)",
+      "partitions": 32,
+      "per_field_changed": {
+        "action": 0,
+        "contraname": 0,
+        "contraticker": 0,
+        "date": 0,
+        "name": 0,
+        "note": 0,
+        "ticker": 0
+      },
+      "rows_after_dedupe": {
+        "20260927p": 59682,
+        "20260927pCOPY": 59682
+      },
+      "rows_before_dedupe": {
+        "20260927p": 59687,
+        "20260927pCOPY": 59687
+      },
+      "rows_in_both": 59682,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "date",
+        "action",
+        "ticker",
+        "name",
+        "contraticker",
+        "contraname",
+        "note"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "tier_sp500",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_sp500",
+          "rows": 59682,
+          "rows_in_entry": 59682
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "tier_sp500",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_sp500",
+          "rows": 59682,
+          "rows_in_entry": 59682
+        }
+      ],
+      "vendor_declared_key": [],
+      "watermark_only_changes": 0
+    },
+    "stocks": {
+      "chunking": {
+        "buckets": 32,
+        "buckets_compared": 32,
+        "buckets_empty_on_a_side": 0,
+        "mode": "key-component partition",
+        "partition_column": "ticker",
+        "peak_rss_gib": 3.229
+      },
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260927p": 5,
+        "20260927pCOPY": 5
+      },
+      "key_fields": [
+        "ticker",
+        "date"
+      ],
+      "key_source": "sprint brief (vendor declares: none)",
+      "partitions": 32,
+      "per_field_changed": {
+        "close": 0,
+        "closeadj": 0,
+        "closeunadj": 0,
+        "date": 0,
+        "high": 0,
+        "lastupdated": 0,
+        "low": 0,
+        "open": 0,
+        "ticker": 0,
+        "volume": 0
+      },
+      "price_analysis": {
+        "class_tally": {
+          "UNCHANGED": 20990
+        },
+        "fields": {
+          "close": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "closeadj": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "closeunadj": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "high": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "low": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "open": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          },
+          "volume": {
+            "abs": null,
+            "by_age_bucket": {
+              "31-365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "8-30": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              "<=7": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              },
+              ">365": {
+                "abs": null,
+                "changed": 0,
+                "rel": null
+              }
+            },
+            "changed": 0,
+            "rel": null
+          }
+        },
+        "revision_tickers": {},
+        "tickers_compared": 20990
+      },
+      "rows_after_dedupe": {
+        "20260927p": 45372755,
+        "20260927pCOPY": 45372755
+      },
+      "rows_before_dedupe": {
+        "20260927p": 45372760,
+        "20260927pCOPY": 45372760
+      },
+      "rows_in_both": 45372755,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "ticker",
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "closeadj",
+        "closeunadj",
+        "lastupdated"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "tier_stocks_TSLA",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_stocks",
+          "rows": 45372755,
+          "rows_in_entry": 45372755
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "tier_stocks_TSLA",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_stocks",
+          "rows": 45372755,
+          "rows_in_entry": 45372755
+        }
+      ],
+      "vendor_declared_key": [],
+      "watermark_only_changes": 0
+    },
+    "tickers": {
+      "chunking": {
+        "buckets": 32,
+        "buckets_compared": 32,
+        "buckets_empty_on_a_side": 0,
+        "mode": "key-component partition",
+        "partition_column": "permaticker",
+        "peak_rss_gib": 3.229
+      },
+      "columns_only_in_a": [],
+      "columns_only_in_b": [],
+      "derived_columns_excluded_from_headline": [],
+      "entries_skipped": [],
+      "intra_snapshot_key_conflicts": {
+        "20260927p": 18714,
+        "20260927pCOPY": 18714
+      },
+      "key_fields": [
+        "permaticker"
+      ],
+      "key_source": "sprint brief (vendor declares: none)",
+      "partitions": 32,
+      "per_field_changed": {
+        "category": 0,
+        "companysite": 0,
+        "currency": 0,
+        "cusips": 0,
+        "exchange": 0,
+        "famaindustry": 0,
+        "figi": 0,
+        "firstadded": 0,
+        "firstpricedate": 0,
+        "firstquarter": 0,
+        "industry": 0,
+        "isdelisted": 0,
+        "lastpricedate": 0,
+        "lastquarter": 0,
+        "lastupdated": 0,
+        "location": 0,
+        "name": 0,
+        "permaticker": 0,
+        "relatedtickers": 0,
+        "scalemarketcap": 0,
+        "scalerevenue": 0,
+        "secfilings": 0,
+        "sector": 0,
+        "siccode": 0,
+        "sicindustry": 0,
+        "sicsector": 0,
+        "table": 0,
+        "ticker": 0
+      },
+      "rows_after_dedupe": {
+        "20260927p": 43958,
+        "20260927pCOPY": 43958
+      },
+      "rows_before_dedupe": {
+        "20260927p": 74288,
+        "20260927pCOPY": 74288
+      },
+      "rows_in_both": 43958,
+      "rows_in_both_differing_any_shared_field": 0,
+      "rows_in_both_differing_vendor_fields": 0,
+      "rows_only_in_a": 0,
+      "rows_only_in_b": 0,
+      "shared_columns": [
+        "table",
+        "permaticker",
+        "ticker",
+        "name",
+        "exchange",
+        "isdelisted",
+        "category",
+        "cusips",
+        "siccode",
+        "sicsector",
+        "sicindustry",
+        "figi",
+        "famaindustry",
+        "sector",
+        "industry",
+        "scalemarketcap",
+        "scalerevenue",
+        "relatedtickers",
+        "currency",
+        "location",
+        "lastupdated",
+        "firstadded",
+        "firstpricedate",
+        "lastpricedate",
+        "firstquarter",
+        "lastquarter",
+        "secfilings",
+        "companysite"
+      ],
+      "source_entries_a": [
+        {
+          "entry": "tier_tickers_free",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_tickers",
+          "rows": 74283,
+          "rows_in_entry": 74283
+        }
+      ],
+      "source_entries_b": [
+        {
+          "entry": "tier_tickers_free",
+          "rows": 5,
+          "rows_in_entry": 5
+        },
+        {
+          "entry": "bulk_tickers",
+          "rows": 74283,
+          "rows_in_entry": 74283
+        }
+      ],
+      "vendor_declared_key": [],
+      "watermark_only_changes": 0
+    }
+  },
+  "tables_only_in_a": [],
+  "tables_only_in_b": [],
+  "tool": "sharadar_snapshot_diff.py",
+  "version": "1.1.0"
+}
