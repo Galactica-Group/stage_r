@@ -1,0 +1,228 @@
+[
+  {
+    "name": "tier_stocks_TSLA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?ticker=TSLA&limit=5&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TSLA",
+      "limit": 5
+    },
+    "http_status": 200,
+    "rows": 5,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "raw_file": "raw/tier_stocks_TSLA.csv",
+    "raw_sha256": "30edf43cb5aae114d543b1709ad6a38b87a3fd326b72f3d8fffe8350b1565ddd",
+    "raw_bytes": 457,
+    "parquet_file": "tier_stocks_TSLA.parquet",
+    "parquet_sha256": "888e8376e8b91b61148dfb57d1d98f000775d70976a9f9da7162f2c6084918cf",
+    "fetched_at_utc": "2026-10-04T10:51:18Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "bulk_stocks",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/stocks?years=full&api_key=<REDACTED>",
+    "params": {
+      "years": "full"
+    },
+    "http_status": 302,
+    "bulk_verdict": "REDIRECT",
+    "bulk_verdict_reason": "302 to a download location",
+    "redirect_location_redacted": "https://static-sharadar.nyc3.digitaloceanspaces.com/bulk-sharadar/stocks.csv.zip?<REDACTED_QUERY>",
+    "snapshot_only_table": false,
+    "fetched_at_utc": "2026-10-04T10:51:29Z",
+    "rows": 45394106,
+    "columns": [
+      "ticker",
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "closeadj",
+      "closeunadj",
+      "lastupdated"
+    ],
+    "zip_member": "stocks.csv",
+    "zip_members": [
+      "stocks.csv"
+    ],
+    "raw_file": "raw/bulk_stocks.zip",
+    "raw_sha256": "4aea3040f5edf84ee8a41294618d932ff48855fd843f9791001cb6ed7d3ed043",
+    "raw_bytes": 989595100,
+    "parquet_file": "bulk_stocks.parquet",
+    "parquet_sha256": "b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4",
+    "date_span": [
+      "1997-12-31",
+      "2026-10-02"
+    ],
+    "full_history_check": {
+      "earliest": "1997-12-31",
+      "latest": "2026-10-02",
+      "run_date": "2026-10-04",
+      "min_year": 1998,
+      "tolerance_days": 5,
+      "start_year": 1997,
+      "end_days_behind": 2,
+      "status": "ok"
+    },
+    "wall_seconds": 69.0
+  },
+  {
+    "name": "bulk_tickers",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/tickers?years=full&api_key=<REDACTED>",
+    "params": {
+      "years": "full"
+    },
+    "http_status": 302,
+    "bulk_verdict": "REDIRECT",
+    "bulk_verdict_reason": "302 to a download location",
+    "redirect_location_redacted": "https://static-sharadar.nyc3.digitaloceanspaces.com/bulk-sharadar/tickers.csv.zip?<REDACTED_QUERY>",
+    "snapshot_only_table": true,
+    "fetched_at_utc": "2026-10-04T10:52:46Z",
+    "rows": 74326,
+    "columns": [
+      "table",
+      "permaticker",
+      "ticker",
+      "name",
+      "exchange",
+      "isdelisted",
+      "category",
+      "cusips",
+      "siccode",
+      "sicsector",
+      "sicindustry",
+      "figi",
+      "famaindustry",
+      "sector",
+      "industry",
+      "scalemarketcap",
+      "scalerevenue",
+      "relatedtickers",
+      "currency",
+      "location",
+      "lastupdated",
+      "firstadded",
+      "firstpricedate",
+      "lastpricedate",
+      "firstquarter",
+      "lastquarter",
+      "secfilings",
+      "companysite"
+    ],
+    "zip_member": "tickers.csv",
+    "zip_members": [
+      "tickers.csv"
+    ],
+    "raw_file": "raw/bulk_tickers.zip",
+    "raw_sha256": "190a07f95a7202bbe1225e5bd14c4441f98c71a10a9e70a2f1012dfc020b30e1",
+    "raw_bytes": 4900360,
+    "parquet_file": "bulk_tickers.parquet",
+    "parquet_sha256": "61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0",
+    "date_span": [
+      null,
+      null
+    ],
+    "full_history_check": {
+      "status": "not_applicable",
+      "reason": "no full-history assertion asked"
+    },
+    "wall_seconds": 2.6
+  },
+  {
+    "name": "bulk_actions",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/actions?years=full&api_key=<REDACTED>",
+    "params": {
+      "years": "full"
+    },
+    "http_status": 302,
+    "bulk_verdict": "REDIRECT",
+    "bulk_verdict_reason": "302 to a download location",
+    "redirect_location_redacted": "https://static-sharadar.nyc3.digitaloceanspaces.com/bulk-sharadar/actions.csv.zip?<REDACTED_QUERY>",
+    "snapshot_only_table": false,
+    "fetched_at_utc": "2026-10-04T10:52:49Z",
+    "rows": 715916,
+    "columns": [
+      "date",
+      "action",
+      "ticker",
+      "name",
+      "value",
+      "contraticker",
+      "contraname"
+    ],
+    "zip_member": "actions.csv",
+    "zip_members": [
+      "actions.csv"
+    ],
+    "raw_file": "raw/bulk_actions.zip",
+    "raw_sha256": "a9039412f72be718085c2b24bbfab7b314722a26f7dabfdd4d1f3ecf7879df99",
+    "raw_bytes": 10612631,
+    "parquet_file": "bulk_actions.parquet",
+    "parquet_sha256": "3d5fb576f817fa0bd28e780fbedc44b26d004ef764508788677a1a412a94222f",
+    "date_span": [
+      "1997-12-31",
+      "2026-10-06"
+    ],
+    "full_history_check": {
+      "status": "not_applicable",
+      "reason": "no full-history assertion asked"
+    },
+    "wall_seconds": 2.8
+  },
+  {
+    "name": "bulk_sp500",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/sp500?years=full&api_key=<REDACTED>",
+    "params": {
+      "years": "full"
+    },
+    "http_status": 302,
+    "bulk_verdict": "REDIRECT",
+    "bulk_verdict_reason": "302 to a download location",
+    "redirect_location_redacted": "https://static-sharadar.nyc3.digitaloceanspaces.com/bulk-sharadar/sp500.csv.zip?<REDACTED_QUERY>",
+    "snapshot_only_table": false,
+    "fetched_at_utc": "2026-10-04T10:52:52Z",
+    "rows": 60185,
+    "columns": [
+      "date",
+      "action",
+      "ticker",
+      "name",
+      "contraticker",
+      "contraname",
+      "note"
+    ],
+    "zip_member": "sp500.csv",
+    "zip_members": [
+      "sp500.csv"
+    ],
+    "raw_file": "raw/bulk_sp500.zip",
+    "raw_sha256": "1c0db0c66caeb1967467175a60fd0755ce026ac1a9287f287577ca2cce92d52a",
+    "raw_bytes": 287080,
+    "parquet_file": "bulk_sp500.parquet",
+    "parquet_sha256": "4906cba16d92660692d53984d5c90a44623def58952dfbeb10c15cf9548ec1bd",
+    "date_span": [
+      "1957-03-04",
+      "2026-10-03"
+    ],
+    "full_history_check": {
+      "status": "not_applicable",
+      "reason": "no full-history assertion asked"
+    },
+    "wall_seconds": 1.9
+  }
+]
