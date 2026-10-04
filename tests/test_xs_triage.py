@@ -552,17 +552,32 @@ def test_subperiod_means_are_hand_checked():
     assert np.isclose(out["2008-2012"]["mean_bps"], 500.0)
 
 
-# ------------------------------- the permutation null's turnover confound
-def test_the_permutation_null_rotates_harder_than_the_real_signal():
+# ------------------------------- the permutation null, RETIRED from the harness
+def test_the_permutation_null_is_no_longer_part_of_the_harness():
     """
-    The measured reason the within-date permutation never votes on a NET
-    statistic: permuting across names destroys the signal's month-to-month
-    persistence, so the permuted book trades more and pays more cost. A
-    persistent real signal then beats it on net whatever its edge.
+    Ratified ruling, Sprint R1b: the within-date rank permutation is retired
+    from the harness entirely. It survives only inside the historical T-R1
+    runner, so that look stays reproducible, and nothing new may reach for it.
     """
+    assert not hasattr(xt, "within_date_permutation_p")
+    src = (ROOT / "tools" / "xs_triage.py").read_text()
+    assert "within_date_permutation_p" not in src
+    assert "RETIRED" in src, "the harness must say why it is gone"
+    import run_t_r1
+    assert hasattr(run_t_r1, "within_date_permutation_p")
+
+
+def test_the_retired_permutation_null_rotated_harder_than_the_real_signal():
+    """
+    The measured reason it was retired, kept as a standing record. Permuting
+    across names destroys the signal's month-to-month persistence, so the
+    permuted book trades more and pays more cost; a persistent real signal then
+    beats it on net whatever its edge.
+    """
+    import run_t_r1
     panel = _synthetic_panel(400, 90, beta=0.0, seed=55, phi=0.95)
-    res = xt.within_date_permutation_p(panel, "sig", "HIGH", "LS", xt.COST_BASE,
-                                       R=12, seed=3)
+    res = run_t_r1.within_date_permutation_p(panel, "sig", "HIGH", "LS",
+                                             xt.COST_BASE, R=12, seed=3)
     assert res["permuted_turnover"] > res["obs_turnover"], res
     # No edge at all, yet the net permutation p is flattered toward significance
     # while the gross p (unconfounded by turnover) is not.

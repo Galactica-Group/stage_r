@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       xs_triage.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Cross-Sectional Triage
 Purpose:      Reusable cross-sectional triage harness: point-in-time universe
               construction, quintile portfolio arithmetic, provisional costs,
               and the voting / reported nulls with their controls.
 Entry Point:  No (imported by tools/build_panel_r1.py and tools/run_t_r1.py)
 Dependencies: numpy, pandas (no factory imports, no scipy)
-Last Sprint:  Sprint R1 — Cross-Sectional Triage Harness (2026-10-04)
+Last Sprint:  Sprint R1b — Harness v2, the neutralised statistic (2026-10-04)
 ================================================================================
 
 The harness separates three concerns: (1) window guards that refuse any daily
@@ -17,6 +17,16 @@ arithmetic over a monthly panel, (3) inference — a stationary block bootstrap
 of months on the demeaned long-short net series as the VOTING null, and a
 within-date rank permutation REPORTED beside it for continuity only.
 No Stage R statistic is computed from a vendor price that leaves this process.
+
+v1.1.0 adds HARNESS v2 (Sprint R1b): a Fama-MacBeth cross-sectional statistic
+whose slope portfolio has unit exposure to the signal and exactly zero exposure
+to sector, beta and size. v1 is retained unchanged and still tested; the two
+constructions live side by side so any look can report one beside the other.
+The within-date rank permutation is RETIRED (ratified ruling, Sprint R1b): it
+treated each month's factor realisation as noise-free, and because permuting
+destroys month-to-month persistence the permuted book rotated roughly twice as
+hard as the real one, which on a net statistic produced two false positives in
+the T-R1 batch.
 ================================================================================
 """
 
@@ -28,7 +38,7 @@ from dataclasses import dataclass, asdict, field
 import numpy as np
 import pandas as pd
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # ------------------------------------------------------------------ constants
 # Normal quantiles, hardcoded (scipy is not a Stage R dependency).
@@ -103,8 +113,29 @@ def sep_ticker_map(tickers: pd.DataFrame) -> pd.DataFrame:
     return sep
 
 
+# v2 (Sprint R1b) tightens rule 1 to these two categories EXACTLY: one line per
+# company, domestic only, so no ADR, no Canadian line and no secondary class.
+TIGHT_CATEGORIES = frozenset({
+    "Domestic Common Stock",
+    "Domestic Common Stock Primary Class",
+})
+NO_SECTOR = "<NO_SECTOR>"
+
+
+def admitted_common_stock_tight(sep: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
+    """
+    Rule 1, v2: category in TIGHT_CATEGORIES exactly. ADRs, Canadian lines and
+    secondary share classes are excluded so the panel holds one line per
+    company and carries no FX in its returns.
+    """
+    cat = sep["category"].astype("string").fillna("")
+    keep = cat.isin(TIGHT_CATEGORIES)
+    counts = cat.loc[keep].value_counts().to_dict()
+    return sep.loc[keep].copy(), {str(k): int(v) for k, v in counts.items()}
+
+
 def admitted_common_stock(sep: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Rule 1: common stock only — category containing 'Common Stock'."""
+    """Rule 1, v1: common stock only — category containing 'Common Stock'."""
     cat = sep["category"].astype("string").fillna("")
     keep = cat.str.contains("Common Stock", case=True, regex=False)
     counts = cat.loc[keep].value_counts().to_dict()
@@ -337,6 +368,295 @@ def build_series(panel: pd.DataFrame, signal_col: str, direction: str, mode: str
     return out
 
 
+# ===========================================================================
+# HARNESS v2 (Sprint R1b) — the NEUTRALISED cross-sectional statistic.
+#
+# v1's long-short quintile spread carried the market, sector and size exposures
+# that come free with a quintile sort, so its volatility was 24-38% annualised
+# and the cross-sectional breadth was wasted on common risk. v2 replaces the
+# sort with a Fama-MacBeth cross-sectional regression and takes the slope
+# portfolio on the signal, which by construction has unit exposure to the signal
+# and exactly zero exposure to every control.
+#
+# v1 is untouched and still tested; the two live side by side.
+# ===========================================================================
+
+_NORMAL_SCORES: dict[int, np.ndarray] = {}
+
+
+def norm_ppf(p: float) -> float:
+    """
+    Inverse standard-normal CDF. Acklam's rational approximation followed by one
+    Halley refinement against math.erfc, which takes it to roughly machine
+    precision. scipy is not a Stage R dependency.
+    """
+    import math
+    if not (0.0 < p < 1.0):
+        return float("nan")
+    a = (-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+         1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00)
+    b = (-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+         6.680131188771972e+01, -1.328068155288572e+01)
+    c = (-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+         -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00)
+    d = (7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+         3.754408661907416e+00)
+    plow, phigh = 0.02425, 1 - 0.02425
+    if p < plow:
+        q = math.sqrt(-2 * math.log(p))
+        x = (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+            ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    elif p > phigh:
+        q = math.sqrt(-2 * math.log(1 - p))
+        x = -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+            ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    else:
+        q = p - 0.5
+        r = q * q
+        x = (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
+            (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+    e = 0.5 * math.erfc(-x / math.sqrt(2)) - p
+    u = e * math.sqrt(2 * math.pi) * math.exp(x * x / 2)
+    return x - u / (1 + x * u / 2)
+
+
+def normal_scores(n: int) -> np.ndarray:
+    """
+    The n normal scores Phi^-1((i - 0.5)/n), ascending. Cached by n: the z
+    vector depends only on the RANK, so one computation per cross-section size
+    serves every month and every synthetic signal.
+    """
+    cached = _NORMAL_SCORES.get(n)
+    if cached is None:
+        cached = np.array([norm_ppf((i + 0.5) / n) for i in range(n)])
+        _NORMAL_SCORES[n] = cached
+    return cached
+
+
+def rank_to_normal_z(values: np.ndarray, direction: str) -> np.ndarray:
+    """
+    The signal's cross-sectional rank mapped to the standard normal, with the
+    registered direction applied so a HIGHER z is always the registered good
+    side. NaN inputs yield NaN.
+    """
+    out = np.full(values.shape[0], np.nan)
+    ok = np.isfinite(values)
+    n = int(ok.sum())
+    if n < N_QUINTILES:
+        return out
+    idx = np.flatnonzero(ok)
+    v = values[idx]
+    if direction == "LOW":
+        v = -v
+    elif direction != "HIGH":
+        raise ValueError(f"unknown direction {direction!r}")
+    order = np.argsort(v, kind="stable")
+    sc = normal_scores(n)
+    z = np.empty(n)
+    z[order] = sc
+    out[idx] = z
+    return out
+
+
+def build_design(z: np.ndarray, sector: np.ndarray, beta: np.ndarray,
+                 log_dv: np.ndarray) -> tuple[np.ndarray, list[str], int]:
+    """
+    The cross-sectional design [1, z, sector dummies, beta, log dollar volume].
+
+    One sector dummy is dropped against the intercept and any all-zero dummy is
+    dropped, so the design is full rank whenever the data allow. Because the
+    resulting portfolio is dollar-neutral (zero exposure to the intercept), zero
+    exposure to the retained dummies implies zero exposure to the dropped one
+    as well, so neutrality holds for EVERY sector, not just the retained ones.
+    beta and log dollar volume are centred for conditioning only; centring a
+    regressor cannot change the partial slope on z.
+    """
+    n = z.shape[0]
+    cols = [np.ones(n), z]
+    names = ["intercept", "z"]
+    levels = [s for s in pd.unique(sector)]
+    levels.sort()
+    for lv in levels[1:]:                      # drop the first level as the base
+        d = (sector == lv).astype(np.float64)
+        if d.sum() == 0 or d.sum() == n:
+            continue
+        cols.append(d)
+        names.append(f"sector::{lv}")
+    cols.append(beta - beta.mean())
+    names.append("beta")
+    cols.append(log_dv - log_dv.mean())
+    names.append("log_dv")
+    X = np.column_stack(cols)
+    return X, names, 1                          # z is column index 1
+
+
+def fm_slope_weights(X: np.ndarray, z_idx: int = 1,
+                     tol: float = 1e-9) -> np.ndarray | None:
+    """
+    The z row of (X'X)^-1 X', computed by pseudo-inverse: the minimum-norm
+    portfolio with unit exposure to z and zero exposure to every other column.
+    Returns None if the design is rank-deficient, so the caller can skip and
+    count the month rather than silently return a non-neutral book.
+    """
+    k = X.shape[1]
+    if X.shape[0] <= k or np.linalg.matrix_rank(X) < k:
+        return None
+    w = np.linalg.pinv(X)[z_idx]
+    target = np.zeros(k)
+    target[z_idx] = 1.0
+    if not np.allclose(w @ X, target, atol=tol):
+        return None
+    return w
+
+
+def scale_to_gross_two(w: np.ndarray) -> np.ndarray:
+    """Scale to 1 long / 1 short, gross 2, so the book is comparable to v1's."""
+    g = float(np.abs(w).sum())
+    if g <= 0:
+        return np.zeros_like(w)
+    return w * (2.0 / g)
+
+
+def residualise(y: np.ndarray, C: np.ndarray) -> np.ndarray:
+    """y with the controls projected out (least squares, min-norm)."""
+    coef, *_ = np.linalg.lstsq(C, y, rcond=None)
+    return y - C @ coef
+
+
+def build_series_v2(panel: pd.DataFrame, signal_col: str, direction: str,
+                    mode: str, spec: CostSpec, fwd_col: str = "fwd_ret",
+                    universe_col: str = "in_universe", month_col: str = "month",
+                    key_col: str = "permaticker") -> tuple[LegSeries, dict]:
+    """
+    The v2 statistic, month by month.
+
+    mode 'LS'        : the scaled slope portfolio (gross 2, 1 long / 1 short).
+    mode 'LONG_ONLY' : the top quintile of z residualised on the controls,
+                       equal weight, minus the universe equal-weight. Costs are
+                       charged on the quintile leg only; the benchmark is not
+                       traded.
+    """
+    out = LegSeries()
+    prev_w: dict[int, float] = {}
+    skipped_rank = 0
+    skipped_small = 0
+    n_names: list[int] = []
+    dropped_nan_control: list[int] = []
+
+    need = [key_col, signal_col, fwd_col, "beta", "log_dv", "sector"]
+    sub = panel.loc[panel[universe_col].astype(bool), [month_col] + need]
+
+    for month, g in sub.groupby(month_col, sort=True, observed=True):
+        fwd = g[fwd_col].to_numpy(dtype=np.float64)
+        beta = g["beta"].to_numpy(dtype=np.float64)
+        ldv = g["log_dv"].to_numpy(dtype=np.float64)
+        sig = g[signal_col].to_numpy(dtype=np.float64)
+        keys = g[key_col].to_numpy()
+        sect = g["sector"].to_numpy().astype(str)
+
+        # A name is usable only with a forward return and every control present.
+        ok = (np.isfinite(fwd) & np.isfinite(beta) & np.isfinite(ldv)
+              & np.isfinite(sig))
+        dropped_nan_control.append(int((~ok).sum()))
+        if ok.sum() < 50:
+            skipped_small += 1
+            continue
+        fwd, beta, ldv, sig, keys, sect = (fwd[ok], beta[ok], ldv[ok], sig[ok],
+                                           keys[ok], sect[ok])
+        n_names.append(int(ok.sum()))
+
+        z = rank_to_normal_z(sig, direction)
+        X, names, z_idx = build_design(z, sect, beta, ldv)
+
+        if mode == "LS":
+            w = fm_slope_weights(X, z_idx)
+            if w is None:
+                skipped_rank += 1
+                continue
+            w_trd = scale_to_gross_two(w)
+            w_ret = w_trd
+        elif mode == "LONG_ONLY":
+            C = np.delete(X, z_idx, axis=1)
+            zr = residualise(z, C)
+            q = quintiles_by_month(zr)
+            lmask = q == N_QUINTILES
+            nl = int(lmask.sum())
+            if nl == 0:
+                skipped_small += 1
+                continue
+            w_trd = np.where(lmask, 1.0 / nl, 0.0)
+            w_ret = w_trd - 1.0 / len(fwd)
+        else:
+            raise ValueError(f"unknown mode {mode!r}")
+
+        here = {int(x) for x in keys}
+        w_prev = np.array([prev_w.get(int(k), 0.0) for k in keys], dtype=np.float64)
+        dropped = float(sum(abs(v) for k, v in prev_w.items() if int(k) not in here))
+
+        gross = float(np.dot(w_ret, fwd))
+        cost, turn = month_costs(w_trd, w_prev, spec)
+        cost += ((spec.bps_per_side + spec.commission_bps) / 1e4) * dropped
+        turn += dropped
+
+        out.months.append(month)
+        out.gross.append(gross)
+        out.net.append(gross - cost)
+        out.turnover.append(turn)
+        prev_w = {int(k): float(v) for k, v in zip(keys, w_trd) if v != 0.0}
+
+    diag = {
+        "months": len(out.months),
+        "months_skipped_rank_deficient": skipped_rank,
+        "months_skipped_too_small": skipped_small,
+        "cross_section_mean": float(np.mean(n_names)) if n_names else float("nan"),
+        "cross_section_min": int(np.min(n_names)) if n_names else 0,
+        "dropped_per_month_mean": float(np.mean(dropped_nan_control))
+        if dropped_nan_control else float("nan"),
+    }
+    return out, diag
+
+
+def residual_next_month_return(panel: pd.DataFrame, month_col: str = "month",
+                               fwd_col: str = "fwd_ret",
+                               universe_col: str = "in_universe") -> pd.Series:
+    """
+    The part of next month's return the v2 controls cannot explain: r(t+1)
+    residualised cross-sectionally on [1, sector dummies, beta, log dollar
+    volume] inside each month. Indexed like the in-universe rows of `panel`.
+
+    This is REALISED future information. It exists only to build the
+    semi-synthetic positive control, where planting a known edge is the point.
+    """
+    sub = panel.loc[panel[universe_col].astype(bool)]
+    out = pd.Series(np.nan, index=sub.index, dtype=np.float64)
+    for _, g in sub.groupby(month_col, sort=True, observed=True):
+        fwd = g[fwd_col].to_numpy(dtype=np.float64)
+        beta = g["beta"].to_numpy(dtype=np.float64)
+        ldv = g["log_dv"].to_numpy(dtype=np.float64)
+        ok = np.isfinite(fwd) & np.isfinite(beta) & np.isfinite(ldv)
+        if ok.sum() < 50:
+            continue
+        sect = g["sector"].to_numpy().astype(str)[ok]
+        X, _, z_idx = build_design(np.zeros(int(ok.sum())), sect, beta[ok], ldv[ok])
+        C = np.delete(X, z_idx, axis=1)
+        out.loc[g.index[ok]] = residualise(fwd[ok], C)
+    return out
+
+
+def plant_signal(resid: np.ndarray, sigma: float, rng: np.random.Generator) -> np.ndarray:
+    """
+    SEMI-SYNTHETIC POSITIVE CONTROL. signal = realised residual next-month
+    return + sigma * standard noise.
+
+    THE LEAK IS DELIBERATE. The planted term is r(t+1) after the controls, so
+    this signal knows the future by construction. A positive control has to: an
+    instrument that cannot detect a planted edge on real data has no standing to
+    certify a nil. It is never used for a verdict, and a test names the leak.
+    """
+    noise = rng.standard_normal(resid.shape[0])
+    return resid + sigma * noise
+
+
 # ------------------------------------------------------------------- inference
 def annualised_sharpe(x: np.ndarray) -> float:
     x = np.asarray(x, dtype=np.float64)
@@ -451,54 +771,6 @@ def mde_from_null_sd(null_sd: float, alpha_z: float = Z_95, power_z: float = Z_8
     return float((alpha_z + power_z) * null_sd)
 
 
-def within_date_permutation_p(panel: pd.DataFrame, signal_col: str, direction: str,
-                              mode: str, spec: CostSpec, R: int = 200, seed: int = 0,
-                              fwd_col: str = "fwd_ret", universe_col: str = "in_universe",
-                              month_col: str = "month", key_col: str = "permaticker") -> dict:
-    """
-    REPORTED, NOT VOTED. Permutes the signal across names WITHIN each date.
-
-    Two independent reasons it does not vote, the second measured here:
-      (1) it treats each month's factor realisation as noise-free and so
-          overstates significance;
-      (2) permuting across names destroys the signal's month-to-month
-          PERSISTENCE, so the permuted book rotates far harder than the real
-          one and pays far more cost. On a NET statistic that alone makes any
-          persistent real signal look significant whatever its edge. The
-          permuted and real turnovers are returned so the size of that artifact
-          is visible, and the gross p is returned beside the net p because the
-          gross comparison is at least not confounded by it.
-    """
-    obs = build_series(panel, signal_col, direction, mode, spec,
-                       fwd_col=fwd_col, universe_col=universe_col,
-                       month_col=month_col, key_col=key_col)
-    obs_net = float(np.mean(obs.net)) if obs.net else float("nan")
-    obs_gross = float(np.mean(obs.gross)) if obs.gross else float("nan")
-    obs_turn = float(np.mean(obs.turnover)) if obs.turnover else float("nan")
-
-    rng = np.random.default_rng(seed)
-    work = panel.copy()
-    ge_net = ge_gross = 0
-    turns: list[float] = []
-    for _ in range(R):
-        work["_perm"] = work.groupby(month_col, sort=False, observed=True)[
-            signal_col].transform(lambda s, _r=rng: s.to_numpy()[_r.permutation(len(s))])
-        s = build_series(work, "_perm", direction, mode, spec, fwd_col=fwd_col,
-                         universe_col=universe_col, month_col=month_col, key_col=key_col)
-        if not s.net:
-            continue
-        if float(np.mean(s.net)) >= obs_net:
-            ge_net += 1
-        if float(np.mean(s.gross)) >= obs_gross:
-            ge_gross += 1
-        turns.append(float(np.mean(s.turnover)))
-    return {"p": (1.0 + ge_net) / (R + 1.0),
-            "p_gross": (1.0 + ge_gross) / (R + 1.0),
-            "R": R, "obs_mean": obs_net, "obs_mean_gross": obs_gross,
-            "obs_turnover": obs_turn,
-            "permuted_turnover": float(np.mean(turns)) if turns else float("nan")}
-
-
 # --------------------------------------------------------- known-null control
 def median_rank_autocorr(panel: pd.DataFrame, signal_cols: list[str],
                          month_col: str = "month", key_col: str = "permaticker",
@@ -566,7 +838,8 @@ def known_null_control(panel: pd.DataFrame, n_synthetic: int, phi: float,
                        mode: str = "LS", direction: str = "HIGH",
                        accept: tuple[float, float] = (0.01, 0.10),
                        alpha: float = 0.05, mean_block: float = 3.0,
-                       calibration_arm: str = "gross") -> dict:
+                       calibration_arm: str = "gross",
+                       builder: str = "v1") -> dict:
     """
     IN RUN. n_synthetic AR(1)-noise signals, each through the FULL pipeline
     (universe, quintiles, weights, costs) at the stated R.
@@ -589,7 +862,10 @@ def known_null_control(panel: pd.DataFrame, n_synthetic: int, phi: float,
     turns: list[float] = []
     for _ in range(n_synthetic):
         work["_noise"] = ar1_noise_signal(months, keys, phi, rng)
-        s = build_series(work, "_noise", direction, mode, spec)
+        if builder == "v2":
+            s, _ = build_series_v2(work, "_noise", direction, mode, spec)
+        else:
+            s = build_series(work, "_noise", direction, mode, spec)
         seed_i = int(rng.integers(0, 2**31 - 1))
         p_gross.append(block_bootstrap_p(np.asarray(s.gross), mean_block=mean_block,
                                          R=R, seed=seed_i)["p"])
@@ -604,7 +880,7 @@ def known_null_control(panel: pd.DataFrame, n_synthetic: int, phi: float,
     return {
         "n_synthetic": int(n_synthetic), "phi": float(phi), "R": int(R),
         "alpha": float(alpha), "mean_block": float(mean_block),
-        "calibration_arm": calibration_arm,
+        "calibration_arm": calibration_arm, "builder": builder,
         "share_at_or_below_alpha": share,
         "share_gross": share_g, "share_net": share_n,
         "accept_band": [float(accept[0]), float(accept[1])],

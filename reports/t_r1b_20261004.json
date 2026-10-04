@@ -1,0 +1,499 @@
+{
+  "batch_id": "T-R1b",
+  "look": "look 2 of Q4 2026",
+  "run_date": "20261004",
+  "vintage": "20261004p",
+  "runner_version": "1.0.0",
+  "harness_version": "1.1.0",
+  "registration_sha256": "a8645889002cdf59bb0825ab965e46c5c58ed90935b693f615c07a8cad2fed9f",
+  "addendum_v2a_sha256": "6deda44de25be1cc5ceeda7a7bbd34e1f55f5d7800928da79ff7e33fc87449d9",
+  "harness_sha256": "72faead7f18c091f7ef085980fc5a97af5e39fff6c4cd1e90ba819f5f3ac5b3c",
+  "panel_sha256": "7f13b1094b059eaa6b69b9ddff9b7b9a2a069d9401b56335673a4314687c30f7",
+  "windows": {
+    "_comment": "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter (D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.",
+    "vintage": "20261004p",
+    "half_a": {
+      "label": "half_A",
+      "return_months_through": "2012-12",
+      "daily_row_exclusive_max": "2013-01-01",
+      "note": "No daily row dated on or after daily_row_exclusive_max may be loaded anywhere in Sprint R1. Filter at read time AND assert the max date after every load."
+    },
+    "half_b": {
+      "label": "half_B",
+      "start": "2013-01-01",
+      "end": "2020-12-31",
+      "status": "UNOPENED"
+    },
+    "holdout": {
+      "label": "holdout",
+      "start": "2021-01-01",
+      "status": "SEALED"
+    }
+  },
+  "panel_summary": {
+    "version": "1.0.0",
+    "harness_version": "1.0.0",
+    "panel_path": "data/derived/panel_monthly_20261004p_halfA_v2.parquet",
+    "panel_sha256": "7f13b1094b059eaa6b69b9ddff9b7b9a2a069d9401b56335673a4314687c30f7",
+    "wall_seconds": 79.4,
+    "peak_rss_gib": 2.18,
+    "in_universe_finite_beta": 166096,
+    "in_universe_finite_beta_pct": 92.7911,
+    "sep_rows": 20997,
+    "admitted_rows": 15730,
+    "categories_admitted": {
+      "Domestic Common Stock": 13531,
+      "Domestic Common Stock Primary Class": 2199
+    },
+    "categories_excluded": [
+      "ADR Common Stock",
+      "ADR Common Stock Primary Class",
+      "ADR Common Stock Secondary Class",
+      "ADR Preferred Stock",
+      "Canadian Common Stock",
+      "Canadian Common Stock Primary Class",
+      "Canadian Common Stock Secondary Class",
+      "Canadian Preferred Stock",
+      "Domestic Common Stock Secondary Class",
+      "Domestic Preferred Stock"
+    ],
+    "sector_counts": {
+      "Technology": 2933,
+      "Healthcare": 2593,
+      "Industrials": 2503,
+      "Financial Services": 2363,
+      "Consumer Cyclical": 1567,
+      "Communication Services": 840,
+      "Energy": 730,
+      "Basic Materials": 673,
+      "Consumer Defensive": 607,
+      "Real Estate": 607,
+      "Utilities": 254,
+      "<NO_SECTOR>": 60
+    },
+    "sector_note": "the tickers master's sector field is CURRENT-VINTAGE per D-R0-A; it is not a point-in-time sector assignment",
+    "attributes_note": "the master's attributes are current-vintage per D-R0-A",
+    "daily_rows_read_half_a": 24485948,
+    "daily_rows_mapped_common_stock": 21672903,
+    "global_sessions": 3774,
+    "calendar_first": "1997-12-31",
+    "calendar_last": "2012-12-31",
+    "max_daily_date_loaded": "2012-12-31",
+    "names_with_features": 11503,
+    "month_ends": 181,
+    "panel_rows": 1783275,
+    "in_universe_rows": 179000,
+    "universe_months": 179,
+    "universe_first_month": "1998-01",
+    "universe_last_month": "2012-11",
+    "universe_size_min": 1000,
+    "universe_size_median": 1000.0,
+    "universe_size_max": 1000,
+    "in_universe_delistings": 320,
+    "in_universe_delisted_names": 320,
+    "exact_zero_fwd_not_delisting": 413,
+    "market_sessions_defined": 3753,
+    "market_first_session": "1998-02-02",
+    "market_names_per_day_min": 985,
+    "market_names_per_day_median": 997.0,
+    "market_names_per_day_max": 1000,
+    "market_annualised_vol_pct": 24.936691091216186
+  },
+  "verdict_bar": {
+    "n_signals": 5,
+    "n_looks_on_half_a": 2,
+    "bar": 0.005,
+    "derivation": "0.05 / (5 x 2)"
+  },
+  "voting_null": {
+    "name": "stationary block bootstrap of months on the demeaned v2 NET series",
+    "mean_block": 3.0,
+    "R": 2000,
+    "seed": 20261004,
+    "shared_month_index": [
+      2000,
+      168
+    ],
+    "months": 168,
+    "first_month": "1998-12",
+    "last_month": "2012-11"
+  },
+  "permutation_null": "RETIRED from the harness (ratified ruling); it treated each month's realisation as noise-free and its turnover confound produced two false positives in the T-R1 batch",
+  "mde_v1_vs_v2": {
+    "MOM12_1": {
+      "v1_bps": 169.3463177619986,
+      "v2_bps": 81.09279054988401,
+      "ratio": 0.4788577137168865,
+      "v1_vol_pct": 31.047690740802953,
+      "v2_vol_pct": 14.160208373108004
+    },
+    "REV1": {
+      "v1_bps": 116.96323346323553,
+      "v2_bps": 60.69140324284298,
+      "ratio": 0.5188930012089638,
+      "v1_vol_pct": 24.61401704048886,
+      "v2_vol_pct": 10.822585257012014
+    },
+    "LOWVOL": {
+      "v1_bps": 212.3137872426498,
+      "v2_bps": 60.2463245042917,
+      "ratio": 0.28376077355465007,
+      "v1_vol_pct": 38.210021181675096,
+      "v2_vol_pct": 11.764331332808414
+    },
+    "HI52": {
+      "v1_bps": 156.99312729210735,
+      "v2_bps": 81.87864950302112,
+      "ratio": 0.5215428911781254,
+      "v1_vol_pct": 31.79865607426086,
+      "v2_vol_pct": 13.730024695194388
+    },
+    "MAX": {
+      "v1_bps": 171.5717552228814,
+      "v2_bps": 41.63925600180916,
+      "ratio": 0.24269295343931999,
+      "v1_vol_pct": 32.301503689399254,
+      "v2_vol_pct": 8.602046015968615
+    }
+  },
+  "mde_prediction": {
+    "stated": "v2's MDE at most half v1's on at least four of the five",
+    "n_at_or_below_half": 3,
+    "held": false
+  },
+  "known_null_control": {
+    "n_synthetic": 200,
+    "phi": 0.7802746574039776,
+    "R": 500,
+    "alpha": 0.05,
+    "mean_block": 3.0,
+    "calibration_arm": "gross",
+    "builder": "v2",
+    "share_at_or_below_alpha": 0.035,
+    "share_gross": 0.035,
+    "share_net": 0.0,
+    "accept_band": [
+      0.01,
+      0.1
+    ],
+    "pass": true,
+    "p_gross_median": 0.4870259481037924,
+    "p_net_median": 0.9710578842315369,
+    "mean_turnover": 1.5212830882809518
+  },
+  "positive_control": {
+    "control_A_as_registered": {
+      "calibrated_on": "v2 GROSS annualised Sharpe",
+      "sigma_star": 16.032587875165788,
+      "calibrated_gross_sharpe": 0.7999751104380819,
+      "target": 0.8,
+      "sigma": 16.032587875165788,
+      "detection_rates": {
+        "v2_net": 0.02,
+        "v2_gross": 0.92,
+        "v1_net": 0.02,
+        "v1_gross": 0.7
+      },
+      "planted_v2_gross_bps": 17.858586152983058,
+      "planted_v2_net_bps": -0.8623114732412467,
+      "planted_v1_net_bps": -0.34599121757830303,
+      "planted_turnover_v2": 2.905456569474182
+    },
+    "control_B_addendum_v2a": {
+      "calibrated_on": "v2 NET annualised Sharpe",
+      "sigma_net_star": 7.617063154453387,
+      "target": 0.8,
+      "sigma": 7.617063154453387,
+      "detection_rates": {
+        "v2_net": 0.9,
+        "v2_gross": 1.0,
+        "v1_net": 0.76,
+        "v1_gross": 1.0
+      },
+      "planted_v2_gross_bps": 38.530902856929444,
+      "planted_v2_net_bps": 19.810027469520154,
+      "planted_v1_net_bps": 22.74565024188806,
+      "planted_turnover_v2": 2.905452148029302
+    },
+    "n_plantings": 50,
+    "R": 500,
+    "floor": 0.8,
+    "adjudicated_on": "control A, GROSS arm (addendum v2a/B1: the arm the registered calibration names)",
+    "pass": true,
+    "net_sensitivity_caveat": "Control A's NET detection rate is 0.020. A planting calibrated to GROSS Sharpe 0.8 rotates almost fully, so a fixed cost of about 18.7 bps a month consumes most of it. Both controls therefore measure a FAST signal and understate net sensitivity for a slow one; the operative per-signal power statement is each signal's own MDE, reported as observed-over-MDE.",
+    "residual_sd": 0.10864395369518737,
+    "deliberate_leak": "the planted term is the realised next-month residual return; a positive control must know the future"
+  },
+  "signals": {
+    "MOM12_1": {
+      "direction": "HIGH",
+      "months_full_sample_v2": 168,
+      "months_voted": 168,
+      "net_mean_bps": 24.153716787256247,
+      "net_sharpe": 0.20468950301432415,
+      "gross_mean_bps": 34.03649545889032,
+      "gross_sharpe": 0.28841253676493217,
+      "stress_mean_bps": 8.554826110654714,
+      "stress_sharpe": 0.07251098800713057,
+      "p_premium_voting": 0.2353823088455772,
+      "mde_v2_bps": 81.09279054988401,
+      "mde_v1_bps": 169.3463177619986,
+      "mde_ratio_v2_over_v1": 0.4788577137168865,
+      "vol_annualised_pct_v2": 14.160208373108004,
+      "vol_annualised_pct_v1": 31.047690740802953,
+      "power_ratio_abs_obs_over_mde": 0.29785282542963115,
+      "long_only_net_mean_bps": 14.849762886985953,
+      "long_only_net_sharpe": 0.19274833881205708,
+      "long_only_p": 0.24387806096951525,
+      "turnover_mean": 1.143222400993485,
+      "turnover_long_only_mean": 0.6159915260191416,
+      "subperiods_net": {
+        "1998-2002": {
+          "months": 49,
+          "mean_bps": 86.79978822603154
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": 25.17033229722182
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -28.908222722878076
+        }
+      },
+      "v2_diagnostics": {
+        "months": 168,
+        "months_skipped_rank_deficient": 0,
+        "months_skipped_too_small": 11,
+        "cross_section_mean": 977.7619047619048,
+        "cross_section_min": 868,
+        "dropped_per_month_mean": 82.32402234636872
+      },
+      "verdict": "NOTHING"
+    },
+    "REV1": {
+      "direction": "LOW",
+      "months_full_sample_v2": 169,
+      "months_voted": 168,
+      "net_mean_bps": 20.71903903220554,
+      "net_sharpe": 0.22973112475633184,
+      "gross_mean_bps": 39.537526662209416,
+      "gross_sharpe": 0.4383218283909375,
+      "stress_mean_bps": -12.751269561135548,
+      "stress_sharpe": -0.1414267197364834,
+      "p_premium_voting": 0.21139430284857572,
+      "mde_v2_bps": 60.69140324284298,
+      "mde_v1_bps": 116.96323346323553,
+      "mde_ratio_v2_over_v1": 0.5188930012089638,
+      "vol_annualised_pct_v2": 10.822585257012014,
+      "vol_annualised_pct_v1": 24.61401704048886,
+      "power_ratio_abs_obs_over_mde": 0.3413834237660146,
+      "long_only_net_mean_bps": 19.354900197562863,
+      "long_only_net_sharpe": 0.29474148231778086,
+      "long_only_p": 0.15142428785607195,
+      "turnover_mean": 2.9248590791013616,
+      "turnover_long_only_mean": 1.5822364826903,
+      "subperiods_net": {
+        "1998-2002": {
+          "months": 50,
+          "mean_bps": 106.88067279204965
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -25.82608924829474
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -1.7730190032359177
+        }
+      },
+      "v2_diagnostics": {
+        "months": 169,
+        "months_skipped_rank_deficient": 0,
+        "months_skipped_too_small": 10,
+        "cross_section_mean": 982.8165680473372,
+        "cross_section_min": 882,
+        "dropped_per_month_mean": 72.08938547486034
+      },
+      "verdict": "NOTHING"
+    },
+    "LOWVOL": {
+      "direction": "LOW",
+      "months_full_sample_v2": 169,
+      "months_voted": 168,
+      "net_mean_bps": -32.0930970502304,
+      "net_sharpe": -0.32736001197853754,
+      "gross_mean_bps": -24.10913635006003,
+      "gross_sharpe": -0.24594091813309918,
+      "stress_mean_bps": -43.894351783904476,
+      "stress_sharpe": -0.44765823528390886,
+      "p_premium_voting": 0.9145427286356822,
+      "mde_v2_bps": 60.2463245042917,
+      "mde_v1_bps": 212.3137872426498,
+      "mde_ratio_v2_over_v1": 0.28376077355465007,
+      "vol_annualised_pct_v2": 11.764331332808414,
+      "vol_annualised_pct_v1": 38.210021181675096,
+      "power_ratio_abs_obs_over_mde": 0.5326980079580492,
+      "long_only_net_mean_bps": -16.11839229742806,
+      "long_only_net_sharpe": -0.3418842776677948,
+      "long_only_p": 0.912543728135932,
+      "turnover_mean": 0.7707756184954118,
+      "turnover_long_only_mean": 0.34652093905183085,
+      "subperiods_net": {
+        "1998-2002": {
+          "months": 50,
+          "mean_bps": -58.77513587215428
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -74.00366434293831
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": 36.82996521070271
+        }
+      },
+      "v2_diagnostics": {
+        "months": 169,
+        "months_skipped_rank_deficient": 0,
+        "months_skipped_too_small": 10,
+        "cross_section_mean": 982.8165680473372,
+        "cross_section_min": 882,
+        "dropped_per_month_mean": 72.08938547486034
+      },
+      "verdict": "NOTHING"
+    },
+    "HI52": {
+      "direction": "HIGH",
+      "months_full_sample_v2": 169,
+      "months_voted": 168,
+      "net_mean_bps": -49.62113998126755,
+      "net_sharpe": -0.43368726057981805,
+      "gross_mean_bps": -37.52645442732366,
+      "gross_sharpe": -0.3278512367027028,
+      "stress_mean_bps": -69.64384442248864,
+      "stress_sharpe": -0.6091458307076522,
+      "p_premium_voting": 0.928535732133933,
+      "mde_v2_bps": 81.87864950302112,
+      "mde_v1_bps": 156.99312729210735,
+      "mde_ratio_v2_over_v1": 0.5215428911781254,
+      "vol_annualised_pct_v2": 13.730024695194388,
+      "vol_annualised_pct_v1": 31.79865607426086,
+      "power_ratio_abs_obs_over_mde": 0.6060327116098397,
+      "long_only_net_mean_bps": -24.392481937516976,
+      "long_only_net_sharpe": -0.4139083041166379,
+      "long_only_p": 0.9070464767616192,
+      "turnover_mean": 1.588055826109553,
+      "turnover_long_only_mean": 1.0552366761101213,
+      "subperiods_net": {
+        "1998-2002": {
+          "months": 50,
+          "mean_bps": -85.92174304304167
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -3.5908331606394293
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -51.743839554456386
+        }
+      },
+      "v2_diagnostics": {
+        "months": 169,
+        "months_skipped_rank_deficient": 0,
+        "months_skipped_too_small": 10,
+        "cross_section_mean": 982.8165680473372,
+        "cross_section_min": 882,
+        "dropped_per_month_mean": 72.08938547486034
+      },
+      "verdict": "NOTHING"
+    },
+    "MAX": {
+      "direction": "LOW",
+      "months_full_sample_v2": 169,
+      "months_voted": 168,
+      "net_mean_bps": -18.236336088736618,
+      "net_sharpe": -0.2543999795613716,
+      "gross_mean_bps": -0.9176671364192852,
+      "gross_sharpe": -0.012804648967047737,
+      "stress_mean_bps": -48.70700732670459,
+      "stress_sharpe": -0.6791415567612016,
+      "p_premium_voting": 0.8830584707646177,
+      "mde_v2_bps": 41.63925600180916,
+      "mde_v1_bps": 171.5717552228814,
+      "mde_ratio_v2_over_v1": 0.24269295343931999,
+      "vol_annualised_pct_v2": 8.602046015968615,
+      "vol_annualised_pct_v1": 32.301503689399254,
+      "power_ratio_abs_obs_over_mde": 0.43796018084339156,
+      "long_only_net_mean_bps": 6.4173239228497,
+      "long_only_net_sharpe": 0.16012509235699113,
+      "long_only_p": 0.2623688155922039,
+      "turnover_mean": 2.6266702769104264,
+      "turnover_long_only_mean": 1.4366288388460586,
+      "subperiods_net": {
+        "1998-2002": {
+          "months": 50,
+          "mean_bps": 15.94176700107865
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -58.17922470658174
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -0.02936639502130181
+        }
+      },
+      "v2_diagnostics": {
+        "months": 169,
+        "months_skipped_rank_deficient": 0,
+        "months_skipped_too_small": 10,
+        "cross_section_mean": 982.8165680473372,
+        "cross_section_min": 882,
+        "dropped_per_month_mean": 72.08938547486034
+      },
+      "verdict": "NOTHING"
+    }
+  },
+  "correlation_net": {
+    "MOM12_1": {
+      "MOM12_1": 1.0,
+      "REV1": -0.5496973075210057,
+      "LOWVOL": -0.324444721465942,
+      "HI52": 0.7853733794554604,
+      "MAX": -0.2563641512553859
+    },
+    "REV1": {
+      "MOM12_1": -0.5496973075210057,
+      "REV1": 1.0,
+      "LOWVOL": 0.16548207952510063,
+      "HI52": -0.7079628780622887,
+      "MAX": 0.39581677528259784
+    },
+    "LOWVOL": {
+      "MOM12_1": -0.324444721465942,
+      "REV1": 0.16548207952510063,
+      "LOWVOL": 1.0,
+      "HI52": 0.15833231593768368,
+      "MAX": 0.8374535170842491
+    },
+    "HI52": {
+      "MOM12_1": 0.7853733794554604,
+      "REV1": -0.7079628780622887,
+      "LOWVOL": 0.15833231593768368,
+      "HI52": 1.0,
+      "MAX": 0.08054666701705575
+    },
+    "MAX": {
+      "MOM12_1": -0.2563641512553859,
+      "REV1": 0.39581677528259784,
+      "LOWVOL": 0.8374535170842491,
+      "HI52": 0.08054666701705575,
+      "MAX": 1.0
+    }
+  },
+  "batch_n_eff": 4.052473796062532,
+  "wall_seconds": 74.1,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}

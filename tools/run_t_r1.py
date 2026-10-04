@@ -36,6 +36,68 @@ import xs_triage as xt
 
 VERSION = "1.0.0"
 
+# ---------------------------------------------------------------------------
+# RETIRED INSTRUMENT, kept here so look T-R1 stays reproducible.
+#
+# The within-date rank permutation was the charter's null. Sprint R1b retired it
+# from the harness entirely on two measured grounds, both visible in T-R1's own
+# output: it treats each month's factor realisation as noise-free, and because
+# permuting across names destroys month-to-month persistence the permuted book
+# rotated roughly twice as hard as the real one (3.25 against 1.17-3.20), so on a
+# net statistic it flattered any persistent signal. In the T-R1 batch it would
+# have reported two false positives — MOM12_1 at p 0.0050 against a voting
+# 0.1639, and HI52 at p 0.0299 on a negative mean.
+#
+# It lives in this historical runner and nowhere else. Nothing new may use it.
+# ---------------------------------------------------------------------------
+def within_date_permutation_p(panel: pd.DataFrame, signal_col: str, direction: str,
+                              mode: str, spec: "xt.CostSpec", R: int = 200, seed: int = 0,
+                              fwd_col: str = "fwd_ret", universe_col: str = "in_universe",
+                              month_col: str = "month", key_col: str = "permaticker") -> dict:
+    """
+    REPORTED, NOT VOTED. Permutes the signal across names WITHIN each date.
+
+    Two independent reasons it does not vote, the second measured here:
+      (1) it treats each month's factor realisation as noise-free and so
+          overstates significance;
+      (2) permuting across names destroys the signal's month-to-month
+          PERSISTENCE, so the permuted book rotates far harder than the real
+          one and pays far more cost. On a NET statistic that alone makes any
+          persistent real signal look significant whatever its edge. The
+          permuted and real turnovers are returned so the size of that artifact
+          is visible, and the gross p is returned beside the net p because the
+          gross comparison is at least not confounded by it.
+    """
+    obs = xt.build_series(panel, signal_col, direction, mode, spec,
+                       fwd_col=fwd_col, universe_col=universe_col,
+                       month_col=month_col, key_col=key_col)
+    obs_net = float(np.mean(obs.net)) if obs.net else float("nan")
+    obs_gross = float(np.mean(obs.gross)) if obs.gross else float("nan")
+    obs_turn = float(np.mean(obs.turnover)) if obs.turnover else float("nan")
+
+    rng = np.random.default_rng(seed)
+    work = panel.copy()
+    ge_net = ge_gross = 0
+    turns: list[float] = []
+    for _ in range(R):
+        work["_perm"] = work.groupby(month_col, sort=False, observed=True)[
+            signal_col].transform(lambda s, _r=rng: s.to_numpy()[_r.permutation(len(s))])
+        s = xt.build_series(work, "_perm", direction, mode, spec, fwd_col=fwd_col,
+                         universe_col=universe_col, month_col=month_col, key_col=key_col)
+        if not s.net:
+            continue
+        if float(np.mean(s.net)) >= obs_net:
+            ge_net += 1
+        if float(np.mean(s.gross)) >= obs_gross:
+            ge_gross += 1
+        turns.append(float(np.mean(s.turnover)))
+    return {"p": (1.0 + ge_net) / (R + 1.0),
+            "p_gross": (1.0 + ge_gross) / (R + 1.0),
+            "R": R, "obs_mean": obs_net, "obs_mean_gross": obs_gross,
+            "obs_turnover": obs_turn,
+            "permuted_turnover": float(np.mean(turns)) if turns else float("nan")}
+
+
 ROOT = Path(__file__).resolve().parent.parent
 PANEL = ROOT / "data" / "derived" / "panel_monthly_20261004p_halfA.parquet"
 LOGDIR = ROOT / "logs" / "r1"
@@ -179,7 +241,7 @@ def main() -> int:
         sub = panel.loc[panel["in_universe"].astype(bool),
                         ["month", "permaticker", n, "fwd_ret", "in_universe"]].copy()
         sub = sub.loc[sub["month"].isin(common)]
-        perm[n] = xt.within_date_permutation_p(
+        perm[n] = within_date_permutation_p(
             sub, n, xt.REGISTERED_SIGNALS[n], "LS", xt.COST_BASE,
             R=R_PERM, seed=SEED_PERM)
         log(f"  {n:<8} permutation p(net) {perm[n]['p']:.4f}  p(gross) "
