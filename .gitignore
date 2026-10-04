@@ -7,3 +7,6 @@ data
 __pycache__/
 *.pyc
 logs/
+
+# Sprint R1: the triage ledger is a tracked, statistics-only artifact.
+!reports/triage_ledger.csv

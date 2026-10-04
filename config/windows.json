@@ -1,0 +1,21 @@
+{
+  "_comment": "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter (D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.",
+  "vintage": "20261004p",
+  "half_a": {
+    "label": "half_A",
+    "return_months_through": "2012-12",
+    "daily_row_exclusive_max": "2013-01-01",
+    "note": "No daily row dated on or after daily_row_exclusive_max may be loaded anywhere in Sprint R1. Filter at read time AND assert the max date after every load."
+  },
+  "half_b": {
+    "label": "half_B",
+    "start": "2013-01-01",
+    "end": "2020-12-31",
+    "status": "UNOPENED"
+  },
+  "holdout": {
+    "label": "holdout",
+    "start": "2021-01-01",
+    "status": "SEALED"
+  }
+}

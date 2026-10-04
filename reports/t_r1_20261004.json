@@ -1,0 +1,385 @@
+{
+  "batch_id": "T-R1",
+  "run_date": "20261004",
+  "vintage": "20261004p",
+  "runner_version": "1.0.0",
+  "harness_version": "1.0.0",
+  "registration_sha256": "0cc4264a6a83365c46279673a3c8748b816ea0cda9675f14009ff6ec8e6bf9e3",
+  "addendum_v1a_sha256": "f3d5257a002742fa9a62d3327dc9065355a640ceab4189b8d96e84fb26336e5e",
+  "harness_sha256": "9b431b943e8ab8dbae738755e306a20d8ec5aca34b908d780c679ff73c52b6e5",
+  "panel_sha256": "c9f09db859885f205dc1f93b73395a88bae2f4abc2463fad3b4116ec59d925e0",
+  "windows": {
+    "_comment": "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter (D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.",
+    "vintage": "20261004p",
+    "half_a": {
+      "label": "half_A",
+      "return_months_through": "2012-12",
+      "daily_row_exclusive_max": "2013-01-01",
+      "note": "No daily row dated on or after daily_row_exclusive_max may be loaded anywhere in Sprint R1. Filter at read time AND assert the max date after every load."
+    },
+    "half_b": {
+      "label": "half_B",
+      "start": "2013-01-01",
+      "end": "2020-12-31",
+      "status": "UNOPENED"
+    },
+    "holdout": {
+      "label": "holdout",
+      "start": "2021-01-01",
+      "status": "SEALED"
+    }
+  },
+  "panel_summary": {
+    "version": "1.0.0",
+    "harness_version": "1.0.0",
+    "panel_path": "data/derived/panel_monthly_20261004p_halfA.parquet",
+    "panel_sha256": "c9f09db859885f205dc1f93b73395a88bae2f4abc2463fad3b4116ec59d925e0",
+    "wall_seconds": 78.2,
+    "peak_rss_gib": 2.28,
+    "sep_rows": 20997,
+    "common_stock_rows": 19760,
+    "categories_admitted": {
+      "Domestic Common Stock": 13531,
+      "Domestic Common Stock Primary Class": 2199,
+      "ADR Common Stock": 1857,
+      "Domestic Common Stock Secondary Class": 1339,
+      "Canadian Common Stock": 386,
+      "ADR Common Stock Primary Class": 267,
+      "ADR Common Stock Secondary Class": 163,
+      "Canadian Common Stock Primary Class": 15,
+      "Canadian Common Stock Secondary Class": 3
+    },
+    "categories_excluded": [
+      "ADR Preferred Stock",
+      "Canadian Preferred Stock",
+      "Domestic Preferred Stock"
+    ],
+    "attributes_note": "the master's attributes are current-vintage per D-R0-A",
+    "daily_rows_read_half_a": 24485948,
+    "daily_rows_mapped_common_stock": 24448660,
+    "global_sessions": 3774,
+    "calendar_first": "1997-12-31",
+    "calendar_last": "2012-12-31",
+    "max_daily_date_loaded": "2012-12-31",
+    "names_with_features": 13033,
+    "month_ends": 181,
+    "panel_rows": 1995372,
+    "in_universe_rows": 179000,
+    "universe_months": 179,
+    "universe_first_month": "1998-01",
+    "universe_last_month": "2012-11",
+    "universe_size_min": 1000,
+    "universe_size_median": 1000.0,
+    "universe_size_max": 1000,
+    "in_universe_delistings": 296,
+    "in_universe_delisted_names": 296,
+    "exact_zero_fwd_not_delisting": 395
+  },
+  "verdict_bar": {
+    "n_signals": 5,
+    "bar": 0.01,
+    "derivation": "0.05/5"
+  },
+  "voting_null": {
+    "name": "stationary block bootstrap of months on the demeaned LS NET series",
+    "mean_block": 3.0,
+    "R": 2000,
+    "seed": 20261004,
+    "shared_month_index": [
+      2000,
+      168
+    ],
+    "window": "the batch common month window (addendum A2)",
+    "months": 168,
+    "first_month": "1998-12",
+    "last_month": "2012-11"
+  },
+  "reported_not_voted": {
+    "name": "within-date rank permutation",
+    "R": 200,
+    "disclosure_1": "treats each month's factor realisation as noise-free and so overstates significance",
+    "disclosure_2": "permuting across names destroys month-to-month persistence, so the permuted book rotates harder and pays more cost than the real one; on a NET statistic that alone flatters any persistent signal. Real and permuted turnovers are reported per signal, and the gross p is given beside the net p as the unconfounded comparison.",
+    "status": "continuity with the charter only; never votes"
+  },
+  "costs_provisional": {
+    "BASE": {
+      "bps_per_side": 5.0,
+      "borrow_bps_per_year": 50.0
+    },
+    "STRESS": {
+      "bps_per_side": 15.0,
+      "borrow_bps_per_year": 100.0
+    },
+    "note": "PROVISIONAL. LONG-ONLY charges the Q5 leg only; the universe-equal-weight benchmark leg is not traded."
+  },
+  "known_null_control": {
+    "n_synthetic": 200,
+    "phi": 0.7703993436492802,
+    "R": 500,
+    "alpha": 0.05,
+    "mean_block": 3.0,
+    "calibration_arm": "gross",
+    "share_at_or_below_alpha": 0.065,
+    "share_gross": 0.065,
+    "share_net": 0.005,
+    "accept_band": [
+      0.01,
+      0.1
+    ],
+    "pass": true,
+    "p_gross_median": 0.5518962075848304,
+    "p_net_median": 0.9471057884231537,
+    "mean_turnover": 1.7165083798882683
+  },
+  "signals": {
+    "MOM12_1": {
+      "direction": "HIGH",
+      "months_full_sample": 168,
+      "months_voted": 168,
+      "ls_net_mean_bps": 68.12761000111036,
+      "ls_net_sharpe": 0.2630745273368334,
+      "ls_gross_mean_bps": 78.15249087523593,
+      "ls_gross_sharpe": 0.30178860660078705,
+      "ls_stress_mean_bps": 52.24451491952583,
+      "ls_stress_sharpe": 0.20173741539723378,
+      "p_premium_voting": 0.16391804097951024,
+      "mde_bps": 169.68450283541588,
+      "null_sd_bps": 68.24299956912904,
+      "p_permutation_not_voted": 0.004975124378109453,
+      "p_permutation_gross_not_voted": 0.004975124378109453,
+      "permutation_turnover_real": 1.171642841491785,
+      "permutation_turnover_permuted": 3.271109393515859,
+      "long_only_net_mean_bps": 47.40430356960293,
+      "long_only_net_sharpe": 0.349014262068337,
+      "long_only_p": 0.10994502748625687,
+      "turnover_ls_mean": 1.171642841491785,
+      "turnover_long_only_mean": 0.5814291333534918,
+      "subperiods_ls_net": {
+        "1998-2002": {
+          "months": 49,
+          "mean_bps": 241.06387292732092
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": 42.376322535706414
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -49.30967195584013
+        }
+      },
+      "ls_net_vol_annualised_pct": 31.07603492779746,
+      "power_ratio_abs_obs_over_mde": 0.40149576928183106,
+      "verdict": "NOTHING"
+    },
+    "REV1": {
+      "direction": "LOW",
+      "months_full_sample": 179,
+      "months_voted": 168,
+      "ls_net_mean_bps": -14.699161547403097,
+      "ls_net_sharpe": -0.07266195423919532,
+      "ls_gross_mean_bps": 5.4770818025839745,
+      "ls_gross_sharpe": 0.02707974249642344,
+      "ls_stress_mean_bps": -50.88498158071057,
+      "ls_stress_sharpe": -0.2514428261196914,
+      "p_premium_voting": 0.6296851574212894,
+      "mde_bps": 115.20925388773868,
+      "null_sd_bps": 46.33437309856476,
+      "p_permutation_not_voted": 0.27860696517412936,
+      "p_permutation_gross_not_voted": 0.2835820895522388,
+      "permutation_turnover_real": 3.194772479521223,
+      "permutation_turnover_permuted": 3.254431973343751,
+      "long_only_net_mean_bps": -11.006202043016163,
+      "long_only_net_sharpe": -0.09373860964475052,
+      "long_only_p": 0.6506746626686657,
+      "turnover_ls_mean": 3.1996710798504684,
+      "turnover_long_only_mean": 1.5769861468053548,
+      "subperiods_ls_net": {
+        "1998-2002": {
+          "months": 60,
+          "mean_bps": 42.83029102324417
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -50.13645796392366
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -15.379580777504696
+        }
+      },
+      "ls_net_vol_annualised_pct": 24.27541901614433,
+      "power_ratio_abs_obs_over_mde": 0.1275866395396167,
+      "verdict": "NOTHING"
+    },
+    "LOWVOL": {
+      "direction": "LOW",
+      "months_full_sample": 170,
+      "months_voted": 168,
+      "ls_net_mean_bps": -22.676694838911345,
+      "ls_net_sharpe": -0.07179145897008837,
+      "ls_gross_mean_bps": -15.757082865300676,
+      "ls_gross_sharpe": -0.04988681531615271,
+      "ls_stress_mean_bps": -32.34925211946599,
+      "ls_stress_sharpe": -0.10240543996147447,
+      "p_premium_voting": 0.6101949025487257,
+      "mde_bps": 210.49638521659787,
+      "null_sd_bps": 84.65655074920208,
+      "p_permutation_not_voted": 0.5870646766169154,
+      "p_permutation_gross_not_voted": 0.9701492537313433,
+      "permutation_turnover_real": 0.5592681374148141,
+      "permutation_turnover_permuted": 3.266852760614265,
+      "long_only_net_mean_bps": -15.86306019301755,
+      "long_only_net_sharpe": -0.11777751190206924,
+      "long_only_p": 0.6626686656671664,
+      "turnover_ls_mean": 0.5605664326676864,
+      "turnover_long_only_mean": 0.21955371359652223,
+      "subperiods_ls_net": {
+        "1998-2002": {
+          "months": 51,
+          "mean_bps": -1.2419064386633405
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -97.16041280528138
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": 5.880241312030091
+        }
+      },
+      "ls_net_vol_annualised_pct": 37.904277468481865,
+      "power_ratio_abs_obs_over_mde": 0.10772961642822199,
+      "verdict": "NOTHING"
+    },
+    "HI52": {
+      "direction": "HIGH",
+      "months_full_sample": 179,
+      "months_voted": 168,
+      "ls_net_mean_bps": -2.1018111854250128,
+      "ls_net_sharpe": -0.008009071886368966,
+      "ls_gross_mean_bps": 10.32080786219405,
+      "ls_gross_sharpe": 0.03931508941097614,
+      "ls_stress_mean_bps": -22.78038261399642,
+      "ls_stress_sharpe": -0.08686207454485236,
+      "p_premium_voting": 0.5367316341829086,
+      "mde_bps": 154.27233757512755,
+      "null_sd_bps": 62.04459977632439,
+      "p_permutation_not_voted": 0.029850746268656716,
+      "p_permutation_gross_not_voted": 0.14427860696517414,
+      "permutation_turnover_real": 1.6527380952380955,
+      "permutation_turnover_permuted": 3.252438988095238,
+      "long_only_net_mean_bps": -15.24308403880903,
+      "long_only_net_sharpe": -0.14698477117021638,
+      "long_only_p": 0.7451274362818591,
+      "turnover_ls_mean": 1.6823463687150837,
+      "turnover_long_only_mean": 1.070167597765363,
+      "subperiods_ls_net": {
+        "1998-2002": {
+          "months": 60,
+          "mean_bps": 44.19153578488017
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": 6.653970210051217
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": -76.37092538367912
+        }
+      },
+      "ls_net_vol_annualised_pct": 31.491456916532695,
+      "power_ratio_abs_obs_over_mde": 0.013624031491721403,
+      "verdict": "NOTHING"
+    },
+    "MAX": {
+      "direction": "LOW",
+      "months_full_sample": 179,
+      "months_voted": 168,
+      "ls_net_mean_bps": -6.742384881837547,
+      "ls_net_sharpe": -0.02506304342606238,
+      "ls_gross_mean_bps": 9.30582940387675,
+      "ls_gross_sharpe": 0.03459414381151412,
+      "ls_stress_mean_bps": -34.67214678659946,
+      "ls_stress_sharpe": -0.12886796506664971,
+      "p_premium_voting": 0.551224387806097,
+      "mde_bps": 172.3528684343353,
+      "null_sd_bps": 69.31615162116977,
+      "p_permutation_not_voted": 0.07960199004975124,
+      "p_permutation_gross_not_voted": 0.18407960199004975,
+      "permutation_turnover_real": 2.3745833333333333,
+      "permutation_turnover_permuted": 3.2527154761904757,
+      "long_only_net_mean_bps": -3.6340562679513573,
+      "long_only_net_sharpe": -0.031213762004415398,
+      "long_only_p": 0.5602198900549725,
+      "turnover_ls_mean": 2.377486033519553,
+      "turnover_long_only_mean": 1.1289385474860336,
+      "subperiods_ls_net": {
+        "1998-2002": {
+          "months": 60,
+          "mean_bps": 48.052975104151145
+        },
+        "2003-2007": {
+          "months": 60,
+          "mean_bps": -87.12335915516181
+        },
+        "2008-2012": {
+          "months": 59,
+          "mean_bps": 1.8194445483054937
+        }
+      },
+      "ls_net_vol_annualised_pct": 32.28204061519356,
+      "power_ratio_abs_obs_over_mde": 0.039119655756737974,
+      "verdict": "NOTHING"
+    }
+  },
+  "correlation_ls_net": {
+    "MOM12_1": {
+      "MOM12_1": 1.0,
+      "REV1": -0.3083997536264072,
+      "LOWVOL": -0.09799457390563657,
+      "HI52": 0.5282917265088519,
+      "MAX": -0.10001003265573838
+    },
+    "REV1": {
+      "MOM12_1": -0.3083997536264072,
+      "REV1": 1.0,
+      "LOWVOL": -0.11315915153842396,
+      "HI52": -0.5804413044202275,
+      "MAX": -0.012647151135936353
+    },
+    "LOWVOL": {
+      "MOM12_1": -0.09799457390563657,
+      "REV1": -0.11315915153842396,
+      "LOWVOL": 1.0,
+      "HI52": 0.6664291026442113,
+      "MAX": 0.9746155728169307
+    },
+    "HI52": {
+      "MOM12_1": 0.5282917265088519,
+      "REV1": -0.5804413044202275,
+      "LOWVOL": 0.6664291026442113,
+      "HI52": 1.0,
+      "MAX": 0.6168109679634451
+    },
+    "MAX": {
+      "MOM12_1": -0.10001003265573838,
+      "REV1": -0.012647151135936353,
+      "LOWVOL": 0.9746155728169307,
+      "HI52": 0.6168109679634451,
+      "MAX": 1.0
+    }
+  },
+  "batch_n_eff": 3.068617677060561,
+  "power_finding": {
+    "statement": "This look is structurally UNDERPOWERED on the registered statistic. The minimum detectable monthly long-short mean is 115 to 210 bps, because the quintile spread carries roughly 8 to 11 per cent monthly volatility and the voted window is 168 months. Real equity factor premia are an order of magnitude smaller than that. Every observed effect is well inside its own MDE (the largest, MOM12_1, reaches 0.40 of it; three of the five are under 0.05).",
+    "consequence": "A NOTHING here means 'no effect of implausibly large size was found'. It is NOT evidence that these premia are absent, and it must not be read as one.",
+    "max_power_ratio": 0.40149576928183106,
+    "signals_under_one_twentieth_of_mde": [
+      "HI52",
+      "MAX"
+    ]
+  },
+  "wall_seconds": 89.1,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}
