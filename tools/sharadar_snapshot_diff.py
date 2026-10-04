@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_snapshot_diff.py
-Version:      1.1.0
+Version:      1.2.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Diff two Sharadar snapshots and classify per-ticker price changes
               as ADJUSTMENT, REVISION or TAIL; emit statistics-only reports.
 Entry Point:  Yes — python tools/sharadar_snapshot_diff.py <label_a> <label_b>
 Dependencies: stdlib, pandas, pyarrow. Makes no network request and imports
               nothing from any other repository.
-Last Sprint:  Sprint R0-C — Chunked-by-ticker comparison (2026-09-27)
+Last Sprint:  Sprint R0-D — Registered-read emissions (2026-10-04)
 ================================================================================
 
 Reads data/sharadar/snapshot_<label>/manifest.json in each snapshot, groups the
@@ -35,6 +35,8 @@ import pyarrow.parquet as pq
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PRICE_TABLES = ("stocks", "funds")
+# Tables whose rows are dated events rather than bars; tallied by event type.
+EVENT_TABLES = ("actions", "sp500")
 PRICE_FIELDS = ["open", "high", "low", "close", "volume", "closeadj", "closeunadj"]
 # open/high/low/close/closeadj all carry split and stock-dividend adjustment.
 ADJUSTABLE_FIELDS = ["open", "high", "low", "close", "closeadj"]
@@ -227,7 +229,16 @@ def compare_keyed(a, b, key, vendor_cols, derived_cols):
             list(vendor_cols) + list(derived_cols)),
         "watermark_only_changes": per_field.get(WATERMARK_FIELD, 0),
         "per_field_changed": per_field,
-    }, ab, bb
+    }, ab, bb, ak.loc[only_a], bk.loc[only_b]
+
+
+def _sigs(df, cols):
+    """Per-row signature over `cols`, as a Series aligned to df. Pure."""
+    s = None
+    for col in cols:
+        part = _norm(df[col])
+        s = part if s is None else s.str.cat(part, sep="\x01")
+    return s if s is not None else pd.Series([""] * len(df), index=df.index)
 
 
 def compare_rowsets(a, b, cols):
@@ -239,7 +250,7 @@ def compare_rowsets(a, b, cols):
             s = part if s is None else s.str.cat(part, sep="\x01")
         return set(s) if s is not None else set()
     sa, sb = sig(a), sig(b)
-    return {
+    counts = {
         "rows_only_in_a": len(sa - sb),
         "rows_only_in_b": len(sb - sa),
         "rows_in_both": len(sa & sb),
@@ -248,6 +259,10 @@ def compare_rowsets(a, b, cols):
         "watermark_only_changes": None,
         "per_field_changed": {},
     }
+    # The one-sided frames let a keyless table still be tallied by event type.
+    only_a = a[~_sigs(a, cols).isin(sb).values] if len(a) else a
+    only_b = b[~_sigs(b, cols).isin(sa).values] if len(b) else b
+    return counts, only_a, only_b
 
 
 def bucket_age(days):
@@ -268,6 +283,296 @@ def _dist(values):
         "p95": float(s.quantile(0.95)),
         "max": float(s.max()),
     }
+
+
+# ---------------------------------------------------------------------------
+# Registered reads (Sprint R0-D). Each function below answers one pre-registered
+# read and is pure: it takes frames and dates, touches no file and no network.
+# The diff reports against the reads; it does not choose them.
+# ---------------------------------------------------------------------------
+
+# R0-B-0's own split drives the headline REVISION count, so the number stays
+# comparable with R0-B's "0 of 30 on five years". The R0-D brief's parenthetical
+# widens as-traded to every price field; that alternative is emitted beside the
+# headline rather than substituted for it, so the two rules can be compared
+# instead of one being assumed.
+REVISION_RULES = {
+    "rule_tool": tuple(UNADJUSTED_FIELDS),
+    "rule_brief_gloss": ("open", "high", "low", "close", "volume", "closeunadj"),
+}
+# A corporate action that can move an adjusted series.
+ADJUSTING_ACTIONS = ("dividend", "split", "spinoff", "stockdividend")
+
+
+def _by_year(values):
+    """{'YYYY': count} over a date-like iterable; unparseable buckets 'unknown'."""
+    d = pd.to_datetime(pd.Series(list(values), dtype="object"), errors="coerce")
+    out = {}
+    for v in d:
+        k = "unknown" if pd.isna(v) else "%04d" % v.year
+        out[k] = out.get(k, 0) + 1
+    return out
+
+
+def _by_date(values):
+    """{'YYYY-MM-DD': count} over a date-like iterable."""
+    d = pd.to_datetime(pd.Series(list(values), dtype="object"), errors="coerce")
+    out = {}
+    for v in d:
+        k = "unknown" if pd.isna(v) else v.strftime("%Y-%m-%d")
+        out[k] = out.get(k, 0) + 1
+    return out
+
+
+def _add_counts(target, addition):
+    """Sum two tallies into a new dict, recursing into nested tallies. Pure."""
+    out = dict(target or {})
+    for k, v in (addition or {}).items():
+        if isinstance(v, dict):
+            out[k] = _add_counts(out.get(k) or {}, v)
+        elif isinstance(v, int) and not isinstance(v, bool):
+            out[k] = out.get(k, 0) + v
+        else:
+            out.setdefault(k, v)
+    return out
+
+
+def membership_reads(only_a_rows, only_b_rows, a_tickers, cutoff_date):
+    """R1 and R2: rows that vanished, and rows that appeared, dated.
+
+    R1 asks that no historical row disappear, so every only-A row is counted by
+    the year it is dated in. R2 expects only-B rows to be dated after the A-side
+    data edge; one dated at or before `cutoff_date` is a BACKFILL — history the
+    vendor had already served once without it — split by whether its ticker was
+    in A at all, because a name new to coverage arrives with its whole past.
+    """
+    out = {"cutoff_date": cutoff_date}
+    a_dates = list(only_a_rows["date"]) if (only_a_rows is not None
+                                            and "date" in only_a_rows) else []
+    out["only_in_a_rows"] = len(a_dates)
+    out["only_in_a_by_year"] = _by_year(a_dates)
+
+    if only_b_rows is None or "date" not in only_b_rows:
+        out["only_in_b_rows"] = 0
+        out["after_cutoff_rows"] = 0
+        out["after_cutoff_by_date"] = {}
+        out["backfill_rows"] = 0
+        out["backfill_by_year"] = {}
+        out["backfill_new_listing_rows"] = 0
+        out["backfill_existing_name_rows"] = 0
+        out["backfill_new_listing_tickers"] = 0
+        out["backfill_existing_name_tickers"] = 0
+        return out
+
+    d = pd.to_datetime(only_b_rows["date"], errors="coerce")
+    cut = pd.Timestamp(cutoff_date) if cutoff_date else None
+    after = d > cut if cut is not None else pd.Series(True, index=d.index)
+    after = after.fillna(False)
+    back = ~after
+
+    out["only_in_b_rows"] = int(len(d))
+    out["after_cutoff_rows"] = int(after.sum())
+    out["after_cutoff_by_date"] = _by_date(only_b_rows.loc[after.values, "date"])
+    out["backfill_rows"] = int(back.sum())
+    out["backfill_by_year"] = _by_year(only_b_rows.loc[back.values, "date"])
+
+    known = set(a_tickers or ())
+    bt = only_b_rows["ticker"].astype(str) if "ticker" in only_b_rows else None
+    if bt is None:
+        out["backfill_new_listing_rows"] = None
+        out["backfill_existing_name_rows"] = None
+        out["backfill_new_listing_tickers"] = None
+        out["backfill_existing_name_tickers"] = None
+        return out
+    bt_back = bt[back.values]
+    is_new = ~bt_back.isin(known)
+    out["backfill_new_listing_rows"] = int(is_new.sum())
+    out["backfill_existing_name_rows"] = int((~is_new).sum())
+    out["backfill_new_listing_tickers"] = int(bt_back[is_new.values].nunique())
+    out["backfill_existing_name_tickers"] = int(bt_back[(~is_new).values].nunique())
+    return out
+
+
+def revision_reads(ab, bb, settle_cutoff):
+    """R3's first half: value-changed rows classified REVISION or ADJUSTMENT.
+
+    Row-level, not per-ticker: R3 asks how many *rows* carry an as-traded change
+    and how they are dated, which the per-ticker class tally cannot answer. Both
+    rules are measured — see REVISION_RULES.
+    """
+    present = [c for c in PRICE_FIELDS if c in ab.columns and c in bb.columns]
+    masks = {}
+    for col in present:
+        na, nb = _norm(ab[col]), _norm(bb[col])
+        masks[col] = pd.Series(na.values != nb.values, index=ab.index)
+    any_change = None
+    for m in masks.values():
+        any_change = m if any_change is None else (any_change | m)
+    if any_change is None:
+        any_change = pd.Series(False, index=ab.index)
+
+    dates = ab["date"] if "date" in ab.columns else pd.Series(index=ab.index, dtype="object")
+    d = pd.to_datetime(dates, errors="coerce")
+    cut = pd.Timestamp(settle_cutoff) if settle_cutoff else None
+
+    out = {"settle_cutoff": settle_cutoff,
+           "fields_compared": present,
+           "value_changed_rows": int(any_change.sum()),
+           "rules": {}}
+    for rule, as_traded in REVISION_RULES.items():
+        at = [c for c in as_traded if c in masks]
+        rev = None
+        for col in at:
+            rev = masks[col] if rev is None else (rev | masks[col])
+        if rev is None:
+            rev = pd.Series(False, index=ab.index)
+        adj = any_change & ~rev
+        ent = {"as_traded_fields": at,
+               "revision_rows": int(rev.sum()),
+               "adjustment_only_rows": int(adj.sum())}
+        if cut is not None:
+            before = rev & (d < cut).fillna(False).values
+            onafter = rev & (d >= cut).fillna(False).values
+            ent["revision_rows_before_cutoff"] = int(before.sum())
+            ent["revision_rows_on_or_after_cutoff"] = int(onafter.sum())
+            ent["revision_before_cutoff_by_year"] = _by_year(dates[before.values])
+            ent["revision_on_or_after_by_date"] = _by_date(dates[onafter.values])
+        out["rules"][rule] = ent
+    return out
+
+
+def watermark_reads(ab, bb):
+    """R4: does a value change always carry the watermark forward?
+
+    A row whose value moved without `lastupdated` advancing would make the
+    watermark unusable for incremental loading, so that count is reported on its
+    own. Watermark movement with no value change is benign and counted too.
+    """
+    if WATERMARK_FIELD not in ab.columns or WATERMARK_FIELD not in bb.columns:
+        return {"status": "no watermark column on both sides"}
+    present = [c for c in PRICE_FIELDS if c in ab.columns and c in bb.columns]
+    changed = None
+    for col in present:
+        m = pd.Series(_norm(ab[col]).values != _norm(bb[col]).values, index=ab.index)
+        changed = m if changed is None else (changed | m)
+    if changed is None:
+        changed = pd.Series(False, index=ab.index)
+
+    wa = pd.to_datetime(_norm(ab[WATERMARK_FIELD]).replace({MISSING: None}),
+                        errors="coerce")
+    wb = pd.to_datetime(_norm(bb[WATERMARK_FIELD]).replace({MISSING: None}),
+                        errors="coerce")
+    advanced = pd.Series((wb > wa).fillna(False).values, index=ab.index)
+    moved = pd.Series(
+        (_norm(ab[WATERMARK_FIELD]).values != _norm(bb[WATERMARK_FIELD]).values),
+        index=ab.index)
+    return {
+        "fields_compared": present,
+        "value_changed_rows": int(changed.sum()),
+        "value_changed_with_watermark_advance": int((changed & advanced).sum()),
+        "value_changed_without_watermark_advance": int((changed & ~advanced).sum()),
+        "watermark_moved_without_value_change": int((moved & ~changed).sum()),
+        "watermark_advanced_without_value_change": int((advanced & ~changed).sum()),
+        "watermark_unparseable_rows": int((wa.isna() | wb.isna()).sum()),
+    }
+
+
+def delisted_split_reads(ab, bb, as_of_a="isdelisted"):
+    """R5: per-field change counts split by whether A had the row delisted.
+
+    A delisted name's record is closed history; any field moving on it is a
+    different claim from a live name's `lastpricedate` ticking forward, so the
+    two populations are counted separately rather than pooled.
+    """
+    if as_of_a not in ab.columns:
+        return {"status": "no %s column" % as_of_a}
+    flag = _norm(ab[as_of_a]).str.upper().isin(["Y", "TRUE", "1"])
+    shared = [c for c in ab.columns
+              if c in set(bb.columns) and not c.startswith("__") and c != as_of_a]
+    out = {"delisted_rows": int(flag.sum()), "active_rows": int((~flag).sum()),
+           "delisted_changed_by_field": {}, "active_changed_by_field": {},
+           "delisted_rows_changed_any_field": 0,
+           "active_rows_changed_any_field": 0}
+    any_del, any_act = None, None
+    for col in shared:
+        m = pd.Series(_norm(ab[col]).values != _norm(bb[col]).values, index=ab.index)
+        nd, na_ = int((m & flag).sum()), int((m & ~flag).sum())
+        if nd:
+            out["delisted_changed_by_field"][col] = nd
+        if na_:
+            out["active_changed_by_field"][col] = na_
+        md, ma = (m & flag), (m & ~flag)
+        any_del = md if any_del is None else (any_del | md)
+        any_act = ma if any_act is None else (any_act | ma)
+    out["delisted_rows_changed_any_field"] = int(any_del.sum()) if any_del is not None else 0
+    out["active_rows_changed_any_field"] = int(any_act.sum()) if any_act is not None else 0
+    return out
+
+
+def by_type_reads(only_a_rows, only_b_rows, type_col="action", date_col="date"):
+    """R6: membership change on an event table, tallied by the event's own type."""
+    out = {"type_column": type_col}
+    for side, rows in (("only_in_a", only_a_rows), ("only_in_b", only_b_rows)):
+        if rows is None or type_col not in getattr(rows, "columns", []):
+            out[side + "_rows"] = 0 if rows is None else int(len(rows))
+            out[side + "_by_type"] = {}
+            out[side + "_by_date"] = {}
+            continue
+        t = _norm(rows[type_col])
+        tally = {}
+        for v in t:
+            tally[v] = tally.get(v, 0) + 1
+        out[side + "_rows"] = int(len(rows))
+        out[side + "_by_type"] = tally
+        out[side + "_by_date"] = (_by_date(rows[date_col])
+                                  if date_col in rows.columns else {})
+    return out
+
+
+def explain_adjustments(adjustment_tickers, actions_b, window_start, window_end,
+                        kinds=ADJUSTING_ACTIONS):
+    """R3's second half: is each ADJUSTMENT ticker backed by a corporate action?
+
+    An adjusted series that moved with no dividend or split in the window is
+    unexplained, which is the finding R3 asks for. Only the action's type and the
+    ticker are reported — never the action's `value`, which is a vendor figure.
+    """
+    out = {"window": [window_start, window_end],
+           "action_kinds": list(kinds),
+           "adjustment_tickers": len(adjustment_tickers)}
+    if actions_b is None or not len(adjustment_tickers):
+        out["status"] = "no actions table" if actions_b is None else "no adjustment tickers"
+        out["explained"] = 0
+        out["unexplained"] = len(adjustment_tickers)
+        out["explained_by_type"] = {}
+        out["unexplained_tickers"] = sorted(adjustment_tickers)
+        return out
+
+    d = pd.to_datetime(actions_b["date"], errors="coerce")
+    lo = pd.Timestamp(window_start) if window_start else None
+    hi = pd.Timestamp(window_end) if window_end else None
+    sel = pd.Series(True, index=actions_b.index)
+    if lo is not None:
+        sel &= (d > lo).fillna(False)
+    if hi is not None:
+        sel &= (d <= hi).fillna(False)
+    kind = _norm(actions_b["action"]).str.lower()
+    sel &= kind.isin([k.lower() for k in kinds]).values
+    win = actions_b[sel.values]
+
+    wanted = set(str(t) for t in adjustment_tickers)
+    hit = win[win["ticker"].astype(str).isin(wanted)]
+    explained = set(hit["ticker"].astype(str))
+    by_type = {}
+    for v in _norm(hit["action"]).str.lower():
+        by_type[v] = by_type.get(v, 0) + 1
+    out["actions_in_window"] = int(len(win))
+    out["actions_in_window_on_adjustment_tickers"] = int(len(hit))
+    out["explained"] = len(explained)
+    out["unexplained"] = len(wanted - explained)
+    out["explained_by_type"] = by_type
+    out["unexplained_tickers"] = sorted(wanted - explained)
+    return out
 
 
 def price_analysis(ab, bb, key, examples, pooled=None):
@@ -541,6 +846,9 @@ def merge_table_entries(entries, pooled=None):
     pas = [e["price_analysis"] for e in entries if e.get("price_analysis")]
     if pas:
         out["price_analysis"] = _merge_price_analysis(pas, pooled)
+    reads = [e["registered_reads"] for e in entries if e.get("registered_reads")]
+    if reads:
+        out["registered_reads"] = _merge_reads(reads)
     return out
 
 
@@ -562,6 +870,43 @@ def _dedupe_dicts(items):
         if k not in seen:
             seen.add(k)
             out.append(it)
+    return out
+
+
+def _merge_reads(reads_list):
+    """Merge per-partition registered-read blocks. Pure.
+
+    Partitions are disjoint row sets and a ticker lives in exactly one of them,
+    so integer counts add and tally dicts add key-wise; descriptive scalars are
+    taken from the first partition that states them.
+    """
+    if not reads_list:
+        return {}
+    out = {}
+    for name in sorted({k for r in reads_list for k in r}):
+        blocks = [r[name] for r in reads_list if name in r]
+        merged = {}
+        for b in blocks:
+            for k, v in b.items():
+                if k == "rules":
+                    continue  # nested one block per rule; merged below
+                if isinstance(v, bool) or v is None:
+                    merged.setdefault(k, v)
+                elif isinstance(v, int):
+                    merged[k] = merged.get(k, 0) + v
+                elif isinstance(v, dict):
+                    cur = merged.get(k)
+                    merged[k] = _add_counts(cur, v) if isinstance(cur, dict) else dict(v)
+                elif isinstance(v, list):
+                    cur = merged.get(k) or []
+                    merged[k] = cur + [x for x in v if x not in cur]
+                else:
+                    merged.setdefault(k, v)
+        # "rules" nests one block per revision rule; merge each rule on its own.
+        if name == "revision" and any("rules" in b for b in blocks):
+            merged["rules"] = _merge_reads(
+                [{r: b["rules"][r] for r in b["rules"]} for b in blocks if "rules" in b])
+        out[name] = merged
     return out
 
 
@@ -623,7 +968,7 @@ def peak_rss_gib():
 
 
 def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
-                   chunk_by_ticker=None):
+                   chunk_by_ticker=None, reads=None):
     dir_a, dir_b = snapshot_dir(root, label_a), snapshot_dir(root, label_b)
     man_a, man_b = read_manifest(root, label_a), read_manifest(root, label_b)
     _ind_a, keys_a = declared_schema(dir_a)
@@ -640,6 +985,12 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
                 out.setdefault(t, []).append(e["name"])
         return out
 
+    reads = dict(reads or {})
+    onlyb_cutoff = reads.get("onlyb_cutoff_date")
+    revision_cutoff = reads.get("revision_cutoff_date")
+    act_lo = reads.get("action_window_start")
+    act_hi = reads.get("action_window_end")
+
     ta, tb = tables_of(man_a), tables_of(man_b)
     both_tables = sorted(set(ta) & set(tb))
     unmapped = sorted({e["name"] for m in (man_a, man_b) for e in m
@@ -648,7 +999,7 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
 
     report = {
         "tool": "sharadar_snapshot_diff.py",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "snapshot_a": label_a,
         "snapshot_b": label_b,
         "manifest_entries": {label_a: len(man_a), label_b: len(man_b)},
@@ -663,6 +1014,12 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
         "entries_only_in_a": sorted({e["name"] for e in man_a} - {e["name"] for e in man_b}),
         "entries_only_in_b": sorted({e["name"] for e in man_b} - {e["name"] for e in man_a}),
         "entries_unmapped_to_a_table": unmapped,
+        "registered_read_parameters": {
+            "onlyb_cutoff_date": onlyb_cutoff,
+            "revision_cutoff_date": revision_cutoff,
+            "action_window_start": act_lo,
+            "action_window_end": act_hi,
+        },
         "tables": {},
     }
     examples = []
@@ -693,14 +1050,29 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
             entry["rows_before_dedupe"] = {label_a: int(len(a)), label_b: int(len(b))}
             entry["rows_after_dedupe"] = {label_a: int(len(a2)), label_b: int(len(b2))}
             entry["intra_snapshot_key_conflicts"] = {label_a: ca, label_b: cb}
-            counts, ab, bb = compare_keyed(a2, b2, key, vendor_cols, derived_cols)
+            counts, ab, bb, oa, ob = compare_keyed(a2, b2, key, vendor_cols,
+                                                   derived_cols)
             entry.update(counts)
+            rd = {}
             if table in PRICE_TABLES and "date" in shared and "ticker" in shared:
                 entry["price_analysis"] = price_analysis(
                     ab, bb, key, examples if len(examples) < examples_cap else [],
                     pooled=pooled)
+                rd["membership"] = membership_reads(
+                    oa, ob, set(a2["ticker"].astype(str)), onlyb_cutoff)
+                rd["revision"] = revision_reads(ab, bb, revision_cutoff)
+                rd["watermark"] = watermark_reads(ab, bb)
+            if "isdelisted" in shared:
+                rd["delisted_split"] = delisted_split_reads(ab, bb)
+            if table in EVENT_TABLES and "action" in shared:
+                rd["by_type"] = by_type_reads(oa, ob, "action")
+            if rd:
+                entry["registered_reads"] = rd
         else:
-            entry.update(compare_rowsets(a, b, vendor_cols))
+            counts, oa, ob = compare_rowsets(a, b, vendor_cols)
+            entry.update(counts)
+            if table in EVENT_TABLES and "action" in shared:
+                entry["registered_reads"] = {"by_type": by_type_reads(oa, ob, "action")}
         return entry
 
     for table in both_tables:
@@ -727,16 +1099,26 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
             del a, b
             continue
 
-        parts, pooled, empty = [], {}, 0
+        parts, pooled, empty, one_sided = [], {}, 0, 0
         for bucket in range(n_chunks):
             a, prov_a, skip_a = load_table_bucket(dir_a, man_a, table, bucket,
                                                  n_chunks, column=part_col)
             b, prov_b, skip_b = load_table_bucket(dir_b, man_b, table, bucket,
                                                  n_chunks, column=part_col)
-            if a is None or b is None:
+            if a is None and b is None:
                 empty += 1
                 del a, b
                 continue
+            # A partition held by one snapshot only is still a membership
+            # difference: standing it up as an empty frame on the absent side
+            # counts its rows as only-A or only-B, where skipping the partition
+            # would have dropped them silently.
+            if a is None or b is None:
+                one_sided += 1
+                if a is None:
+                    a = b.iloc[0:0].copy()
+                else:
+                    b = a.iloc[0:0].copy()
             parts.append(compare_one(table, a, prov_a, skip_a, b, prov_b, skip_b,
                                      pooled=pooled))
             del a, b
@@ -749,10 +1131,28 @@ def diff_snapshots(root, label_a, label_b, examples_cap=EXAMPLE_ROW_CAP,
             "partition_column": part_col,
             "buckets": n_chunks,
             "buckets_compared": len(parts),
-            "buckets_empty_on_a_side": empty,
+            "buckets_empty_on_both_sides": empty,
+            "buckets_present_on_one_side_only": one_sided,
             "peak_rss_gib": peak_rss_gib(),
         }
         report["tables"][table] = entry
+
+    # R3's explanation join runs once, after the partitions have merged: it needs
+    # every ADJUSTMENT ticker of the whole table against the whole actions table,
+    # which no single ticker partition holds.
+    for table in both_tables:
+        entry = report["tables"].get(table)
+        if not isinstance(entry, dict) or table not in PRICE_TABLES:
+            continue
+        pa = entry.get("price_analysis") or {}
+        classes = pa.get("classes_by_ticker") or {}
+        adj = sorted(t for t, c in classes.items() if c == "ADJUSTMENT")
+        actions_b = None
+        if "actions" in tb:
+            actions_b, _pv, _sk = load_table(dir_b, man_b, "actions")
+        entry.setdefault("registered_reads", {})["adjustment_explanation"] = \
+            explain_adjustments(adj, actions_b, act_lo, act_hi)
+        del actions_b
 
     report["chunk_by_ticker"] = chunk_by_ticker
     report["peak_rss_gib"] = peak_rss_gib()
@@ -830,6 +1230,22 @@ def render_markdown(report, examples_path, examples_rows):
         nz = {k: v for k, v in pf.items() if v}
         L.append("- **%s**: %s" % (t, ", ".join("%s=%d" % kv for kv in sorted(nz.items())) or "no field changed"))
     L.append("")
+    L.append("## Registered reads (Sprint R0-D)")
+    L.append("")
+    rp = report.get("registered_read_parameters") or {}
+    L.append("Parameters were fixed before the pull: " + ", ".join(
+        "%s=%s" % (k, v) for k, v in sorted(rp.items())) or "none")
+    L.append("")
+    for t, e in sorted(report["tables"].items()):
+        rd = (e or {}).get("registered_reads")
+        if not rd:
+            continue
+        L.append("### %s" % t)
+        L.append("")
+        L.append("```")
+        L.append(json.dumps(rd, indent=2, sort_keys=True))
+        L.append("```")
+        L.append("")
     L.append("## Price tables — magnitude of change and classification")
     L.append("")
     for t in PRICE_TABLES:
@@ -883,9 +1299,10 @@ def sha256_file(path):
     return h.hexdigest()
 
 
-def run(root, label_a, label_b, chunk_by_ticker=None):
+def run(root, label_a, label_b, chunk_by_ticker=None, reads=None):
     report, examples = diff_snapshots(root, label_a, label_b,
-                                      chunk_by_ticker=chunk_by_ticker)
+                                      chunk_by_ticker=chunk_by_ticker,
+                                      reads=reads)
     report["manifest_sha256"] = {}
     for lbl in (label_a, label_b):
         mp = os.path.join(snapshot_dir(root, lbl), "manifest.json")
@@ -926,9 +1343,24 @@ def main(argv=None):
                     help="compare ticker-keyed tables in N disjoint ticker "
                          "partitions; bounds peak memory on a table too large "
                          "to hold twice")
+    ap.add_argument("--onlyb-cutoff-date", default=None,
+                    help="A-side data edge: a B-only row dated at or before this "
+                         "is a BACKFILL, not a new session")
+    ap.add_argument("--revision-cutoff-date", default=None,
+                    help="settle edge: as-traded changes dated before this are "
+                         "counted separately as late corrections to old bars")
+    ap.add_argument("--action-window-start", default=None,
+                    help="exclusive lower bound for an explaining corporate action")
+    ap.add_argument("--action-window-end", default=None,
+                    help="inclusive upper bound for an explaining corporate action")
     args = ap.parse_args(argv)
+    reads = {"onlyb_cutoff_date": args.onlyb_cutoff_date,
+             "revision_cutoff_date": args.revision_cutoff_date,
+             "action_window_start": args.action_window_start,
+             "action_window_end": args.action_window_end}
     report, json_path, md_path, ex_path = run(args.root, args.label_a, args.label_b,
-                                             chunk_by_ticker=args.chunk_by_ticker)
+                                             chunk_by_ticker=args.chunk_by_ticker,
+                                             reads=reads)
     print("wrote %s" % os.path.relpath(json_path, args.root))
     print("wrote %s" % os.path.relpath(md_path, args.root))
     print("examples %s (%d rows, untracked)" % (os.path.relpath(ex_path, args.root),
