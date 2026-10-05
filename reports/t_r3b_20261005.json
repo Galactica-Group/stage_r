@@ -1,0 +1,455 @@
+{
+  "batch_id": "T-R3b",
+  "look": "half-B confirmation of T-R3 (not a discovery look; spends no Q4 look)",
+  "run_date": "20261005",
+  "vintage": "funds_20261005f",
+  "runner_version": "1.0.0",
+  "engine_version": "1.0.0",
+  "registration_v5_sha256": "55a0ff2735214f858c0fb0f22592e9f73bc00621bfce56de859c95670b88352e",
+  "registration_v4_sha256": "c3349c76745f93ca9bded73b2ee38ed52cb3ad2b1a273c42ddcea72a93ee614b",
+  "engine_sha256": "d024f6ff265a17ee4533c60cf1dc19b7e8f666d0619ede680efe4a5fdf2e91e8",
+  "engine_sha_asserted_unchanged": true,
+  "vendor_requests_this_sprint": 0,
+  "windows_json": {
+    "_comment": "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter (D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.",
+    "vintage": "20261004p",
+    "half_a": {
+      "label": "half_A",
+      "return_months_through": "2012-12",
+      "daily_row_exclusive_max": "2013-01-01",
+      "note": "No daily row dated on or after daily_row_exclusive_max may be loaded anywhere in Sprint R1. Filter at read time AND assert the max date after every load."
+    },
+    "half_b": {
+      "label": "half_B",
+      "start": "2013-01-01",
+      "end": "2020-12-31",
+      "status": "UNOPENED"
+    },
+    "holdout": {
+      "label": "holdout",
+      "start": "2021-01-01",
+      "status": "SEALED"
+    }
+  },
+  "windows_json_sha256": "f8b5394ae3dadabdd2c8112c3da2cde6120718d18b6e7029997da50eb512e73c",
+  "data": {
+    "tickers": [
+      "SPY",
+      "IWM",
+      "QQQ",
+      "EFA",
+      "EEM",
+      "TLT",
+      "IEF",
+      "TIP",
+      "LQD",
+      "HYG",
+      "IYR",
+      "VNQ",
+      "GLD",
+      "SLV",
+      "DBC",
+      "USO",
+      "SHY"
+    ],
+    "spans": {
+      "SPY": [
+        "1997-12-31",
+        "2020-12-31",
+        5789,
+        "2026-10-02"
+      ],
+      "IWM": [
+        "2000-05-26",
+        "2020-12-31",
+        5183,
+        "2026-10-02"
+      ],
+      "QQQ": [
+        "1999-03-10",
+        "2020-12-31",
+        5491,
+        "2026-10-02"
+      ],
+      "EFA": [
+        "2001-08-27",
+        "2020-12-31",
+        4868,
+        "2026-10-02"
+      ],
+      "EEM": [
+        "2003-04-14",
+        "2020-12-31",
+        4462,
+        "2026-10-02"
+      ],
+      "TLT": [
+        "2002-07-30",
+        "2020-12-31",
+        4640,
+        "2026-10-02"
+      ],
+      "IEF": [
+        "2002-07-30",
+        "2020-12-31",
+        4640,
+        "2026-10-02"
+      ],
+      "TIP": [
+        "2003-12-05",
+        "2020-12-31",
+        4298,
+        "2026-10-02"
+      ],
+      "LQD": [
+        "2002-07-30",
+        "2020-12-31",
+        4640,
+        "2026-10-02"
+      ],
+      "HYG": [
+        "2007-04-11",
+        "2020-12-31",
+        3458,
+        "2026-10-02"
+      ],
+      "IYR": [
+        "2000-06-19",
+        "2020-12-31",
+        5168,
+        "2026-10-02"
+      ],
+      "VNQ": [
+        "2004-09-29",
+        "2020-12-31",
+        4094,
+        "2026-10-02"
+      ],
+      "GLD": [
+        "2004-11-18",
+        "2020-12-31",
+        4058,
+        "2026-10-02"
+      ],
+      "SLV": [
+        "2006-04-28",
+        "2020-12-31",
+        3696,
+        "2026-10-02"
+      ],
+      "DBC": [
+        "2006-02-06",
+        "2020-12-31",
+        3753,
+        "2026-10-02"
+      ],
+      "USO": [
+        "2006-04-10",
+        "2020-12-31",
+        3709,
+        "2026-10-02"
+      ],
+      "SHY": [
+        "2002-07-30",
+        "2020-12-31",
+        4640,
+        "2026-10-02"
+      ]
+    },
+    "manifest_sha256": "a915c416b29b93b242f77784291cfb61387ffe76ea892517575cfd5609a83f49",
+    "holdout_exclusive_min": "2021-01-01",
+    "max_date_loaded": "2020-12-31"
+  },
+  "panel": {
+    "classes": {
+      "us_equity": [
+        "SPY",
+        "IWM",
+        "QQQ"
+      ],
+      "intl_equity": [
+        "EFA",
+        "EEM"
+      ],
+      "bonds": [
+        "TLT",
+        "IEF",
+        "TIP",
+        "LQD",
+        "HYG"
+      ],
+      "real_estate": [
+        "IYR",
+        "VNQ"
+      ],
+      "commodities": [
+        "GLD",
+        "SLV",
+        "DBC",
+        "USO"
+      ]
+    },
+    "cash_proxy": "SHY",
+    "lookback_months": 10,
+    "built_window": [
+      "2002-08",
+      "2020-12"
+    ],
+    "built_months": 221,
+    "scored_window": [
+      "2013-01",
+      "2020-12"
+    ],
+    "scored_months": 96,
+    "all_five_classes_eligible_every_scored_month": true,
+    "class_weight_throughout": 0.2,
+    "warm_up_note": "the state for 2013-01 is formed from month-end closes through 2012-12; pre-2013 rows are signal inputs only and are never scored",
+    "first_month_buy_in_note": "the first scored month pays a full 1.0 turnover buy-in in BOTH books, the same convention half A used at 2002-08"
+  },
+  "order_of_operations": [
+    "MDE",
+    "known-null control",
+    "positive control",
+    "observed",
+    "joined (descriptive)"
+  ],
+  "mde": {
+    "dsr_at_80pct_power": 0.31288118597512093,
+    "null_median": 0.11332585130599226,
+    "null_sd": 0.12151114833915926,
+    "null_p95": 0.3239406747230486,
+    "R": 2000,
+    "seed": 20261005
+  },
+  "known_null_control": {
+    "N": 200,
+    "R_each": 500,
+    "seed": 777,
+    "share_p_le_0.05": 0.04,
+    "band": [
+      0.01,
+      0.1
+    ],
+    "mean_p": 0.48084000000000005,
+    "median_p": 0.439,
+    "in_band": true
+  },
+  "positive_control": {
+    "q_grid": [
+      {
+        "q": 0.5,
+        "dsr": -0.18284410071090162
+      },
+      {
+        "q": 0.52,
+        "dsr": -0.08250333584070041
+      },
+      {
+        "q": 0.54,
+        "dsr": 0.053724832511347576
+      },
+      {
+        "q": 0.56,
+        "dsr": 0.23557180594019161
+      },
+      {
+        "q": 0.58,
+        "dsr": 0.3238957036557391
+      },
+      {
+        "q": 0.6,
+        "dsr": 0.4740207597854728
+      },
+      {
+        "q": 0.62,
+        "dsr": 0.6140557970453173
+      },
+      {
+        "q": 0.65,
+        "dsr": 0.7957232308728048
+      },
+      {
+        "q": 0.7,
+        "dsr": 1.2512178302869048
+      },
+      {
+        "q": 0.75,
+        "dsr": 1.694892213635177
+      },
+      {
+        "q": 0.8,
+        "dsr": 1.9246576077358046
+      }
+    ],
+    "q_star": 0.6,
+    "N_draws": 50,
+    "R_each": 500,
+    "seed": 4242,
+    "detection_rate": 1.0,
+    "floor": 0.8,
+    "median_p": 0.0,
+    "passes": true,
+    "leak": "DELIBERATE \u2014 the planted state reads the sign of the return it is about to earn; it proves the instrument can see a real timing edge and is never a result"
+  },
+  "observed": {
+    "TREND": {
+      "cagr": 0.04925386106921659,
+      "ann_vol": 0.0578666072671958,
+      "sharpe_excess_cash": 0.6383696634960483,
+      "max_drawdown": -0.04999381346782217,
+      "worst_rolling_12m": -0.04940856873051369,
+      "months": 96
+    },
+    "BUY_AND_HOLD": {
+      "cagr": 0.058545626104663295,
+      "ann_vol": 0.10795726731645588,
+      "sharpe_excess_cash": 0.45659013778984386,
+      "max_drawdown": -0.19559425059699886,
+      "worst_rolling_12m": -0.11454950837626465,
+      "months": 96
+    },
+    "dsr": 0.18177952570620443,
+    "timing_p": 0.2845,
+    "bootstrap_reported_not_voting": {
+      "dsr_ci90": [
+        -0.16428002820366747,
+        0.4447855072977493
+      ],
+      "mean_monthly_diff_ci90": [
+        -0.0037253143742477304,
+        0.0015586238804670208
+      ],
+      "mean_monthly_diff_point": -0.0010888942613460726,
+      "R": 5000,
+      "mean_block": 6.0
+    },
+    "time_in_cash_by_class": {
+      "us_equity": 0.1597222222222222,
+      "intl_equity": 0.3541666666666667,
+      "bonds": 0.33541666666666664,
+      "real_estate": 0.3125,
+      "commodities": 0.5989583333333334,
+      "_all": 0.3678385416666667
+    },
+    "switches_total": 246,
+    "switches_per_year": 30.75,
+    "turnover_mean_annual_trend": 3.6120193106251586,
+    "turnover_mean_annual_bh": 0.4449555762044133,
+    "dsr_by_calendar_year": {
+      "2013": {
+        "months": 12,
+        "dsr": 0.4270738757539052,
+        "trend_net_return": 0.05133741263050795,
+        "bh_net_return": 0.03721851604216764
+      },
+      "2014": {
+        "months": 12,
+        "dsr": 0.294127309413925,
+        "trend_net_return": 0.04807639761521543,
+        "bh_net_return": 0.033212688465928064
+      },
+      "2015": {
+        "months": 12,
+        "dsr": -0.17691804444175308,
+        "trend_net_return": -0.022208179194813105,
+        "bh_net_return": -0.06098135829935192
+      },
+      "2016": {
+        "months": 12,
+        "dsr": -0.3775762300078417,
+        "trend_net_return": 0.04062553501992583,
+        "bh_net_return": 0.09774739411292543
+      },
+      "2017": {
+        "months": 12,
+        "dsr": 0.638840825061,
+        "trend_net_return": 0.10697415312420344,
+        "bh_net_return": 0.14426602930108468
+      },
+      "2018": {
+        "months": 12,
+        "dsr": 0.6478944572050226,
+        "trend_net_return": -0.0035008033848987763,
+        "bh_net_return": -0.06845393244770681
+      },
+      "2019": {
+        "months": 12,
+        "dsr": -0.9841830125942853,
+        "trend_net_return": 0.07826970473933126,
+        "bh_net_return": 0.22853862100670042
+      },
+      "2020": {
+        "months": 12,
+        "dsr": 0.34749792956419856,
+        "trend_net_return": 0.10160736900165124,
+        "bh_net_return": 0.08973244019478233
+      }
+    },
+    "dsr_excluding_2020": {
+      "dsr": 0.08836930221648942,
+      "months": 84,
+      "status": "DESCRIPTIVE"
+    },
+    "stress": {
+      "bps_per_side": 15.0,
+      "dsr": 0.12429170166969422,
+      "timing_p": 0.331
+    },
+    "six_class_variant": {
+      "dsr": 0.18198834706311823,
+      "months": 96,
+      "status": "REPORTED, NOT VOTED"
+    }
+  },
+  "joined_descriptive_only": {
+    "window": [
+      "2002-08",
+      "2020-12"
+    ],
+    "months": 221,
+    "TREND": {
+      "cagr": 0.07851528403911812,
+      "ann_vol": 0.07421764619204832,
+      "sharpe_excess_cash": 0.7744405769454598,
+      "max_drawdown": -0.11324091324845209,
+      "worst_rolling_12m": -0.09223855911982326,
+      "months": 221
+    },
+    "BUY_AND_HOLD": {
+      "cagr": 0.08389814453670774,
+      "ann_vol": 0.13326894638097955,
+      "sharpe_excess_cash": 0.5084573409183443,
+      "max_drawdown": -0.43169051099466227,
+      "worst_rolling_12m": -0.3950973525284074,
+      "months": 221
+    },
+    "dsr": 0.2659832360271155,
+    "bootstrap": {
+      "dsr_ci90": [
+        -0.05419349309509786,
+        0.5349464898595754
+      ],
+      "mean_monthly_diff_ci90": [
+        -0.0036790656760143296,
+        0.0021376369721533978
+      ],
+      "mean_monthly_diff_point": -0.0009443817623542121,
+      "R": 5000,
+      "mean_block": 6.0
+    },
+    "status": "DESCRIPTIVE ONLY \u2014 half A has been seen, so no verdict attaches to the joined window and it votes on nothing"
+  },
+  "verdict": {
+    "verdict": "CONSISTENT",
+    "bar": 0.05,
+    "single_test": true,
+    "rule": {
+      "CONFIRM": "p <= 0.05 and dSR > 0",
+      "CONSISTENT": "dSR > 0 and p > 0.05",
+      "REJECT": "dSR <= 0"
+    }
+  },
+  "prior_stated_in_registration": "CONSISTENT or REJECT",
+  "wall_seconds": 3.5,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}
