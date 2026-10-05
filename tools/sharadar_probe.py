@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.6.0
+Version:      1.7.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R0-C — Paid tier verified; bulk full-history pull (2026-09-27)
+Last Sprint:  Sprint R3-0 — Tier check takes a table list (2026-10-05)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -39,6 +39,13 @@ The vendor serves a rolling window, so the oldest bars age out between snapshots
 — the calendar days between the two fetches. A start edge that recedes by no more
 than that is retention, recorded as ROLLOFF; further than that, or any loss at the
 end edge, is still a regression and still halts.
+
+--cmd tier-check --tables <a,b,c> adds one small probe per named table. These are
+COVERAGE probes, not tier probes: they ask whether the key's plan reaches a table,
+so a 403 among them names a table off the plan and must not be read as the key
+being free-tier. They are therefore excluded from classify_tier's input and from
+the exit code. A coverage probe that does not answer 200 has its body recorded in
+full rather than truncated, because the vendor's refusal text is the finding.
 ================================================================================
 """
 
@@ -247,6 +254,71 @@ TIER_PROBES = (
      "params": {"limit": 5, "format": "json"},
      "paid_gated": True, "free_tier_observed": "200 (R0-B manifest: probe5_sp500, 5 rows)"},
 )
+# ---------------------------------------------------------------------------
+# Coverage probes. A tier probe asks "is this key paid?"; a coverage probe asks
+# "does this key's plan reach this table?". The two questions have different
+# answers and must not share a verdict, so coverage probes are kept out of
+# classify_tier entirely.
+# ---------------------------------------------------------------------------
+COVERAGE_PROBE_LIMIT = 5
+# Tables date their rows under different column names; the first one present wins.
+DATE_COLUMN_CANDIDATES = ("date", "datekey", "calendardate", "reportperiod",
+                          "lastupdated", "firstpricedate")
+
+
+def parse_table_list(raw):
+    """Split a --tables argument into an ordered, de-duplicated table list.
+
+    Pure. Empty or whitespace-only input yields no tables, so omitting --tables
+    and passing an empty one behave the same way.
+    """
+    if not raw:
+        return []
+    out = []
+    for part in str(raw).split(","):
+        name = part.strip()
+        if name and name not in out:
+            out.append(name)
+    return out
+
+
+def coverage_probes(tables, limit=COVERAGE_PROBE_LIMIT):
+    """Build one coverage probe spec per table name. Pure; issues nothing."""
+    return [{"name": "cov_%s" % t, "path": "data/%s" % t, "table": t,
+             "params": {"limit": limit, "format": "json"}, "coverage": True}
+            for t in tables]
+
+
+def body_for_report(status, text, limit=400):
+    """A 200's body is a sample and is truncated; anything else is the finding.
+
+    Pure. A non-200 body is returned whole because the vendor's refusal text is
+    precisely what a coverage probe is asking for; truncating it would discard
+    the answer. Redaction is the caller's job and is not optional.
+    """
+    text = "" if text is None else str(text)
+    if status == 200:
+        return text[:limit]
+    return text
+
+
+def frame_date_span(df):
+    """The span of the dated rows a frame actually carries, or None.
+
+    Pure. Returns (column_name, earliest, latest). Only the span of the rows in
+    hand: a limit-capped request returns a window, not the table's full history.
+    """
+    if df is None or not len(getattr(df, "columns", [])):
+        return None
+    for col in DATE_COLUMN_CANDIDATES:
+        if col not in df.columns:
+            continue
+        dates = pd.to_datetime(pd.Series(df[col]).astype(str), errors="coerce").dropna()
+        if len(dates):
+            return (col, dates.min().strftime("%Y-%m-%d"), dates.max().strftime("%Y-%m-%d"))
+    return None
+
+
 # Response headers worth surfacing when asking what plan a key is on.
 PLAN_HEADER_HINTS = ("plan", "tier", "subscription", "quota", "entitle", "limit",
                      "credit", "ratelimit", "rate-limit")
@@ -577,11 +649,14 @@ class Probe:
         return resp, df
 
     # ---- tier check -------------------------------------------------------
-    def tier_check(self):
-        """Issue the tier probes and return (verdict_dict, per-probe detail).
+    def tier_check(self, coverage_tables=None):
+        """Issue the tier probes and return (verdict_dict, detail, coverage).
 
         Every probe is captured and manifested like any other request, so the
-        evidence for the verdict is banked rather than merely printed.
+        evidence for the verdict is banked rather than merely printed. Coverage
+        probes named by coverage_tables are issued the same way but returned
+        separately: they answer which tables the plan reaches, not which tier the
+        key is on, and classify_tier never sees them.
         """
         results = []
         detail = []
@@ -606,7 +681,29 @@ class Probe:
                 "plan_headers": {} if resp is None else plan_headers(resp.headers),
                 "all_headers": {} if resp is None else dict(resp.headers),
             })
-        return classify_tier(results), detail
+
+        coverage = []
+        for spec in coverage_probes(parse_table_list(coverage_tables)
+                                    if isinstance(coverage_tables, str)
+                                    else (coverage_tables or [])):
+            url = "%s/%s" % (self.base_url, spec["path"])
+            resp, df = self.capture(spec["name"], url, dict(spec["params"]),
+                                    tag=spec["name"])
+            status = None if resp is None else resp.status_code
+            span = frame_date_span(df)
+            coverage.append({
+                "name": spec["name"],
+                "table": spec["table"],
+                "http_status": status,
+                "rows": None if df is None else int(len(df)),
+                "columns": None if df is None else list(df.columns),
+                "date_column": None if span is None else span[0],
+                "returned_span": None if span is None else [span[1], span[2]],
+                "body": "" if resp is None else self.redact(
+                    body_for_report(status, resp.text)),
+                "plan_headers": {} if resp is None else plan_headers(resp.headers),
+            })
+        return classify_tier(results), detail, coverage
 
     # ---- bulk downloads ---------------------------------------------------
     def bulk_table(self, table, years=BULK_YEARS, run_date=None,
@@ -851,6 +948,10 @@ def main():
     ap.add_argument("--url", default=None)
     ap.add_argument("--name", default=None)
     ap.add_argument("--table", default=None)
+    ap.add_argument("--tables", default=None,
+                    help="comma-separated tables to probe for plan coverage "
+                         "under --cmd tier-check; a 403 among them names a "
+                         "table off the plan, not a free-tier key")
     ap.add_argument("--params", default="{}")
     ap.add_argument("--noauth", action="store_true")
     ap.add_argument("--bulk-tables", default=",".join(BULK_TABLES),
@@ -904,7 +1005,7 @@ def main():
     p = Probe(args.snapshot, key, args.base_url)
 
     if args.cmd == "tier-check":
-        verdict, detail = p.tier_check()
+        verdict, detail, coverage = p.tier_check(coverage_tables=args.tables)
         report = {
             "snapshot": args.snapshot,
             "base_url": p.base_url,
@@ -913,6 +1014,8 @@ def main():
             "verdict": verdict["verdict"],
             "reason": verdict["reason"],
             "probes": detail,
+            "coverage_tables_requested": parse_table_list(args.tables),
+            "coverage": coverage,
             "requests_used": p.budget_used(),
             "request_budget": REQUEST_BUDGET,
         }
@@ -928,6 +1031,13 @@ def main():
             if d["plan_headers"]:
                 print("    PLAN HEADERS: %s" % json.dumps(d["plan_headers"]))
         print("VERDICT: %s - %s" % (verdict["verdict"], verdict["reason"]))
+        for c in coverage:
+            print("COVERAGE %-20s -> %s rows=%s span=%s" % (
+                c["table"], c["http_status"], c["rows"], c["returned_span"]))
+            if c["http_status"] == 200:
+                print("    COLUMNS: %s" % json.dumps(c["columns"]))
+            else:
+                print("    BODY: %s" % c["body"])
         print("report %s" % os.path.relpath(out, REPO_ROOT))
         if verdict["verdict"] != "PAID":
             raise SystemExit(3)
