@@ -1,0 +1,3362 @@
+{
+  "batch_id": "T-R3",
+  "look": "look 3 of Q4 2026",
+  "run_date": "20261005",
+  "vintage": "funds_20261005f",
+  "runner_version": "1.0.0",
+  "engine_version": "1.0.0",
+  "registration_sha256": "c3349c76745f93ca9bded73b2ee38ed52cb3ad2b1a273c42ddcea72a93ee614b",
+  "engine_sha256": "d024f6ff265a17ee4533c60cf1dc19b7e8f666d0619ede680efe4a5fdf2e91e8",
+  "windows": {
+    "_comment": "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter (D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.",
+    "vintage": "20261004p",
+    "half_a": {
+      "label": "half_A",
+      "return_months_through": "2012-12",
+      "daily_row_exclusive_max": "2013-01-01",
+      "note": "No daily row dated on or after daily_row_exclusive_max may be loaded anywhere in Sprint R1. Filter at read time AND assert the max date after every load."
+    },
+    "half_b": {
+      "label": "half_B",
+      "start": "2013-01-01",
+      "end": "2020-12-31",
+      "status": "UNOPENED"
+    },
+    "holdout": {
+      "label": "holdout",
+      "start": "2021-01-01",
+      "status": "SEALED"
+    }
+  },
+  "data": {
+    "tickers": [
+      "SPY",
+      "IWM",
+      "QQQ",
+      "EFA",
+      "EEM",
+      "TLT",
+      "IEF",
+      "TIP",
+      "LQD",
+      "HYG",
+      "IYR",
+      "VNQ",
+      "GLD",
+      "SLV",
+      "DBC",
+      "USO",
+      "SHY"
+    ],
+    "spans": {
+      "SPY": [
+        "1997-12-31",
+        "2012-12-31",
+        3774,
+        "2026-10-02"
+      ],
+      "IWM": [
+        "2000-05-26",
+        "2012-12-31",
+        3168,
+        "2026-10-02"
+      ],
+      "QQQ": [
+        "1999-03-10",
+        "2012-12-31",
+        3476,
+        "2026-10-02"
+      ],
+      "EFA": [
+        "2001-08-27",
+        "2012-12-31",
+        2853,
+        "2026-10-02"
+      ],
+      "EEM": [
+        "2003-04-14",
+        "2012-12-31",
+        2447,
+        "2026-10-02"
+      ],
+      "TLT": [
+        "2002-07-30",
+        "2012-12-31",
+        2625,
+        "2026-10-02"
+      ],
+      "IEF": [
+        "2002-07-30",
+        "2012-12-31",
+        2625,
+        "2026-10-02"
+      ],
+      "TIP": [
+        "2003-12-05",
+        "2012-12-31",
+        2283,
+        "2026-10-02"
+      ],
+      "LQD": [
+        "2002-07-30",
+        "2012-12-31",
+        2625,
+        "2026-10-02"
+      ],
+      "HYG": [
+        "2007-04-11",
+        "2012-12-31",
+        1443,
+        "2026-10-02"
+      ],
+      "IYR": [
+        "2000-06-19",
+        "2012-12-31",
+        3153,
+        "2026-10-02"
+      ],
+      "VNQ": [
+        "2004-09-29",
+        "2012-12-31",
+        2079,
+        "2026-10-02"
+      ],
+      "GLD": [
+        "2004-11-18",
+        "2012-12-31",
+        2043,
+        "2026-10-02"
+      ],
+      "SLV": [
+        "2006-04-28",
+        "2012-12-31",
+        1681,
+        "2026-10-02"
+      ],
+      "DBC": [
+        "2006-02-06",
+        "2012-12-31",
+        1738,
+        "2026-10-02"
+      ],
+      "USO": [
+        "2006-04-10",
+        "2012-12-31",
+        1694,
+        "2026-10-02"
+      ],
+      "SHY": [
+        "2002-07-30",
+        "2012-12-31",
+        2625,
+        "2026-10-02"
+      ]
+    },
+    "manifest_sha256": "a915c416b29b93b242f77784291cfb61387ffe76ea892517575cfd5609a83f49"
+  },
+  "panel": {
+    "classes": {
+      "us_equity": [
+        "SPY",
+        "IWM",
+        "QQQ"
+      ],
+      "intl_equity": [
+        "EFA",
+        "EEM"
+      ],
+      "bonds": [
+        "TLT",
+        "IEF",
+        "TIP",
+        "LQD",
+        "HYG"
+      ],
+      "real_estate": [
+        "IYR",
+        "VNQ"
+      ],
+      "commodities": [
+        "GLD",
+        "SLV",
+        "DBC",
+        "USO"
+      ]
+    },
+    "cash_proxy": "SHY",
+    "lookback_months": 10,
+    "class_entry_month_end": {
+      "us_equity": "1998-10",
+      "intl_equity": "2002-06",
+      "bonds": "2003-05",
+      "real_estate": "2001-04",
+      "commodities": "2005-09"
+    },
+    "first_two_class_month_end": "2001-04",
+    "first_cash_return_month": "2002-08",
+    "binding_constraint": "the cash proxy",
+    "first_scored_month": "2002-08",
+    "last_scored_month": "2012-12",
+    "months": 125
+  },
+  "order_of_operations": [
+    "MDE",
+    "known-null control",
+    "positive control",
+    "observed"
+  ],
+  "mde": {
+    "dsr_at_80pct_power": 0.2714231146402183,
+    "null_median": -0.015273612882469534,
+    "null_sd": 0.10196498081490263,
+    "null_p95": 0.17033360882307189,
+    "R": 2000,
+    "seed": 20261005
+  },
+  "known_null_control": {
+    "N": 200,
+    "R_each": 500,
+    "seed": 777,
+    "share_p_le_0.05": 0.045,
+    "band": [
+      0.01,
+      0.1
+    ],
+    "mean_p": 0.51681,
+    "median_p": 0.496,
+    "in_band": true
+  },
+  "positive_control": {
+    "q_grid": [
+      {
+        "q": 0.5,
+        "dsr": -0.20369041630520385
+      },
+      {
+        "q": 0.52,
+        "dsr": -0.11592946720052577
+      },
+      {
+        "q": 0.54,
+        "dsr": 0.08739680714576392
+      },
+      {
+        "q": 0.56,
+        "dsr": 0.21787517200246131
+      },
+      {
+        "q": 0.58,
+        "dsr": 0.2674135740922887
+      },
+      {
+        "q": 0.6,
+        "dsr": 0.37231943166275205
+      },
+      {
+        "q": 0.62,
+        "dsr": 0.5379686260447666
+      },
+      {
+        "q": 0.65,
+        "dsr": 0.7908950412940711
+      },
+      {
+        "q": 0.7,
+        "dsr": 1.0490020285711652
+      },
+      {
+        "q": 0.75,
+        "dsr": 1.4115899360118975
+      },
+      {
+        "q": 0.8,
+        "dsr": 1.6963109648243262
+      }
+    ],
+    "q_star": 0.6,
+    "N_draws": 50,
+    "R_each": 500,
+    "seed": 4242,
+    "detection_rate": 1.0,
+    "floor": 0.8,
+    "median_p": 0.0,
+    "passes": true,
+    "leak": "DELIBERATE \u2014 the planted state reads the sign of the return it is about to earn; it proves the instrument can see a real timing edge and is never a result"
+  },
+  "observed": {
+    "TREND": {
+      "cagr": 0.10150588618297851,
+      "ann_vol": 0.08433561900316079,
+      "sharpe_excess_cash": 0.8653241360954174,
+      "max_drawdown": -0.11324091324845209,
+      "worst_rolling_12m": -0.09223855911982326,
+      "months": 125
+    },
+    "BUY_AND_HOLD": {
+      "cagr": 0.10373004436985656,
+      "ann_vol": 0.14999074096987813,
+      "sharpe_excess_cash": 0.5455319472247898,
+      "max_drawdown": -0.43169051099466227,
+      "worst_rolling_12m": -0.3950973525284074,
+      "months": 125
+    },
+    "dsr": 0.31979218887062755,
+    "timing_p": 0.001,
+    "bootstrap_reported_not_voting": {
+      "dsr_ci90": [
+        -0.16017047758348998,
+        0.7013802498667422
+      ],
+      "mean_monthly_diff_ci90": [
+        -0.0051485627297558605,
+        0.004387926421127795
+      ],
+      "mean_monthly_diff_point": -0.0008322047247382676,
+      "R": 5000,
+      "mean_block": 6.0
+    },
+    "time_in_cash_by_class": {
+      "us_equity": 0.30133333333333334,
+      "intl_equity": 0.28448275862068967,
+      "bonds": 0.22529644268774704,
+      "real_estate": 0.27906976744186046,
+      "commodities": 0.31353135313531355,
+      "_all": 0.27467811158798283
+    },
+    "switches_total": 217,
+    "switches_per_year": 20.832,
+    "turnover_mean_annual_trend": 3.195245763400819,
+    "turnover_mean_annual_bh": 0.6421588001399946,
+    "dsr_by_subperiod": {
+      "2001-2002": {
+        "months": 5,
+        "dsr": -1.0842578581405786,
+        "thin": true
+      },
+      "2003-2007": {
+        "months": 60,
+        "dsr": -0.04455065551685311,
+        "thin": false
+      },
+      "2008-2012": {
+        "months": 60,
+        "dsr": 0.2285660918702363,
+        "thin": false
+      }
+    },
+    "dsr_excluding_2008": {
+      "dsr": 0.06121008648105519,
+      "months": 113,
+      "status": "DESCRIPTIVE"
+    },
+    "stress": {
+      "bps_per_side": 15.0,
+      "dsr": 0.2881773277194093,
+      "timing_p": 0.002
+    }
+  },
+  "robustness_six_class_variant": {
+    "dsr": 0.3315275678431213,
+    "months": 125,
+    "first_scored_month": "2002-08",
+    "last_scored_month": "2012-12",
+    "status": "ROBUSTNESS read on the rejected reading of 'cash: SHY' as a sixth weighted class; not the registered design"
+  },
+  "verdict": {
+    "verdict": "SOMETHING",
+    "bar": 0.05,
+    "suggestive_bar": 0.1,
+    "single_test": true,
+    "promotion": "one registered half-B look (2013-2020)"
+  },
+  "dating_test": {
+    "tool_version": "1.0.0",
+    "snapshot": "snapshot_20261005c",
+    "names": [
+      "KO",
+      "NKE",
+      "WMT"
+    ],
+    "units_note": "marketcap USD millions, netinccmnusd USD; implied earnings scaled by 1e6 (descriptions dictionary)",
+    "dating_note": "for ART the fundamentals date IS the SEC filing date; for MRT it is the reportperiod (descriptions dictionary)",
+    "detector": {
+      "pe_half_digit": 0.05,
+      "band_multiple": 1.5,
+      "band_floor": 0.0001,
+      "rule": "a day matches the unique reported value inside its own pe-rounding band; several -> ambiguous, none -> unmatched"
+    },
+    "pooled": {
+      "steps": 255,
+      "lag_exactly_zero": 201,
+      "lag_positive_late": 54,
+      "lag_negative_look_ahead": 0,
+      "share_dated_exactly_on_the_filing_date": 0.788235294117647,
+      "masking_window_days_median": 2.0,
+      "masking_window_days_p90": 104.39999999999995,
+      "tightly_dated_gap_le_5d": 170
+    },
+    "per_ticker": [
+      {
+        "ticker": "KO",
+        "daily_rows": 7002,
+        "daily_span": [
+          "1998-12-01",
+          "2026-10-02"
+        ],
+        "art_rows": 132,
+        "art_span": [
+          "1994-03-14",
+          "2026-07-29"
+        ],
+        "mrt_rows": 136,
+        "status_counts": {
+          "matched": 4134,
+          "ambiguous": 2868,
+          "unmatched": 0,
+          "no_data": 0
+        },
+        "median_band_rel": 0.0030527559055118117,
+        "steps_found": 83,
+        "steps_as_filed": 83,
+        "steps_look_ahead": 0,
+        "lag_days": {
+          "min": 0,
+          "median": 0.0,
+          "max": 20
+        },
+        "gap_days_between_matched_days": {
+          "min": 1,
+          "median": 3.0,
+          "max": 371
+        },
+        "steps_with_look_ahead_excluded_outright": 0,
+        "steps_where_ambiguity_could_mask_a_look_ahead": 83,
+        "detection_bias_note": "days whose implied E sits inside the rounding band of two reported values are AMBIGUOUS and excluded from step detection, which can only date a step LATER, i.e. biases the test TOWARD as-filed; steps_with_look_ahead_excluded_outright is the count immune to that bias",
+        "verdict": "AS-FILED",
+        "dimension_attribution": {
+          "note": "a day is tested against the ART value SET and the MRT value SET over the reportperiods where the two differ, with no uniqueness requirement, so a day may resolve to a dimension by coincidence with a different period: these counts are LOOSE upper bounds, not step evidence",
+          "reportperiods_in_both": 129,
+          "reportperiods_where_they_differ": 6,
+          "days_resolving_to_ART": 432,
+          "days_resolving_to_MRT": 43,
+          "days_resolving_to_neither": 6475,
+          "days_resolving_to_both": 52,
+          "separable": true
+        },
+        "steps": [
+          {
+            "step_date": "1999-03-29",
+            "prev_matched_reportperiod": "1998-09-30",
+            "new_matched_reportperiod": "1998-12-31",
+            "art_filing_date": "1999-03-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-05-12",
+            "prev_matched_reportperiod": "1998-12-31",
+            "new_matched_reportperiod": "1999-03-31",
+            "art_filing_date": "1999-05-12",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-08-12",
+            "prev_matched_reportperiod": "1999-03-31",
+            "new_matched_reportperiod": "1999-06-30",
+            "art_filing_date": "1999-08-12",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-11-03",
+            "prev_matched_reportperiod": "1999-06-30",
+            "new_matched_reportperiod": "1999-09-30",
+            "art_filing_date": "1999-11-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-03-09",
+            "prev_matched_reportperiod": "1999-09-30",
+            "new_matched_reportperiod": "1999-12-31",
+            "art_filing_date": "2000-03-09",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-05-11",
+            "prev_matched_reportperiod": "1999-12-31",
+            "new_matched_reportperiod": "2000-03-31",
+            "art_filing_date": "2000-05-11",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-07-27",
+            "prev_matched_reportperiod": "2000-03-31",
+            "new_matched_reportperiod": "2000-06-30",
+            "art_filing_date": "2000-07-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-10-27",
+            "prev_matched_reportperiod": "2000-06-30",
+            "new_matched_reportperiod": "2000-09-30",
+            "art_filing_date": "2000-10-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-05-01",
+            "prev_matched_reportperiod": "2000-09-30",
+            "new_matched_reportperiod": "2001-03-31",
+            "art_filing_date": "2001-05-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 56,
+            "lag_days_lower_bound": -56,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-08-15",
+            "prev_matched_reportperiod": "2001-03-31",
+            "new_matched_reportperiod": "2001-06-30",
+            "art_filing_date": "2001-08-14",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-11-13",
+            "prev_matched_reportperiod": "2001-06-30",
+            "new_matched_reportperiod": "2001-09-30",
+            "art_filing_date": "2001-11-13",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-05-10",
+            "prev_matched_reportperiod": "2001-09-30",
+            "new_matched_reportperiod": "2002-03-31",
+            "art_filing_date": "2002-05-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 64,
+            "lag_days_lower_bound": -64,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-08-13",
+            "prev_matched_reportperiod": "2002-03-31",
+            "new_matched_reportperiod": "2002-06-30",
+            "art_filing_date": "2002-08-13",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-11-13",
+            "prev_matched_reportperiod": "2002-06-30",
+            "new_matched_reportperiod": "2002-09-30",
+            "art_filing_date": "2002-11-13",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-03-26",
+            "prev_matched_reportperiod": "2002-09-30",
+            "new_matched_reportperiod": "2002-12-31",
+            "art_filing_date": "2003-03-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-04-25",
+            "prev_matched_reportperiod": "2002-12-31",
+            "new_matched_reportperiod": "2003-03-31",
+            "art_filing_date": "2003-04-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-08-14",
+            "prev_matched_reportperiod": "2003-03-31",
+            "new_matched_reportperiod": "2003-06-30",
+            "art_filing_date": "2003-08-13",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-02-27",
+            "prev_matched_reportperiod": "2003-06-30",
+            "new_matched_reportperiod": "2003-12-31",
+            "art_filing_date": "2004-02-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 126,
+            "lag_days_lower_bound": -126,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-04-29",
+            "prev_matched_reportperiod": "2003-12-31",
+            "new_matched_reportperiod": "2004-03-31",
+            "art_filing_date": "2004-04-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-10-28",
+            "prev_matched_reportperiod": "2004-03-31",
+            "new_matched_reportperiod": "2004-09-30",
+            "art_filing_date": "2004-10-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 85,
+            "lag_days_lower_bound": -85,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-03-14",
+            "prev_matched_reportperiod": "2004-09-30",
+            "new_matched_reportperiod": "2004-12-31",
+            "art_filing_date": "2005-03-04",
+            "lag_days_step_minus_filing": 10,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 11,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-04-28",
+            "prev_matched_reportperiod": "2004-12-31",
+            "new_matched_reportperiod": "2005-03-31",
+            "art_filing_date": "2005-04-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-10-27",
+            "prev_matched_reportperiod": "2005-03-31",
+            "new_matched_reportperiod": "2005-09-30",
+            "art_filing_date": "2005-10-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 90,
+            "lag_days_lower_bound": -90,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-03-16",
+            "prev_matched_reportperiod": "2005-09-30",
+            "new_matched_reportperiod": "2005-12-31",
+            "art_filing_date": "2006-02-28",
+            "lag_days_step_minus_filing": 16,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 20,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-04-27",
+            "prev_matched_reportperiod": "2005-12-31",
+            "new_matched_reportperiod": "2006-03-31",
+            "art_filing_date": "2006-04-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -6,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-08-11",
+            "prev_matched_reportperiod": "2006-03-31",
+            "new_matched_reportperiod": "2006-06-30",
+            "art_filing_date": "2006-07-27",
+            "lag_days_step_minus_filing": 15,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 16,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-11-06",
+            "prev_matched_reportperiod": "2006-06-30",
+            "new_matched_reportperiod": "2006-09-29",
+            "art_filing_date": "2006-10-26",
+            "lag_days_step_minus_filing": 11,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 13,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-02-22",
+            "prev_matched_reportperiod": "2006-09-29",
+            "new_matched_reportperiod": "2006-12-31",
+            "art_filing_date": "2007-02-21",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 10,
+            "lag_days_lower_bound": -9,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-04-26",
+            "prev_matched_reportperiod": "2006-12-31",
+            "new_matched_reportperiod": "2007-03-30",
+            "art_filing_date": "2007-04-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 42,
+            "lag_days_lower_bound": -42,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-10-24",
+            "prev_matched_reportperiod": "2007-03-30",
+            "new_matched_reportperiod": "2007-09-28",
+            "art_filing_date": "2007-10-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 92,
+            "lag_days_lower_bound": -92,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-02-28",
+            "prev_matched_reportperiod": "2007-09-28",
+            "new_matched_reportperiod": "2007-12-31",
+            "art_filing_date": "2008-02-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-07-25",
+            "prev_matched_reportperiod": "2007-12-31",
+            "new_matched_reportperiod": "2008-06-27",
+            "art_filing_date": "2008-07-24",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 92,
+            "lag_days_lower_bound": -91,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-10-23",
+            "prev_matched_reportperiod": "2008-06-27",
+            "new_matched_reportperiod": "2008-09-26",
+            "art_filing_date": "2008-10-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2009-03-04",
+            "prev_matched_reportperiod": "2008-09-26",
+            "new_matched_reportperiod": "2008-12-31",
+            "art_filing_date": "2009-02-26",
+            "lag_days_step_minus_filing": 6,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 7,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2009-04-30",
+            "prev_matched_reportperiod": "2008-12-31",
+            "new_matched_reportperiod": "2009-04-03",
+            "art_filing_date": "2009-04-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-02-26",
+            "prev_matched_reportperiod": "2009-04-03",
+            "new_matched_reportperiod": "2009-12-31",
+            "art_filing_date": "2010-02-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 212,
+            "lag_days_lower_bound": -212,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-08-02",
+            "prev_matched_reportperiod": "2009-12-31",
+            "new_matched_reportperiod": "2010-07-02",
+            "art_filing_date": "2010-08-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 96,
+            "lag_days_lower_bound": -96,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-11-01",
+            "prev_matched_reportperiod": "2010-07-02",
+            "new_matched_reportperiod": "2010-10-01",
+            "art_filing_date": "2010-10-29",
+            "lag_days_step_minus_filing": 3,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-02-28",
+            "prev_matched_reportperiod": "2010-10-01",
+            "new_matched_reportperiod": "2010-12-31",
+            "art_filing_date": "2011-02-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-05-04",
+            "prev_matched_reportperiod": "2010-12-31",
+            "new_matched_reportperiod": "2011-04-01",
+            "art_filing_date": "2011-05-02",
+            "lag_days_step_minus_filing": 2,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-08-01",
+            "prev_matched_reportperiod": "2011-04-01",
+            "new_matched_reportperiod": "2011-07-01",
+            "art_filing_date": "2011-08-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-10-27",
+            "prev_matched_reportperiod": "2011-07-01",
+            "new_matched_reportperiod": "2011-09-30",
+            "art_filing_date": "2011-10-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-02-27",
+            "prev_matched_reportperiod": "2011-09-30",
+            "new_matched_reportperiod": "2012-12-31",
+            "art_filing_date": "2013-02-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 371,
+            "lag_days_lower_bound": -371,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-07-25",
+            "prev_matched_reportperiod": "2012-12-31",
+            "new_matched_reportperiod": "2013-06-28",
+            "art_filing_date": "2013-07-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 92,
+            "lag_days_lower_bound": -92,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-11-12",
+            "prev_matched_reportperiod": "2013-06-28",
+            "new_matched_reportperiod": "2013-09-27",
+            "art_filing_date": "2013-10-24",
+            "lag_days_step_minus_filing": 19,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 20,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-04-24",
+            "prev_matched_reportperiod": "2013-09-27",
+            "new_matched_reportperiod": "2014-03-28",
+            "art_filing_date": "2014-04-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 59,
+            "lag_days_lower_bound": -59,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-07-31",
+            "prev_matched_reportperiod": "2014-03-28",
+            "new_matched_reportperiod": "2014-06-27",
+            "art_filing_date": "2014-07-30",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-10-29",
+            "prev_matched_reportperiod": "2014-06-27",
+            "new_matched_reportperiod": "2014-09-26",
+            "art_filing_date": "2014-10-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -5,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-07-29",
+            "prev_matched_reportperiod": "2014-09-26",
+            "new_matched_reportperiod": "2015-07-03",
+            "art_filing_date": "2015-07-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 155,
+            "lag_days_lower_bound": -155,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-10-28",
+            "prev_matched_reportperiod": "2015-07-03",
+            "new_matched_reportperiod": "2015-10-02",
+            "art_filing_date": "2015-10-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-02-25",
+            "prev_matched_reportperiod": "2015-10-02",
+            "new_matched_reportperiod": "2015-12-31",
+            "art_filing_date": "2016-02-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-04-28",
+            "prev_matched_reportperiod": "2015-12-31",
+            "new_matched_reportperiod": "2016-04-01",
+            "art_filing_date": "2016-04-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-07-28",
+            "prev_matched_reportperiod": "2016-04-01",
+            "new_matched_reportperiod": "2016-07-01",
+            "art_filing_date": "2016-07-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-02-24",
+            "prev_matched_reportperiod": "2016-07-01",
+            "new_matched_reportperiod": "2016-12-31",
+            "art_filing_date": "2017-02-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 121,
+            "lag_days_lower_bound": -121,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-05-17",
+            "prev_matched_reportperiod": "2016-12-31",
+            "new_matched_reportperiod": "2017-03-31",
+            "art_filing_date": "2017-04-27",
+            "lag_days_step_minus_filing": 20,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 21,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-07-31",
+            "prev_matched_reportperiod": "2017-03-31",
+            "new_matched_reportperiod": "2017-06-30",
+            "art_filing_date": "2017-07-27",
+            "lag_days_step_minus_filing": 4,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-10-26",
+            "prev_matched_reportperiod": "2017-06-30",
+            "new_matched_reportperiod": "2017-09-29",
+            "art_filing_date": "2017-10-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-02-23",
+            "prev_matched_reportperiod": "2017-09-29",
+            "new_matched_reportperiod": "2017-12-31",
+            "art_filing_date": "2018-02-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-05-01",
+            "prev_matched_reportperiod": "2017-12-31",
+            "new_matched_reportperiod": "2018-03-30",
+            "art_filing_date": "2018-05-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-07-26",
+            "prev_matched_reportperiod": "2018-03-30",
+            "new_matched_reportperiod": "2018-06-29",
+            "art_filing_date": "2018-07-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-02-21",
+            "prev_matched_reportperiod": "2018-06-29",
+            "new_matched_reportperiod": "2018-12-31",
+            "art_filing_date": "2019-02-21",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 115,
+            "lag_days_lower_bound": -115,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-04-25",
+            "prev_matched_reportperiod": "2018-12-31",
+            "new_matched_reportperiod": "2019-03-29",
+            "art_filing_date": "2019-04-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-02-24",
+            "prev_matched_reportperiod": "2019-03-29",
+            "new_matched_reportperiod": "2019-12-31",
+            "art_filing_date": "2020-02-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 215,
+            "lag_days_lower_bound": -215,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-04-24",
+            "prev_matched_reportperiod": "2019-12-31",
+            "new_matched_reportperiod": "2020-03-27",
+            "art_filing_date": "2020-04-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-07-22",
+            "prev_matched_reportperiod": "2020-03-27",
+            "new_matched_reportperiod": "2020-06-26",
+            "art_filing_date": "2020-07-22",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-10-22",
+            "prev_matched_reportperiod": "2020-06-26",
+            "new_matched_reportperiod": "2020-09-25",
+            "art_filing_date": "2020-10-22",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-07-26",
+            "prev_matched_reportperiod": "2020-09-25",
+            "new_matched_reportperiod": "2021-07-02",
+            "art_filing_date": "2021-07-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 152,
+            "lag_days_lower_bound": -152,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-02-22",
+            "prev_matched_reportperiod": "2021-07-02",
+            "new_matched_reportperiod": "2021-12-31",
+            "art_filing_date": "2022-02-22",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 118,
+            "lag_days_lower_bound": -118,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-04-28",
+            "prev_matched_reportperiod": "2021-12-31",
+            "new_matched_reportperiod": "2022-04-01",
+            "art_filing_date": "2022-04-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-07-28",
+            "prev_matched_reportperiod": "2022-04-01",
+            "new_matched_reportperiod": "2022-07-01",
+            "art_filing_date": "2022-07-27",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-10-26",
+            "prev_matched_reportperiod": "2022-07-01",
+            "new_matched_reportperiod": "2022-09-30",
+            "art_filing_date": "2022-10-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-02-22",
+            "prev_matched_reportperiod": "2022-09-30",
+            "new_matched_reportperiod": "2022-12-31",
+            "art_filing_date": "2023-02-21",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-04-26",
+            "prev_matched_reportperiod": "2022-12-31",
+            "new_matched_reportperiod": "2023-03-31",
+            "art_filing_date": "2023-04-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-07-27",
+            "prev_matched_reportperiod": "2023-03-31",
+            "new_matched_reportperiod": "2023-06-30",
+            "art_filing_date": "2023-07-27",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-02-20",
+            "prev_matched_reportperiod": "2023-06-30",
+            "new_matched_reportperiod": "2023-12-31",
+            "art_filing_date": "2024-02-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 120,
+            "lag_days_lower_bound": -120,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-08-06",
+            "prev_matched_reportperiod": "2023-12-31",
+            "new_matched_reportperiod": "2024-06-28",
+            "art_filing_date": "2024-07-29",
+            "lag_days_step_minus_filing": 8,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 97,
+            "lag_days_lower_bound": -89,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-10-24",
+            "prev_matched_reportperiod": "2024-06-28",
+            "new_matched_reportperiod": "2024-09-27",
+            "art_filing_date": "2024-10-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 21,
+            "lag_days_lower_bound": -21,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-02-21",
+            "prev_matched_reportperiod": "2024-09-27",
+            "new_matched_reportperiod": "2024-12-31",
+            "art_filing_date": "2025-02-20",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-07-24",
+            "prev_matched_reportperiod": "2024-12-31",
+            "new_matched_reportperiod": "2025-06-27",
+            "art_filing_date": "2025-07-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 85,
+            "lag_days_lower_bound": -85,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-10-23",
+            "prev_matched_reportperiod": "2025-06-27",
+            "new_matched_reportperiod": "2025-09-26",
+            "art_filing_date": "2025-10-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-02-20",
+            "prev_matched_reportperiod": "2025-09-26",
+            "new_matched_reportperiod": "2025-12-31",
+            "art_filing_date": "2026-02-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-04-30",
+            "prev_matched_reportperiod": "2025-12-31",
+            "new_matched_reportperiod": "2026-04-03",
+            "art_filing_date": "2026-04-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-07-29",
+            "prev_matched_reportperiod": "2026-04-03",
+            "new_matched_reportperiod": "2026-07-03",
+            "art_filing_date": "2026-07-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          }
+        ]
+      },
+      {
+        "ticker": "NKE",
+        "daily_rows": 7002,
+        "daily_span": [
+          "1998-12-01",
+          "2026-10-02"
+        ],
+        "art_rows": 124,
+        "art_span": [
+          "1996-01-16",
+          "2026-10-02"
+        ],
+        "mrt_rows": 129,
+        "status_counts": {
+          "matched": 5270,
+          "ambiguous": 1732,
+          "unmatched": 0,
+          "no_data": 0
+        },
+        "median_band_rel": 0.0032645569620253167,
+        "steps_found": 95,
+        "steps_as_filed": 95,
+        "steps_look_ahead": 0,
+        "lag_days": {
+          "min": 0,
+          "median": 0.0,
+          "max": 78
+        },
+        "gap_days_between_matched_days": {
+          "min": 1,
+          "median": 1.0,
+          "max": 368
+        },
+        "steps_with_look_ahead_excluded_outright": 0,
+        "steps_where_ambiguity_could_mask_a_look_ahead": 95,
+        "detection_bias_note": "days whose implied E sits inside the rounding band of two reported values are AMBIGUOUS and excluded from step detection, which can only date a step LATER, i.e. biases the test TOWARD as-filed; steps_with_look_ahead_excluded_outright is the count immune to that bias",
+        "verdict": "AS-FILED",
+        "dimension_attribution": {
+          "note": "a day is tested against the ART value SET and the MRT value SET over the reportperiods where the two differ, with no uniqueness requirement, so a day may resolve to a dimension by coincidence with a different period: these counts are LOOSE upper bounds, not step evidence",
+          "reportperiods_in_both": 122,
+          "reportperiods_where_they_differ": 3,
+          "days_resolving_to_ART": 89,
+          "days_resolving_to_MRT": 5,
+          "days_resolving_to_neither": 6908,
+          "days_resolving_to_both": 0,
+          "separable": true
+        },
+        "steps": [
+          {
+            "step_date": "1999-01-14",
+            "prev_matched_reportperiod": "1998-08-31",
+            "new_matched_reportperiod": "1998-11-30",
+            "art_filing_date": "1999-01-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-04-14",
+            "prev_matched_reportperiod": "1998-11-30",
+            "new_matched_reportperiod": "1999-02-28",
+            "art_filing_date": "1999-04-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-08-26",
+            "prev_matched_reportperiod": "1999-02-28",
+            "new_matched_reportperiod": "1999-05-31",
+            "art_filing_date": "1999-08-26",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-10-15",
+            "prev_matched_reportperiod": "1999-05-31",
+            "new_matched_reportperiod": "1999-08-31",
+            "art_filing_date": "1999-10-15",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-01-14",
+            "prev_matched_reportperiod": "1999-08-31",
+            "new_matched_reportperiod": "1999-11-30",
+            "art_filing_date": "2000-01-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-04-14",
+            "prev_matched_reportperiod": "1999-11-30",
+            "new_matched_reportperiod": "2000-02-29",
+            "art_filing_date": "2000-04-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-01-16",
+            "prev_matched_reportperiod": "2000-02-29",
+            "new_matched_reportperiod": "2000-11-30",
+            "art_filing_date": "2001-01-16",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 141,
+            "lag_days_lower_bound": -141,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-04-15",
+            "prev_matched_reportperiod": "2000-11-30",
+            "new_matched_reportperiod": "2002-02-28",
+            "art_filing_date": "2002-04-15",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 368,
+            "lag_days_lower_bound": -368,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-08-14",
+            "prev_matched_reportperiod": "2002-02-28",
+            "new_matched_reportperiod": "2002-05-31",
+            "art_filing_date": "2002-08-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-10-15",
+            "prev_matched_reportperiod": "2002-05-31",
+            "new_matched_reportperiod": "2002-08-31",
+            "art_filing_date": "2002-10-15",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-01-10",
+            "prev_matched_reportperiod": "2002-08-31",
+            "new_matched_reportperiod": "2002-11-30",
+            "art_filing_date": "2003-01-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-04-14",
+            "prev_matched_reportperiod": "2002-11-30",
+            "new_matched_reportperiod": "2003-02-28",
+            "art_filing_date": "2003-04-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-08-07",
+            "prev_matched_reportperiod": "2003-02-28",
+            "new_matched_reportperiod": "2003-05-31",
+            "art_filing_date": "2003-08-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-10-10",
+            "prev_matched_reportperiod": "2003-05-31",
+            "new_matched_reportperiod": "2003-08-31",
+            "art_filing_date": "2003-10-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-01-12",
+            "prev_matched_reportperiod": "2003-08-31",
+            "new_matched_reportperiod": "2003-11-30",
+            "art_filing_date": "2004-01-12",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-04-08",
+            "prev_matched_reportperiod": "2003-11-30",
+            "new_matched_reportperiod": "2004-02-29",
+            "art_filing_date": "2004-04-08",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-07-30",
+            "prev_matched_reportperiod": "2004-02-29",
+            "new_matched_reportperiod": "2004-05-31",
+            "art_filing_date": "2004-07-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-09-30",
+            "prev_matched_reportperiod": "2004-05-31",
+            "new_matched_reportperiod": "2004-08-31",
+            "art_filing_date": "2004-09-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-12-22",
+            "prev_matched_reportperiod": "2004-08-31",
+            "new_matched_reportperiod": "2004-11-30",
+            "art_filing_date": "2004-12-22",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-04-06",
+            "prev_matched_reportperiod": "2004-11-30",
+            "new_matched_reportperiod": "2005-02-28",
+            "art_filing_date": "2005-04-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-07-29",
+            "prev_matched_reportperiod": "2005-02-28",
+            "new_matched_reportperiod": "2005-05-31",
+            "art_filing_date": "2005-07-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-10-03",
+            "prev_matched_reportperiod": "2005-05-31",
+            "new_matched_reportperiod": "2005-08-31",
+            "art_filing_date": "2005-10-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-01-10",
+            "prev_matched_reportperiod": "2005-08-31",
+            "new_matched_reportperiod": "2005-11-30",
+            "art_filing_date": "2006-01-06",
+            "lag_days_step_minus_filing": 4,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-04-07",
+            "prev_matched_reportperiod": "2005-11-30",
+            "new_matched_reportperiod": "2006-02-28",
+            "art_filing_date": "2006-04-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-08-01",
+            "prev_matched_reportperiod": "2006-02-28",
+            "new_matched_reportperiod": "2006-05-31",
+            "art_filing_date": "2006-07-28",
+            "lag_days_step_minus_filing": 4,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-10-04",
+            "prev_matched_reportperiod": "2006-05-31",
+            "new_matched_reportperiod": "2006-08-31",
+            "art_filing_date": "2006-10-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-01-08",
+            "prev_matched_reportperiod": "2006-08-31",
+            "new_matched_reportperiod": "2006-11-30",
+            "art_filing_date": "2007-01-04",
+            "lag_days_step_minus_filing": 4,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 5,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-04-05",
+            "prev_matched_reportperiod": "2006-11-30",
+            "new_matched_reportperiod": "2007-02-28",
+            "art_filing_date": "2007-04-04",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 7,
+            "lag_days_lower_bound": -6,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-09-13",
+            "prev_matched_reportperiod": "2007-02-28",
+            "new_matched_reportperiod": "2007-05-31",
+            "art_filing_date": "2007-07-27",
+            "lag_days_step_minus_filing": 48,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 50,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-10-04",
+            "prev_matched_reportperiod": "2007-05-31",
+            "new_matched_reportperiod": "2007-08-31",
+            "art_filing_date": "2007-10-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -6,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-01-10",
+            "prev_matched_reportperiod": "2007-08-31",
+            "new_matched_reportperiod": "2007-11-30",
+            "art_filing_date": "2008-01-09",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-04-04",
+            "prev_matched_reportperiod": "2007-11-30",
+            "new_matched_reportperiod": "2008-02-29",
+            "art_filing_date": "2008-04-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-07-28",
+            "prev_matched_reportperiod": "2008-02-29",
+            "new_matched_reportperiod": "2008-05-31",
+            "art_filing_date": "2008-07-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-10-06",
+            "prev_matched_reportperiod": "2008-05-31",
+            "new_matched_reportperiod": "2008-08-31",
+            "art_filing_date": "2008-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2009-01-07",
+            "prev_matched_reportperiod": "2008-08-31",
+            "new_matched_reportperiod": "2008-11-30",
+            "art_filing_date": "2009-01-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 7,
+            "lag_days_lower_bound": -7,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2009-04-09",
+            "prev_matched_reportperiod": "2008-11-30",
+            "new_matched_reportperiod": "2009-02-28",
+            "art_filing_date": "2009-04-09",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2009-09-18",
+            "prev_matched_reportperiod": "2009-02-28",
+            "new_matched_reportperiod": "2009-05-31",
+            "art_filing_date": "2009-07-27",
+            "lag_days_step_minus_filing": 53,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 56,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-01-06",
+            "prev_matched_reportperiod": "2009-05-31",
+            "new_matched_reportperiod": "2009-11-30",
+            "art_filing_date": "2010-01-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 110,
+            "lag_days_lower_bound": -110,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-04-07",
+            "prev_matched_reportperiod": "2009-11-30",
+            "new_matched_reportperiod": "2010-02-28",
+            "art_filing_date": "2010-04-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-07-20",
+            "prev_matched_reportperiod": "2010-02-28",
+            "new_matched_reportperiod": "2010-05-31",
+            "art_filing_date": "2010-07-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-10-06",
+            "prev_matched_reportperiod": "2010-05-31",
+            "new_matched_reportperiod": "2010-08-31",
+            "art_filing_date": "2010-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-01-06",
+            "prev_matched_reportperiod": "2010-08-31",
+            "new_matched_reportperiod": "2010-11-30",
+            "art_filing_date": "2011-01-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-07-22",
+            "prev_matched_reportperiod": "2010-11-30",
+            "new_matched_reportperiod": "2011-05-31",
+            "art_filing_date": "2011-07-22",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 108,
+            "lag_days_lower_bound": -108,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-10-06",
+            "prev_matched_reportperiod": "2011-05-31",
+            "new_matched_reportperiod": "2011-08-31",
+            "art_filing_date": "2011-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2012-01-09",
+            "prev_matched_reportperiod": "2011-08-31",
+            "new_matched_reportperiod": "2011-11-30",
+            "art_filing_date": "2012-01-05",
+            "lag_days_step_minus_filing": 4,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 25,
+            "lag_days_lower_bound": -21,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2012-10-10",
+            "prev_matched_reportperiod": "2011-11-30",
+            "new_matched_reportperiod": "2012-08-31",
+            "art_filing_date": "2012-10-09",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 82,
+            "lag_days_lower_bound": -81,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-04-04",
+            "prev_matched_reportperiod": "2012-08-31",
+            "new_matched_reportperiod": "2013-02-28",
+            "art_filing_date": "2013-04-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 86,
+            "lag_days_lower_bound": -86,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-07-23",
+            "prev_matched_reportperiod": "2013-02-28",
+            "new_matched_reportperiod": "2013-05-31",
+            "art_filing_date": "2013-07-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-10-18",
+            "prev_matched_reportperiod": "2013-05-31",
+            "new_matched_reportperiod": "2013-08-31",
+            "art_filing_date": "2013-10-07",
+            "lag_days_step_minus_filing": 11,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 14,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-01-07",
+            "prev_matched_reportperiod": "2013-08-31",
+            "new_matched_reportperiod": "2013-11-30",
+            "art_filing_date": "2014-01-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 26,
+            "lag_days_lower_bound": -26,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-04-07",
+            "prev_matched_reportperiod": "2013-11-30",
+            "new_matched_reportperiod": "2014-02-28",
+            "art_filing_date": "2014-04-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2014-10-07",
+            "prev_matched_reportperiod": "2014-02-28",
+            "new_matched_reportperiod": "2014-08-31",
+            "art_filing_date": "2014-10-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 75,
+            "lag_days_lower_bound": -75,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-01-07",
+            "prev_matched_reportperiod": "2014-08-31",
+            "new_matched_reportperiod": "2014-11-30",
+            "art_filing_date": "2015-01-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-07-23",
+            "prev_matched_reportperiod": "2014-11-30",
+            "new_matched_reportperiod": "2015-05-31",
+            "art_filing_date": "2015-07-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 108,
+            "lag_days_lower_bound": -108,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-10-06",
+            "prev_matched_reportperiod": "2015-05-31",
+            "new_matched_reportperiod": "2015-08-31",
+            "art_filing_date": "2015-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-01-06",
+            "prev_matched_reportperiod": "2015-08-31",
+            "new_matched_reportperiod": "2015-11-30",
+            "art_filing_date": "2016-01-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-04-05",
+            "prev_matched_reportperiod": "2015-11-30",
+            "new_matched_reportperiod": "2016-02-29",
+            "art_filing_date": "2016-04-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-07-21",
+            "prev_matched_reportperiod": "2016-02-29",
+            "new_matched_reportperiod": "2016-05-31",
+            "art_filing_date": "2016-07-21",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-10-11",
+            "prev_matched_reportperiod": "2016-05-31",
+            "new_matched_reportperiod": "2016-08-31",
+            "art_filing_date": "2016-10-11",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-01-05",
+            "prev_matched_reportperiod": "2016-08-31",
+            "new_matched_reportperiod": "2016-11-30",
+            "art_filing_date": "2017-01-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-04-04",
+            "prev_matched_reportperiod": "2016-11-30",
+            "new_matched_reportperiod": "2017-02-28",
+            "art_filing_date": "2017-04-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-07-20",
+            "prev_matched_reportperiod": "2017-02-28",
+            "new_matched_reportperiod": "2017-05-31",
+            "art_filing_date": "2017-07-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-10-06",
+            "prev_matched_reportperiod": "2017-05-31",
+            "new_matched_reportperiod": "2017-08-31",
+            "art_filing_date": "2017-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-01-05",
+            "prev_matched_reportperiod": "2017-08-31",
+            "new_matched_reportperiod": "2017-11-30",
+            "art_filing_date": "2018-01-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-04-05",
+            "prev_matched_reportperiod": "2017-11-30",
+            "new_matched_reportperiod": "2018-02-28",
+            "art_filing_date": "2018-04-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-07-25",
+            "prev_matched_reportperiod": "2018-02-28",
+            "new_matched_reportperiod": "2018-05-31",
+            "art_filing_date": "2018-07-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-10-05",
+            "prev_matched_reportperiod": "2018-05-31",
+            "new_matched_reportperiod": "2018-08-31",
+            "art_filing_date": "2018-10-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-01-08",
+            "prev_matched_reportperiod": "2018-08-31",
+            "new_matched_reportperiod": "2018-11-30",
+            "art_filing_date": "2019-01-08",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-04-04",
+            "prev_matched_reportperiod": "2018-11-30",
+            "new_matched_reportperiod": "2019-02-28",
+            "art_filing_date": "2019-04-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-07-23",
+            "prev_matched_reportperiod": "2019-02-28",
+            "new_matched_reportperiod": "2019-05-31",
+            "art_filing_date": "2019-07-23",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-10-04",
+            "prev_matched_reportperiod": "2019-05-31",
+            "new_matched_reportperiod": "2019-08-31",
+            "art_filing_date": "2019-10-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-01-07",
+            "prev_matched_reportperiod": "2019-08-31",
+            "new_matched_reportperiod": "2019-11-30",
+            "art_filing_date": "2020-01-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-04-07",
+            "prev_matched_reportperiod": "2019-11-30",
+            "new_matched_reportperiod": "2020-02-29",
+            "art_filing_date": "2020-04-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-07-24",
+            "prev_matched_reportperiod": "2020-02-29",
+            "new_matched_reportperiod": "2020-05-31",
+            "art_filing_date": "2020-07-24",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-10-08",
+            "prev_matched_reportperiod": "2020-05-31",
+            "new_matched_reportperiod": "2020-08-31",
+            "art_filing_date": "2020-10-08",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-01-05",
+            "prev_matched_reportperiod": "2020-08-31",
+            "new_matched_reportperiod": "2020-11-30",
+            "art_filing_date": "2021-01-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-07-20",
+            "prev_matched_reportperiod": "2020-11-30",
+            "new_matched_reportperiod": "2021-05-31",
+            "art_filing_date": "2021-07-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-10-05",
+            "prev_matched_reportperiod": "2021-05-31",
+            "new_matched_reportperiod": "2021-08-31",
+            "art_filing_date": "2021-10-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-01-06",
+            "prev_matched_reportperiod": "2021-08-31",
+            "new_matched_reportperiod": "2021-11-30",
+            "art_filing_date": "2022-01-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-04-05",
+            "prev_matched_reportperiod": "2021-11-30",
+            "new_matched_reportperiod": "2022-02-28",
+            "art_filing_date": "2022-04-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-07-21",
+            "prev_matched_reportperiod": "2022-02-28",
+            "new_matched_reportperiod": "2022-05-31",
+            "art_filing_date": "2022-07-21",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-12-23",
+            "prev_matched_reportperiod": "2022-05-31",
+            "new_matched_reportperiod": "2022-08-31",
+            "art_filing_date": "2022-10-06",
+            "lag_days_step_minus_filing": 78,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 79,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-02-17",
+            "prev_matched_reportperiod": "2022-08-31",
+            "new_matched_reportperiod": "2022-11-30",
+            "art_filing_date": "2023-01-05",
+            "lag_days_step_minus_filing": 43,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 56,
+            "lag_days_lower_bound": -13,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-04-06",
+            "prev_matched_reportperiod": "2022-11-30",
+            "new_matched_reportperiod": "2023-02-28",
+            "art_filing_date": "2023-04-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -6,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-07-20",
+            "prev_matched_reportperiod": "2023-02-28",
+            "new_matched_reportperiod": "2023-05-31",
+            "art_filing_date": "2023-07-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-10-06",
+            "prev_matched_reportperiod": "2023-05-31",
+            "new_matched_reportperiod": "2023-08-31",
+            "art_filing_date": "2023-10-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-04-04",
+            "prev_matched_reportperiod": "2023-08-31",
+            "new_matched_reportperiod": "2024-02-29",
+            "art_filing_date": "2024-04-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 91,
+            "lag_days_lower_bound": -91,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-07-25",
+            "prev_matched_reportperiod": "2024-02-29",
+            "new_matched_reportperiod": "2024-05-31",
+            "art_filing_date": "2024-07-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-01-03",
+            "prev_matched_reportperiod": "2024-05-31",
+            "new_matched_reportperiod": "2024-11-30",
+            "art_filing_date": "2025-01-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 92,
+            "lag_days_lower_bound": -92,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-04-03",
+            "prev_matched_reportperiod": "2024-11-30",
+            "new_matched_reportperiod": "2025-02-28",
+            "art_filing_date": "2025-04-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-07-17",
+            "prev_matched_reportperiod": "2025-02-28",
+            "new_matched_reportperiod": "2025-05-31",
+            "art_filing_date": "2025-07-17",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-10-01",
+            "prev_matched_reportperiod": "2025-05-31",
+            "new_matched_reportperiod": "2025-08-31",
+            "art_filing_date": "2025-10-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-12-30",
+            "prev_matched_reportperiod": "2025-08-31",
+            "new_matched_reportperiod": "2025-11-30",
+            "art_filing_date": "2025-12-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-04-01",
+            "prev_matched_reportperiod": "2025-11-30",
+            "new_matched_reportperiod": "2026-02-28",
+            "art_filing_date": "2026-04-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-07-20",
+            "prev_matched_reportperiod": "2026-02-28",
+            "new_matched_reportperiod": "2026-05-31",
+            "art_filing_date": "2026-07-15",
+            "lag_days_step_minus_filing": 5,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          }
+        ]
+      },
+      {
+        "ticker": "WMT",
+        "daily_rows": 7002,
+        "daily_span": [
+          "1998-12-01",
+          "2026-10-02"
+        ],
+        "art_rows": 129,
+        "art_span": [
+          "1995-04-27",
+          "2026-08-28"
+        ],
+        "mrt_rows": 132,
+        "status_counts": {
+          "matched": 3799,
+          "ambiguous": 3203,
+          "unmatched": 0,
+          "no_data": 0
+        },
+        "median_band_rel": 0.0033608695652173914,
+        "steps_found": 77,
+        "steps_as_filed": 77,
+        "steps_look_ahead": 0,
+        "lag_days": {
+          "min": 0,
+          "median": 0.0,
+          "max": 43
+        },
+        "gap_days_between_matched_days": {
+          "min": 1,
+          "median": 3.0,
+          "max": 446
+        },
+        "steps_with_look_ahead_excluded_outright": 0,
+        "steps_where_ambiguity_could_mask_a_look_ahead": 77,
+        "detection_bias_note": "days whose implied E sits inside the rounding band of two reported values are AMBIGUOUS and excluded from step detection, which can only date a step LATER, i.e. biases the test TOWARD as-filed; steps_with_look_ahead_excluded_outright is the count immune to that bias",
+        "verdict": "AS-FILED",
+        "dimension_attribution": {
+          "note": "a day is tested against the ART value SET and the MRT value SET over the reportperiods where the two differ, with no uniqueness requirement, so a day may resolve to a dimension by coincidence with a different period: these counts are LOOSE upper bounds, not step evidence",
+          "reportperiods_in_both": 126,
+          "reportperiods_where_they_differ": 13,
+          "days_resolving_to_ART": 935,
+          "days_resolving_to_MRT": 77,
+          "days_resolving_to_neither": 5933,
+          "days_resolving_to_both": 57,
+          "separable": true
+        },
+        "steps": [
+          {
+            "step_date": "1999-04-19",
+            "prev_matched_reportperiod": "1998-07-31",
+            "new_matched_reportperiod": "1999-01-31",
+            "art_filing_date": "1999-04-19",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 129,
+            "lag_days_lower_bound": -129,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-06-07",
+            "prev_matched_reportperiod": "1999-01-31",
+            "new_matched_reportperiod": "1999-04-30",
+            "art_filing_date": "1999-06-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-09-10",
+            "prev_matched_reportperiod": "1999-04-30",
+            "new_matched_reportperiod": "1999-07-31",
+            "art_filing_date": "1999-09-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "1999-12-15",
+            "prev_matched_reportperiod": "1999-07-31",
+            "new_matched_reportperiod": "1999-10-31",
+            "art_filing_date": "1999-12-15",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-04-17",
+            "prev_matched_reportperiod": "1999-10-31",
+            "new_matched_reportperiod": "2000-01-31",
+            "art_filing_date": "2000-04-17",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-06-08",
+            "prev_matched_reportperiod": "2000-01-31",
+            "new_matched_reportperiod": "2000-04-30",
+            "art_filing_date": "2000-06-08",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-08-25",
+            "prev_matched_reportperiod": "2000-04-30",
+            "new_matched_reportperiod": "2000-07-31",
+            "art_filing_date": "2000-08-25",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2000-11-30",
+            "prev_matched_reportperiod": "2000-07-31",
+            "new_matched_reportperiod": "2000-10-31",
+            "art_filing_date": "2000-11-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-04-17",
+            "prev_matched_reportperiod": "2000-10-31",
+            "new_matched_reportperiod": "2001-01-31",
+            "art_filing_date": "2001-04-17",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-06-05",
+            "prev_matched_reportperiod": "2001-01-31",
+            "new_matched_reportperiod": "2001-04-30",
+            "art_filing_date": "2001-06-05",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-09-04",
+            "prev_matched_reportperiod": "2001-04-30",
+            "new_matched_reportperiod": "2001-07-31",
+            "art_filing_date": "2001-09-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -4,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2001-11-29",
+            "prev_matched_reportperiod": "2001-07-31",
+            "new_matched_reportperiod": "2001-10-31",
+            "art_filing_date": "2001-11-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-06-10",
+            "prev_matched_reportperiod": "2001-10-31",
+            "new_matched_reportperiod": "2002-04-30",
+            "art_filing_date": "2002-06-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 59,
+            "lag_days_lower_bound": -59,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-09-11",
+            "prev_matched_reportperiod": "2002-04-30",
+            "new_matched_reportperiod": "2002-07-31",
+            "art_filing_date": "2002-09-11",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2002-12-06",
+            "prev_matched_reportperiod": "2002-07-31",
+            "new_matched_reportperiod": "2002-10-31",
+            "art_filing_date": "2002-12-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-04-17",
+            "prev_matched_reportperiod": "2002-10-31",
+            "new_matched_reportperiod": "2003-01-31",
+            "art_filing_date": "2003-04-15",
+            "lag_days_step_minus_filing": 2,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-06-09",
+            "prev_matched_reportperiod": "2003-01-31",
+            "new_matched_reportperiod": "2003-04-30",
+            "art_filing_date": "2003-06-09",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -6,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-09-10",
+            "prev_matched_reportperiod": "2003-04-30",
+            "new_matched_reportperiod": "2003-07-31",
+            "art_filing_date": "2003-09-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2003-12-11",
+            "prev_matched_reportperiod": "2003-07-31",
+            "new_matched_reportperiod": "2003-10-31",
+            "art_filing_date": "2003-12-11",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-06-04",
+            "prev_matched_reportperiod": "2003-10-31",
+            "new_matched_reportperiod": "2004-04-30",
+            "art_filing_date": "2004-06-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-09-03",
+            "prev_matched_reportperiod": "2004-04-30",
+            "new_matched_reportperiod": "2004-07-31",
+            "art_filing_date": "2004-09-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2004-12-14",
+            "prev_matched_reportperiod": "2004-07-31",
+            "new_matched_reportperiod": "2004-10-31",
+            "art_filing_date": "2004-12-03",
+            "lag_days_step_minus_filing": 11,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 12,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-03-31",
+            "prev_matched_reportperiod": "2004-10-31",
+            "new_matched_reportperiod": "2005-01-31",
+            "art_filing_date": "2005-03-31",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-06-03",
+            "prev_matched_reportperiod": "2005-01-31",
+            "new_matched_reportperiod": "2005-04-30",
+            "art_filing_date": "2005-06-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-09-02",
+            "prev_matched_reportperiod": "2005-04-30",
+            "new_matched_reportperiod": "2005-07-31",
+            "art_filing_date": "2005-08-31",
+            "lag_days_step_minus_filing": 2,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2005-12-02",
+            "prev_matched_reportperiod": "2005-07-31",
+            "new_matched_reportperiod": "2005-10-31",
+            "art_filing_date": "2005-12-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-03-30",
+            "prev_matched_reportperiod": "2005-10-31",
+            "new_matched_reportperiod": "2006-01-31",
+            "art_filing_date": "2006-03-29",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-06-02",
+            "prev_matched_reportperiod": "2006-01-31",
+            "new_matched_reportperiod": "2006-04-30",
+            "art_filing_date": "2006-06-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-08-31",
+            "prev_matched_reportperiod": "2006-04-30",
+            "new_matched_reportperiod": "2006-07-31",
+            "art_filing_date": "2006-08-30",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2006-11-30",
+            "prev_matched_reportperiod": "2006-07-31",
+            "new_matched_reportperiod": "2006-10-31",
+            "art_filing_date": "2006-11-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 2,
+            "lag_days_lower_bound": -2,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-06-04",
+            "prev_matched_reportperiod": "2006-10-31",
+            "new_matched_reportperiod": "2007-04-30",
+            "art_filing_date": "2007-06-01",
+            "lag_days_step_minus_filing": 3,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 70,
+            "lag_days_lower_bound": -67,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-09-10",
+            "prev_matched_reportperiod": "2007-04-30",
+            "new_matched_reportperiod": "2007-07-31",
+            "art_filing_date": "2007-09-10",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 13,
+            "lag_days_lower_bound": -13,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2007-11-29",
+            "prev_matched_reportperiod": "2007-07-31",
+            "new_matched_reportperiod": "2007-10-31",
+            "art_filing_date": "2007-11-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-06-09",
+            "prev_matched_reportperiod": "2007-10-31",
+            "new_matched_reportperiod": "2008-04-30",
+            "art_filing_date": "2008-06-09",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 73,
+            "lag_days_lower_bound": -73,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2008-12-26",
+            "prev_matched_reportperiod": "2008-04-30",
+            "new_matched_reportperiod": "2008-10-31",
+            "art_filing_date": "2008-12-09",
+            "lag_days_step_minus_filing": 17,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 115,
+            "lag_days_lower_bound": -98,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-03-30",
+            "prev_matched_reportperiod": "2008-10-31",
+            "new_matched_reportperiod": "2010-01-31",
+            "art_filing_date": "2010-03-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 368,
+            "lag_days_lower_bound": -368,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2010-06-07",
+            "prev_matched_reportperiod": "2010-01-31",
+            "new_matched_reportperiod": "2010-04-30",
+            "art_filing_date": "2010-06-04",
+            "lag_days_step_minus_filing": 3,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 4,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2011-09-02",
+            "prev_matched_reportperiod": "2010-04-30",
+            "new_matched_reportperiod": "2011-07-31",
+            "art_filing_date": "2011-09-01",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 373,
+            "lag_days_lower_bound": -372,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2012-03-28",
+            "prev_matched_reportperiod": "2011-07-31",
+            "new_matched_reportperiod": "2012-01-31",
+            "art_filing_date": "2012-03-27",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 113,
+            "lag_days_lower_bound": -112,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2012-09-20",
+            "prev_matched_reportperiod": "2012-01-31",
+            "new_matched_reportperiod": "2012-07-31",
+            "art_filing_date": "2012-09-06",
+            "lag_days_step_minus_filing": 14,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 112,
+            "lag_days_lower_bound": -98,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-04-04",
+            "prev_matched_reportperiod": "2012-07-31",
+            "new_matched_reportperiod": "2013-01-31",
+            "art_filing_date": "2013-03-26",
+            "lag_days_step_minus_filing": 9,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 122,
+            "lag_days_lower_bound": -113,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2013-12-06",
+            "prev_matched_reportperiod": "2013-01-31",
+            "new_matched_reportperiod": "2013-10-31",
+            "art_filing_date": "2013-12-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 206,
+            "lag_days_lower_bound": -206,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-06-08",
+            "prev_matched_reportperiod": "2013-10-31",
+            "new_matched_reportperiod": "2015-04-30",
+            "art_filing_date": "2015-06-05",
+            "lag_days_step_minus_filing": 3,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 446,
+            "lag_days_lower_bound": -443,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2015-12-03",
+            "prev_matched_reportperiod": "2015-04-30",
+            "new_matched_reportperiod": "2015-10-31",
+            "art_filing_date": "2015-12-02",
+            "lag_days_step_minus_filing": 1,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 94,
+            "lag_days_lower_bound": -93,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2016-12-08",
+            "prev_matched_reportperiod": "2015-10-31",
+            "new_matched_reportperiod": "2016-10-31",
+            "art_filing_date": "2016-12-01",
+            "lag_days_step_minus_filing": 7,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 254,
+            "lag_days_lower_bound": -247,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-06-12",
+            "prev_matched_reportperiod": "2016-10-31",
+            "new_matched_reportperiod": "2017-04-30",
+            "art_filing_date": "2017-06-02",
+            "lag_days_step_minus_filing": 10,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 97,
+            "lag_days_lower_bound": -87,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2017-12-01",
+            "prev_matched_reportperiod": "2017-04-30",
+            "new_matched_reportperiod": "2017-10-31",
+            "art_filing_date": "2017-12-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 99,
+            "lag_days_lower_bound": -99,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-07-17",
+            "prev_matched_reportperiod": "2017-10-31",
+            "new_matched_reportperiod": "2018-04-30",
+            "art_filing_date": "2018-06-04",
+            "lag_days_step_minus_filing": 43,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 46,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-09-06",
+            "prev_matched_reportperiod": "2018-04-30",
+            "new_matched_reportperiod": "2018-07-31",
+            "art_filing_date": "2018-09-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 16,
+            "lag_days_lower_bound": -16,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2018-11-30",
+            "prev_matched_reportperiod": "2018-07-31",
+            "new_matched_reportperiod": "2018-10-31",
+            "art_filing_date": "2018-11-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-06-07",
+            "prev_matched_reportperiod": "2018-10-31",
+            "new_matched_reportperiod": "2019-04-30",
+            "art_filing_date": "2019-06-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 72,
+            "lag_days_lower_bound": -72,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2019-09-06",
+            "prev_matched_reportperiod": "2019-04-30",
+            "new_matched_reportperiod": "2019-07-31",
+            "art_filing_date": "2019-09-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-03-20",
+            "prev_matched_reportperiod": "2019-07-31",
+            "new_matched_reportperiod": "2020-01-31",
+            "art_filing_date": "2020-03-20",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 108,
+            "lag_days_lower_bound": -108,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-07-16",
+            "prev_matched_reportperiod": "2020-01-31",
+            "new_matched_reportperiod": "2020-04-30",
+            "art_filing_date": "2020-06-03",
+            "lag_days_step_minus_filing": 43,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 44,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-09-02",
+            "prev_matched_reportperiod": "2020-04-30",
+            "new_matched_reportperiod": "2020-07-31",
+            "art_filing_date": "2020-09-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2020-12-04",
+            "prev_matched_reportperiod": "2020-07-31",
+            "new_matched_reportperiod": "2020-10-31",
+            "art_filing_date": "2020-12-02",
+            "lag_days_step_minus_filing": 2,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-04-09",
+            "prev_matched_reportperiod": "2020-10-31",
+            "new_matched_reportperiod": "2021-01-31",
+            "art_filing_date": "2021-03-19",
+            "lag_days_step_minus_filing": 21,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 22,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-06-04",
+            "prev_matched_reportperiod": "2021-01-31",
+            "new_matched_reportperiod": "2021-04-30",
+            "art_filing_date": "2021-06-04",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 56,
+            "lag_days_lower_bound": -56,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-09-02",
+            "prev_matched_reportperiod": "2021-04-30",
+            "new_matched_reportperiod": "2021-07-31",
+            "art_filing_date": "2021-09-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2021-12-01",
+            "prev_matched_reportperiod": "2021-07-31",
+            "new_matched_reportperiod": "2021-10-31",
+            "art_filing_date": "2021-12-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-06-03",
+            "prev_matched_reportperiod": "2021-10-31",
+            "new_matched_reportperiod": "2022-04-30",
+            "art_filing_date": "2022-06-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 78,
+            "lag_days_lower_bound": -78,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-09-02",
+            "prev_matched_reportperiod": "2022-04-30",
+            "new_matched_reportperiod": "2022-07-31",
+            "art_filing_date": "2022-09-02",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2022-12-07",
+            "prev_matched_reportperiod": "2022-07-31",
+            "new_matched_reportperiod": "2022-10-31",
+            "art_filing_date": "2022-12-01",
+            "lag_days_step_minus_filing": 6,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 7,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-03-17",
+            "prev_matched_reportperiod": "2022-10-31",
+            "new_matched_reportperiod": "2023-01-31",
+            "art_filing_date": "2023-03-17",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-06-07",
+            "prev_matched_reportperiod": "2023-01-31",
+            "new_matched_reportperiod": "2023-04-30",
+            "art_filing_date": "2023-06-02",
+            "lag_days_step_minus_filing": 5,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 6,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-09-01",
+            "prev_matched_reportperiod": "2023-04-30",
+            "new_matched_reportperiod": "2023-07-31",
+            "art_filing_date": "2023-09-01",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 3,
+            "lag_days_lower_bound": -3,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2023-11-30",
+            "prev_matched_reportperiod": "2023-07-31",
+            "new_matched_reportperiod": "2023-10-31",
+            "art_filing_date": "2023-11-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-06-07",
+            "prev_matched_reportperiod": "2023-10-31",
+            "new_matched_reportperiod": "2024-04-30",
+            "art_filing_date": "2024-06-07",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 87,
+            "lag_days_lower_bound": -87,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-08-30",
+            "prev_matched_reportperiod": "2024-04-30",
+            "new_matched_reportperiod": "2024-07-31",
+            "art_filing_date": "2024-08-30",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2024-12-06",
+            "prev_matched_reportperiod": "2024-07-31",
+            "new_matched_reportperiod": "2024-10-31",
+            "art_filing_date": "2024-12-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-03-14",
+            "prev_matched_reportperiod": "2024-10-31",
+            "new_matched_reportperiod": "2025-01-31",
+            "art_filing_date": "2025-03-14",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-06-06",
+            "prev_matched_reportperiod": "2025-01-31",
+            "new_matched_reportperiod": "2025-04-30",
+            "art_filing_date": "2025-06-06",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-08-29",
+            "prev_matched_reportperiod": "2025-04-30",
+            "new_matched_reportperiod": "2025-07-31",
+            "art_filing_date": "2025-08-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2025-12-03",
+            "prev_matched_reportperiod": "2025-07-31",
+            "new_matched_reportperiod": "2025-10-31",
+            "art_filing_date": "2025-12-03",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-03-13",
+            "prev_matched_reportperiod": "2025-10-31",
+            "new_matched_reportperiod": "2026-01-31",
+            "art_filing_date": "2026-03-13",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-05-29",
+            "prev_matched_reportperiod": "2026-01-31",
+            "new_matched_reportperiod": "2026-04-30",
+            "art_filing_date": "2026-05-29",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          },
+          {
+            "step_date": "2026-08-28",
+            "prev_matched_reportperiod": "2026-04-30",
+            "new_matched_reportperiod": "2026-07-31",
+            "art_filing_date": "2026-08-28",
+            "lag_days_step_minus_filing": 0,
+            "classification": "AS-FILED",
+            "gap_days_between_matched_days": 1,
+            "lag_days_lower_bound": -1,
+            "look_ahead_excluded_outright": false
+          }
+        ]
+      }
+    ],
+    "verdict_daily_table": "AS-FILED",
+    "caveat": "assumes the free sample is built the same way as the paid table",
+    "scope_note": "a provenance test on single-name valuation metadata; it computes no return statistic and shares no universe with any registered Stage R look"
+  },
+  "prior_stated_in_registration": "SOMETHING",
+  "wall_seconds": 4.7,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}

@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       sharadar_probe.py
-Version:      1.7.0
+Version:      1.8.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Read-only probe of the Sharadar free tier: surface discovery, table
               sampling, and snapshot capture with sha256 manifesting.
 Entry Point:  Yes — python tools/sharadar_probe.py --snapshot <label> <command>
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R3-0 — Tier check takes a table list (2026-10-05)
+Last Sprint:  Sprint R3 — Snapshot directory takes a prefix (2026-10-05)
 ================================================================================
 
 The API key is read at runtime from a .env-style file whose path is supplied by
@@ -39,6 +39,11 @@ The vendor serves a rolling window, so the oldest bars age out between snapshots
 — the calendar days between the two fetches. A start edge that recedes by no more
 than that is retention, recorded as ROLLOFF; further than that, or any loss at the
 end edge, is still a regression and still halts.
+
+--dir-prefix names the directory family a label is written into, so a pull that is
+not a whole-table snapshot can be banked under its own vintage name (funds_<label>)
+without colliding with the snapshot_<label> series. It changes the directory only:
+the manifest shape, the budget accounting and the date assertions are untouched.
 
 --cmd tier-check --tables <a,b,c> adds one small probe per named table. These are
 COVERAGE probes, not tier probes: they ask whether the key's plan reaches a table,
@@ -443,9 +448,12 @@ def is_derived_entry(entry):
     return entry.get("url_redacted") is None or entry.get("derived_from") is not None
 
 
-def assert_label_is_new(root, label):
+DIR_PREFIX_DEFAULT = "snapshot_"
+
+
+def assert_label_is_new(root, label, dir_prefix=DIR_PREFIX_DEFAULT):
     """Refuse to replay into a label that already has anything on disk."""
-    snap = os.path.join(root, "data", "sharadar", "snapshot_%s" % label)
+    snap = os.path.join(root, "data", "sharadar", "%s%s" % (dir_prefix, label))
     budget = os.path.join(root, "logs", "budget_%s.json" % label)
     for path, what in ((snap, "snapshot directory"), (budget, "budget file")):
         if os.path.exists(path):
@@ -477,11 +485,13 @@ def read_api_key(env_path, var_name):
 
 
 class Probe:
-    def __init__(self, label, api_key, base_url):
+    def __init__(self, label, api_key, base_url, dir_prefix=DIR_PREFIX_DEFAULT):
         self.label = label
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
-        self.snap_dir = os.path.join(REPO_ROOT, "data", "sharadar", "snapshot_%s" % label)
+        self.dir_prefix = dir_prefix
+        self.snap_dir = os.path.join(REPO_ROOT, "data", "sharadar",
+                                     "%s%s" % (dir_prefix, label))
         self.raw_dir = os.path.join(self.snap_dir, "raw")
         self.log_path = os.path.join(REPO_ROOT, "logs", "sharadar_probe_%s.log" % label)
         self.budget_path = os.path.join(REPO_ROOT, "logs", "budget_%s.json" % label)
@@ -954,6 +964,9 @@ def main():
                          "table off the plan, not a free-tier key")
     ap.add_argument("--params", default="{}")
     ap.add_argument("--noauth", action="store_true")
+    ap.add_argument("--dir-prefix", default=DIR_PREFIX_DEFAULT,
+                    help="directory family under data/sharadar/ that --snapshot "
+                         "is written into (default snapshot_)")
     ap.add_argument("--bulk-tables", default=",".join(BULK_TABLES),
                     help="comma-separated tables to pull over the bulk route")
     ap.add_argument("--bulk-years", default=BULK_YEARS)
@@ -972,10 +985,10 @@ def main():
 
     if args.replay:
         if not args.replay_resume:
-            assert_label_is_new(REPO_ROOT, args.snapshot)
+            assert_label_is_new(REPO_ROOT, args.snapshot, args.dir_prefix)
         with open(args.replay, "r", encoding="utf-8") as fh:
             entries = json.load(fh)
-        p = Probe(args.snapshot, key, args.base_url)
+        p = Probe(args.snapshot, key, args.base_url, args.dir_prefix)
         p.log("REPLAY of %s (%d entries) into snapshot %s"
               % (os.path.basename(args.replay), len(entries), args.snapshot))
         summary = p.replay_manifest(entries, source_dir=args.replay_source_dir,
@@ -1002,7 +1015,7 @@ def main():
         print("report %s" % os.path.relpath(out, REPO_ROOT))
         return
 
-    p = Probe(args.snapshot, key, args.base_url)
+    p = Probe(args.snapshot, key, args.base_url, args.dir_prefix)
 
     if args.cmd == "tier-check":
         verdict, detail, coverage = p.tier_check(coverage_tables=args.tables)

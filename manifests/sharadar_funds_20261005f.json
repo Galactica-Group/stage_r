@@ -1,0 +1,444 @@
+[
+  {
+    "name": "etf_SPY",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=SPY&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "SPY",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 7233,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_SPY.json",
+    "raw_sha256": "fb03dbfaf8498b6f820e4b818a7df54765c36185ff09eab0cf472982e6d5e8c5",
+    "raw_bytes": 401022,
+    "parquet_file": "etf_SPY.parquet",
+    "parquet_sha256": "f0b16a6cad541eb5300c5440c94066e9cc463a0ced10764127547b3ba71fbdf8",
+    "fetched_at_utc": "2026-10-05T20:07:45Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_IWM",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=IWM&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "IWM",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6627,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_IWM.json",
+    "raw_sha256": "05ec4b6db89ce05b354de1f0a1fecf245eecc05cfc8ce09e5ceee7ee9a90a103",
+    "raw_bytes": 366593,
+    "parquet_file": "etf_IWM.parquet",
+    "parquet_sha256": "ed791aafbcf388da4be75dacffa248ae2079f04509f09a5e9159fdb3bd344389",
+    "fetched_at_utc": "2026-10-05T20:07:47Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_QQQ",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=QQQ&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "QQQ",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6935,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_QQQ.json",
+    "raw_sha256": "9d1c26f9763a697961ef459438258fd6320efce4e9fc216d5cef72b386e11735",
+    "raw_bytes": 383417,
+    "parquet_file": "etf_QQQ.parquet",
+    "parquet_sha256": "80488152d600a3e596159d4b85191d7c04543d9b4627ffac5f6755c2e11e1249",
+    "fetched_at_utc": "2026-10-05T20:07:48Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_EFA",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=EFA&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "EFA",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6312,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_EFA.json",
+    "raw_sha256": "47fc0ef9205e58ceb8021e130f6db92d3fb226fe830b305d3a760d198a597b38",
+    "raw_bytes": 346509,
+    "parquet_file": "etf_EFA.parquet",
+    "parquet_sha256": "cb60ec1d1c5b1621436419d340cf9cb8e131b78f7bd6dd103e56373e46ae0675",
+    "fetched_at_utc": "2026-10-05T20:07:51Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_EEM",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=EEM&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "EEM",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5906,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_EEM.json",
+    "raw_sha256": "a9fdf949e42c75a64dde4833b89b29f9bee0fccdd109893d72c1a912b353e1a7",
+    "raw_bytes": 323992,
+    "parquet_file": "etf_EEM.parquet",
+    "parquet_sha256": "d7a71444e4093521707810039b33b643cedfd70f8dded8ca16df61adebb8e3cc",
+    "fetched_at_utc": "2026-10-05T20:07:52Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_TLT",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=TLT&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TLT",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6084,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_TLT.json",
+    "raw_sha256": "5465f79ee7f4c0b6a90172bc7091cad75908ba72134b1ec08f79b0cbbb015e57",
+    "raw_bytes": 334829,
+    "parquet_file": "etf_TLT.parquet",
+    "parquet_sha256": "40f6a9b4572f17708e6d56cd4719dbf52a2caf5023f9156e96345fbd52239e8f",
+    "fetched_at_utc": "2026-10-05T20:07:54Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_IEF",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=IEF&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "IEF",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6084,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_IEF.json",
+    "raw_sha256": "818e1be11fdc83df05f01196fc29c5bd80bc79c1f2189c8ac9add3153823e037",
+    "raw_bytes": 334218,
+    "parquet_file": "etf_IEF.parquet",
+    "parquet_sha256": "523402dc017cd3111a27f5098555d7f6c6fe920b85041f079d375484a67d5b44",
+    "fetched_at_utc": "2026-10-05T20:07:56Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_TIP",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=TIP&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "TIP",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5742,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_TIP.json",
+    "raw_sha256": "066942ee6fc2a3da360b257fafd426f584fdf97093b7ec0e932268df894431f5",
+    "raw_bytes": 316144,
+    "parquet_file": "etf_TIP.parquet",
+    "parquet_sha256": "7646dee90bb21e5f9520985a4560916d15353aeba55ca828d82fc8a34dcf4d3f",
+    "fetched_at_utc": "2026-10-05T20:07:58Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_LQD",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=LQD&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "LQD",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6084,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_LQD.json",
+    "raw_sha256": "ad8057918e2a1bd3c214bbc7c0995683c544312bd4c81012c3413fa1a33a49d2",
+    "raw_bytes": 334987,
+    "parquet_file": "etf_LQD.parquet",
+    "parquet_sha256": "f9dc2610bd615209cae47819e901b7f881b0523983d5e454deb44eb8f3fba6a1",
+    "fetched_at_utc": "2026-10-05T20:08:00Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_HYG",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=HYG&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "HYG",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 4902,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_HYG.json",
+    "raw_sha256": "56032111df5088c24a2d4ee7cd99c4a1ab500fc44c78ee2fde889def424034b3",
+    "raw_bytes": 269030,
+    "parquet_file": "etf_HYG.parquet",
+    "parquet_sha256": "c8423e3afdf63bbbd5e7acff4f573f7952e6564a77aa8cbba876284541dbd41b",
+    "fetched_at_utc": "2026-10-05T20:08:01Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_IYR",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=IYR&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "IYR",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6612,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_IYR.json",
+    "raw_sha256": "63965d3ba8e84f7c46dea8cc6a430c79c03a30aca31a6b0f226356b56601ee9e",
+    "raw_bytes": 363056,
+    "parquet_file": "etf_IYR.parquet",
+    "parquet_sha256": "4f373303d4d495fb0d82b1f726901b385a2e87787ca0b8844365b74d51892009",
+    "fetched_at_utc": "2026-10-05T20:08:03Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_VNQ",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=VNQ&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "VNQ",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5538,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_VNQ.json",
+    "raw_sha256": "11d10a4afd2c23ee84be8cc775e88d33724daa1ec58ac36f3a54cd68177e97a9",
+    "raw_bytes": 304003,
+    "parquet_file": "etf_VNQ.parquet",
+    "parquet_sha256": "7c453203c5cc2bdc7d678fdaecc1f563635c2a26e55d2a39c6d4656902f1385d",
+    "fetched_at_utc": "2026-10-05T20:08:05Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_GLD",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=GLD&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "GLD",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5502,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_GLD.json",
+    "raw_sha256": "01e206b85ad002f9e8b9ea9fc242a8be348eafe440fe317de9d23355dceba51f",
+    "raw_bytes": 300770,
+    "parquet_file": "etf_GLD.parquet",
+    "parquet_sha256": "fd48955ed67890efebe0ef234afc391905210f3c0fa5ba798664c6816562d589",
+    "fetched_at_utc": "2026-10-05T20:08:10Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_SLV",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=SLV&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "SLV",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5140,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_SLV.json",
+    "raw_sha256": "e81c7b1633a31d425f96a3fba4f460db397dc91b4850e3df47431f6ba3db124d",
+    "raw_bytes": 277488,
+    "parquet_file": "etf_SLV.parquet",
+    "parquet_sha256": "a48de8af461619c39b6623110dda03ea466c46d90ba848e91b8033f78344419f",
+    "fetched_at_utc": "2026-10-05T20:08:15Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_DBC",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=DBC&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "DBC",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5197,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_DBC.json",
+    "raw_sha256": "0c86a9a1dd9a5335e794cd742e87f15a1083058084ce58c6de78ac87516698bd",
+    "raw_bytes": 284986,
+    "parquet_file": "etf_DBC.parquet",
+    "parquet_sha256": "25f906b6b73bef6401f8a237d4d671b4cde7de9c199867d3f35e0d56f572afc6",
+    "fetched_at_utc": "2026-10-05T20:08:17Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_USO",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=USO&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "USO",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 5153,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_USO.json",
+    "raw_sha256": "12fab8634a7605a570f58421f329988fd4166f66880c1c5cc52c70acfeb972f4",
+    "raw_bytes": 279845,
+    "parquet_file": "etf_USO.parquet",
+    "parquet_sha256": "29ca90d472a1d161f8ae6d98e926597c512fb0f551f5e6b5b1f554b6cf852d4a",
+    "fetched_at_utc": "2026-10-05T20:08:22Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  },
+  {
+    "name": "etf_SHY",
+    "url_redacted": "https://api.sharadar.com/v1.0/data/funds?ticker=SHY&fields=ticker%2Cdate%2Ccloseadj&format=json&api_key=<REDACTED>",
+    "params": {
+      "ticker": "SHY",
+      "fields": "ticker,date,closeadj",
+      "format": "json"
+    },
+    "http_status": 200,
+    "rows": 6084,
+    "columns": [
+      "ticker",
+      "date",
+      "closeadj"
+    ],
+    "raw_file": "raw/etf_SHY.json",
+    "raw_sha256": "a3153b3f02436b9b546ad13fac5860f6e6b9c702a3233fa2b071ff552427307e",
+    "raw_bytes": 333910,
+    "parquet_file": "etf_SHY.parquet",
+    "parquet_sha256": "8563adad6160921b4659f4811df9ac80e22197a4f2584900a16ce9cb26b851d0",
+    "fetched_at_utc": "2026-10-05T20:08:23Z",
+    "date_range_check": {
+      "status": "not_applicable",
+      "reason": "no date window requested"
+    }
+  }
+]
