@@ -1,0 +1,3113 @@
+{
+  "calls_made_this_run": 1,
+  "exclusions_applied": {
+    "excluded_symbols": [
+      {
+        "base": "EURI",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "EURIUSDT"
+      },
+      {
+        "base": "EUR",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "EURUSDT"
+      },
+      {
+        "base": "FDUSD",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "FDUSDUSDT"
+      },
+      {
+        "base": "JUP",
+        "reason": "base ends in UP (leveraged-token naming)",
+        "symbol": "JUPUSDT"
+      },
+      {
+        "base": "SYRUP",
+        "reason": "base ends in UP (leveraged-token naming)",
+        "symbol": "SYRUPUSDT"
+      },
+      {
+        "base": "TUSD",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "TUSDUSDT"
+      },
+      {
+        "base": "USD1",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "USD1USDT"
+      },
+      {
+        "base": "USDC",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "USDCUSDT"
+      },
+      {
+        "base": "USDS",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "USDSUSDT"
+      },
+      {
+        "base": "XUSD",
+        "reason": "base in stable/fiat exclusion list",
+        "symbol": "XUSDUSDT"
+      }
+    ],
+    "leveraged_suffixes": [
+      "UP",
+      "DOWN",
+      "BULL",
+      "BEAR"
+    ],
+    "stable_fiat_bases": [
+      "AEUR",
+      "ARS",
+      "AUD",
+      "BRL",
+      "BUSD",
+      "DAI",
+      "EUR",
+      "EURI",
+      "FDUSD",
+      "GBP",
+      "JPY",
+      "NGN",
+      "PAX",
+      "PYUSD",
+      "RUB",
+      "TRY",
+      "TUSD",
+      "UAH",
+      "USD1",
+      "USDC",
+      "USDP",
+      "USDS",
+      "XUSD",
+      "ZAR"
+    ]
+  },
+  "failures": {},
+  "fetched_at": "2026-10-15T21:08:28.465597+00:00",
+  "host": "https://api.binance.com",
+  "last_run_at": "2026-10-15T21:15:06.391632+00:00",
+  "symbols": {
+    "0GUSDT": {
+      "first_open_time": "2025-09-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 388,
+      "sha256": "d3209414d0aa5ca5ef6de781555ee5a072e2909a16302def0c7385d9a9b8e985"
+    },
+    "1000CATUSDT": {
+      "first_open_time": "2024-12-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 667,
+      "sha256": "5549085cf54a9ba951c6f209255a6f9d3b9395eabe8048788f0cf1bad0415fc3"
+    },
+    "1000CHEEMSUSDT": {
+      "first_open_time": "2025-02-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 613,
+      "sha256": "993ced3c02f36d5d57b30600523bbea5db058c644a3162176fc6d45e6e2797e3"
+    },
+    "1000SATSUSDT": {
+      "first_open_time": "2023-12-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1038,
+      "sha256": "fa2798a15292c47cb870cfc60e5fd8b80edf396574908b80a35ff955fe93863b"
+    },
+    "1INCHUSDT": {
+      "first_open_time": "2020-12-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2120,
+      "sha256": "984b085741a5173e702e0f130ae20f2b5d72c44dec43c051a0662862480f1075"
+    },
+    "1MBABYDOGEUSDT": {
+      "first_open_time": "2024-09-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 759,
+      "sha256": "c4d0880b481df73a622cfed765f4a85a47aff6c9770201426f58359052ee9309"
+    },
+    "2ZUSDT": {
+      "first_open_time": "2025-10-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 378,
+      "sha256": "325bb1448943eb42ce8815a381f1707fd2e72bb3ee8a921063cd32b5b1437f4e"
+    },
+    "AAOIBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "c9b9bd4ff6e7773201531ef30778fa04507c4049907212dbb9bcf2a9b47a042b"
+    },
+    "AAPLBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "fe2778b60c4f859cd1ee31d94990c4054102c42f115e537fe26f881c57a3d3b2"
+    },
+    "AAVEUSDT": {
+      "first_open_time": "2020-10-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2191,
+      "sha256": "ea555b77c15748399b4d9f3c244d1cd53e896a607b3ed5c975e906093456417e"
+    },
+    "ACEUSDT": {
+      "first_open_time": "2023-12-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1032,
+      "sha256": "1346f3e5159c2b435761b6c7bf615a2d296bf7a9fcb2cada89318be058a89812"
+    },
+    "ACHUSDT": {
+      "first_open_time": "2022-01-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1739,
+      "sha256": "1ce63f9f3c8287447f8bd9698f10a34021a98ff5a1a3bdb5635d0662e809a37d"
+    },
+    "ACMUSDT": {
+      "first_open_time": "2021-02-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2059,
+      "sha256": "799d76a43f881916fccb2dbad0af48a92b0cbdd4ed6fcf3a63866ad90893357c"
+    },
+    "ACTUSDT": {
+      "first_open_time": "2024-11-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 703,
+      "sha256": "7bff4cdd80e82189d828439b1e67667f6fe6989dd5de663155b6b986873256ef"
+    },
+    "ADAUSDT": {
+      "first_open_time": "2018-04-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3103,
+      "sha256": "9734f066e363f12ea2305ee15b8df05643c8f9dfa7b559188fbaadf89655e3f0"
+    },
+    "ADBEBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "717c4a603d8339af194b21b8ff8230c7b1cfb93016610eb177762660bdc91294"
+    },
+    "ADXUSDT": {
+      "first_open_time": "2021-10-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1812,
+      "sha256": "f11ae43a08859be27fc5a8d6461343d8bbda16127098b9cedc395938f6374568"
+    },
+    "AEROUSDT": {
+      "first_open_time": "2026-07-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 90,
+      "sha256": "c454e8fe94727e25969b707dd8b5ba1ebdb6fde2132740636f56e2ffd0ff7b4f"
+    },
+    "AEVOUSDT": {
+      "first_open_time": "2024-03-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 946,
+      "sha256": "85ceb4e6118e28531a1bc4ad548088ffbbb17402fb5b08a39db14370d71e98ce"
+    },
+    "AGLDUSDT": {
+      "first_open_time": "2021-10-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1836,
+      "sha256": "a1a3831aedd8a1129e0a4a2933986da634a89f1ee289e1f8019ff15401087ec3"
+    },
+    "AGPUBUSDT": {
+      "first_open_time": "2026-09-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 22,
+      "sha256": "b22dc65f2fe841300ef59ba5f8387d06f10c1b8440ab424b25dc8ebd42b67626"
+    },
+    "AIGENSYNUSDT": {
+      "first_open_time": "2026-05-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 154,
+      "sha256": "4d4684051873aadc1b994c521db66bab95d75675536a23b9506bbb5c2329d8ec"
+    },
+    "AIUSDT": {
+      "first_open_time": "2024-01-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1015,
+      "sha256": "b4ae0cc6cbab4a7c12f3026ba5c6f5d02533fd62da29118a39915eb16b43f7b3"
+    },
+    "AIXBTUSDT": {
+      "first_open_time": "2025-01-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 643,
+      "sha256": "ed39c6a95f46510505b3f4d7e60bf6bbfb5ed105beee049e90fe48fe0679aaef"
+    },
+    "ALABBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "4f97bc60e8880919b8c39dab8d16ba332c9652d69bd98fa29de2992f9de85229"
+    },
+    "ALGOUSDT": {
+      "first_open_time": "2019-06-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2672,
+      "sha256": "6bc74b2fee6661ddeec08422101e34601a06a4fbc92a8b3de8c33992e54bab4c"
+    },
+    "ALICEUSDT": {
+      "first_open_time": "2021-03-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2040,
+      "sha256": "b892dfccf289946ec118dfc9608916016d57c8f158d9f5a803f084dc77d2ba30"
+    },
+    "ALLOUSDT": {
+      "first_open_time": "2025-11-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 338,
+      "sha256": "8e44b586e8212e8d36a3a6dd5e1a90e12beb6222f4fd92fdd9b65d5a346b504b"
+    },
+    "ALPINEUSDT": {
+      "first_open_time": "2022-02-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1697,
+      "sha256": "3c9dc7078a1115e13b2e330876af032a150826f6564c55b3f1022bd18677cd72"
+    },
+    "ALTUSDT": {
+      "first_open_time": "2024-01-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 994,
+      "sha256": "d340f29c05a88a70f64e3552c7420fc55c8de4438618f73e56d2c7a47b952755"
+    },
+    "AMATBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "e61ab43db279c92bf75bb2288c2bfa1972939c7016c8966fed402558a203a2aa"
+    },
+    "AMCBUSDT": {
+      "first_open_time": "2026-09-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 22,
+      "sha256": "4a33a9e008489c0cd3e7e25d1a62c8f33812e3412a23470e38f2f6eee3401d8e"
+    },
+    "AMDBUSDT": {
+      "first_open_time": "2026-06-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 114,
+      "sha256": "4ee68bc9fe5e9cfdc0e6fd063f1d5ef9ff9c32bd8e10f1a643595e2dbbc6bba1"
+    },
+    "AMPUSDT": {
+      "first_open_time": "2021-11-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1787,
+      "sha256": "25bcbd9a0bd1eba5fa4054dcaade652ae46f34f96e10cdd9d4e370b2fb1022ec"
+    },
+    "AMZNBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "3331480a5a2ce01422941aeae847e9e129df691be891aec115a4a1c69e38780b"
+    },
+    "ANIMEUSDT": {
+      "first_open_time": "2025-01-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 630,
+      "sha256": "a7d8e8b391094129ef7fc3387e832990d20eeb8550263c6ed1c358b200ae4002"
+    },
+    "ANKRUSDT": {
+      "first_open_time": "2019-07-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2641,
+      "sha256": "c47a9c0a4c687141cc0ff366bf72b9bfec24c3fdf719d3de7f3fe902250002aa"
+    },
+    "APEUSDT": {
+      "first_open_time": "2022-03-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1673,
+      "sha256": "82906000a7b93c08a4c92bcf25868307f06733efc76005f473391921fc72a606"
+    },
+    "API3USDT": {
+      "first_open_time": "2022-01-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1728,
+      "sha256": "fd715ce60aa9cfbfd2112b842e4ac4ca6567ec7f185406d2d3ed0a886fccac7c"
+    },
+    "APTUSDT": {
+      "first_open_time": "2022-10-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1457,
+      "sha256": "3c51cea69a7f71e6734f62f8289a9f5c05bd1bd5f626d12b9d021701a739025c"
+    },
+    "ARBUSDT": {
+      "first_open_time": "2023-03-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1302,
+      "sha256": "f902770e468ae1b9f0b0d39d089ebc66093364b4c504d2a03bc67404a9ead01e"
+    },
+    "ARKMUSDT": {
+      "first_open_time": "2023-07-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1185,
+      "sha256": "bae4755ac05fcefe418d30de9157846e9c17a7a339e3b4e72480cc2f7f6cdff8"
+    },
+    "ARKUSDT": {
+      "first_open_time": "2023-09-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1119,
+      "sha256": "4b0325af5968d3fef91180402a06371d157cedf44766f6e87b0014a95a6549e7"
+    },
+    "ARMBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "56bce300d7dd8d1fd1281e91f0151077f2b90c1734c2fbe47c4f439789249456"
+    },
+    "ARPAUSDT": {
+      "first_open_time": "2019-11-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2535,
+      "sha256": "157d6b7a0dbba6070e254e18b659c4c37dfe59652a187e61cf05faf49b343248"
+    },
+    "ARUSDT": {
+      "first_open_time": "2021-05-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1980,
+      "sha256": "6d8b663e9f7594c26e6d292a55c4bb99eb73bfc91a2778485b342fae12b8eefc"
+    },
+    "ASMLBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "ed20b7403ec62aeb344eebf478577b1e12189fd1763928b2ffe0b67badccf3f4"
+    },
+    "ASRUSDT": {
+      "first_open_time": "2020-12-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2115,
+      "sha256": "c03b59f3ff9a91eba89da97baf653625e7cb75f14cd1e2ceab18a06ca4615544"
+    },
+    "ASTERUSDT": {
+      "first_open_time": "2025-10-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 374,
+      "sha256": "b786429f8ee8977c3839865b001d8ebbe4f6de4165679f226ad7ae16552bc64d"
+    },
+    "ASTRUSDT": {
+      "first_open_time": "2022-02-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1690,
+      "sha256": "997221605f8e87f8adc290dca2d114754b6c0afa027054e5fa0c7bd6e4743675"
+    },
+    "ASTSBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "a1936703bd7506a9a55bc12bb1e6c48e4c3577a5ff4636ae8e39e4800f05ca70"
+    },
+    "ATMUSDT": {
+      "first_open_time": "2020-12-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2115,
+      "sha256": "40cd09966462ad22ea4f71540fdbef16db37a74b70212fbf6fe7a3e6b0a85e6c"
+    },
+    "ATOMUSDT": {
+      "first_open_time": "2019-04-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2726,
+      "sha256": "47c8b2b03883730da3b1af02045d0184180684040494e6bb23a9e97d88fca474"
+    },
+    "ATUSDT": {
+      "first_open_time": "2025-11-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 322,
+      "sha256": "e88f4f23f3f49bf5585a80f417ce8ebd9bc139a8eb4d7630718348bc185c7b5a"
+    },
+    "AUCTIONUSDT": {
+      "first_open_time": "2021-10-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1812,
+      "sha256": "f7c98bf433a2624c4bec2d82d7a1b39428ea3a73bced9f17fd789dac3c8363da"
+    },
+    "AUDIOUSDT": {
+      "first_open_time": "2020-10-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2183,
+      "sha256": "602758805f263c6eb83e888659ded4f6efdd3fcf2af952539cd5730f868ebd96"
+    },
+    "AUSDT": {
+      "first_open_time": "2025-05-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 505,
+      "sha256": "10ee179c0131a98f1c993e54a5c94e5a7eca5bf4f62d89ba1be9d56901a5e5f5"
+    },
+    "AVAUSDT": {
+      "first_open_time": "2020-11-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2151,
+      "sha256": "1b861fa0871b114c5f291f05563c9af9ce65b196d9611e14e576a4099d826091"
+    },
+    "AVAXUSDT": {
+      "first_open_time": "2020-09-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2214,
+      "sha256": "1b5f08a3ec28a524b5f90ae32e6b6a08bfea538c01d3684949e1a88e4917c675"
+    },
+    "AVGOBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "6fb96fc96f932c58c418a43bb4ba4f89db16fdaf1aee5a5fb9ca94a231fdce8f"
+    },
+    "AVNTUSDT": {
+      "first_open_time": "2025-09-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 395,
+      "sha256": "3ae0e41352235c91506c1b16dae158f4d11dc7ee7d34fbc9f775a044bcd445fe"
+    },
+    "AWEUSDT": {
+      "first_open_time": "2025-05-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 512,
+      "sha256": "2067758934f1f45442b445749f29c0d6aacdb2d4dc2412916b0edcd4d5fe4e85"
+    },
+    "AXLUSDT": {
+      "first_open_time": "2024-03-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 958,
+      "sha256": "51ffa428d357e9dc55676def30c7360c58158b065bb016b491a528e7c4f3b41a"
+    },
+    "AXSUSDT": {
+      "first_open_time": "2020-11-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2171,
+      "sha256": "c39e3c43458bc60c567462e014dfbf033111cff8f1cec9664c1e1b712a25ab38"
+    },
+    "AXTIBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "59fd71e52a23eca2bd8a8114cbfd5aa9c27aca354f8f287825ccf2d4a2cc7746"
+    },
+    "BABABUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "324ba5fae1d54b954f422c9fa43f53371adf116c8e4c346d2afc1715923ed104"
+    },
+    "BABYUSDT": {
+      "first_open_time": "2025-04-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 553,
+      "sha256": "cd498a8e38beb9db933b15e09c14cdfe54c72478eb0ac75636a9b6547b61ebae"
+    },
+    "BANANAS31USDT": {
+      "first_open_time": "2025-03-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 567,
+      "sha256": "975bdb566ef62f1cce1178c1a8b9a8d68b1008aff772d63e56dbfe069084ec87"
+    },
+    "BANANAUSDT": {
+      "first_open_time": "2024-07-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 817,
+      "sha256": "bfafddf8bd58a141036dfd3405229cde7aab16249f4c8ea077a0492d40ee6d07"
+    },
+    "BANDUSDT": {
+      "first_open_time": "2019-09-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2584,
+      "sha256": "9b211a0eae14fa247e7e4f9fe31961e3165389b3e650effe98b4ccf0e282d5e8"
+    },
+    "BANKUSDT": {
+      "first_open_time": "2025-11-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 336,
+      "sha256": "ba5f5a553b67497d46f4646e5e2b4d78dbd3d9fbf606e0a83efb364e513d19c4"
+    },
+    "BARDUSDT": {
+      "first_open_time": "2025-09-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 392,
+      "sha256": "debecbcade4f2b499d7b0441031fae145e1925a83345e627379acf9c347b5a13"
+    },
+    "BARUSDT": {
+      "first_open_time": "2021-04-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2003,
+      "sha256": "2764201b19464803aa29855360b21a1bce2866856e18feebd10f78428489d6e6"
+    },
+    "BATUSDT": {
+      "first_open_time": "2019-03-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2782,
+      "sha256": "c5abc45c3ffb0d0663d79a42eb0ec2bcfd9bc111ee0930e2246573bfac1e3fa6"
+    },
+    "BBBUSDT": {
+      "first_open_time": "2026-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1,
+      "sha256": "34fe33ab1915d0b666b7a1b23de93085f1a6bf58d828a54d7859c8d6f10cf612"
+    },
+    "BBUSDT": {
+      "first_open_time": "2024-05-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 885,
+      "sha256": "14f03d6d3fd1e9a6a40d5457fe2fc656bacbe652024678e0e3ba182e497f640c"
+    },
+    "BCHUSDT": {
+      "first_open_time": "2019-11-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2513,
+      "sha256": "14aa60d79c42ae90aae1e202fdabc84e936a94f93ed0dfeebf430e30dbd8eec0"
+    },
+    "BEAMXUSDT": {
+      "first_open_time": "2023-11-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1066,
+      "sha256": "02b95e16d60e46b1237e013574c2f450cc50f203ee6e02d2676f9be1ea35994f"
+    },
+    "BEBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "a9f9dcd392fbab53fdffef465f756837b89a99fd83434279336adc6acb5827c6"
+    },
+    "BELUSDT": {
+      "first_open_time": "2020-09-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2221,
+      "sha256": "efbaf46b97e36a237eea2e9ed28a9d7330648d62374eea6b66643604ffe79713"
+    },
+    "BERAUSDT": {
+      "first_open_time": "2025-02-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 616,
+      "sha256": "28eecfe2f7de7f3f15402b15f0bf7f45fe1b21ce2cabff7fd3101256567e8a3a"
+    },
+    "BFUSDUSDT": {
+      "first_open_time": "2025-08-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 428,
+      "sha256": "614acb3ec00baabd5d1fd4d43b867afc89175144c41c4bf81ed97d9a3c733143"
+    },
+    "BICOUSDT": {
+      "first_open_time": "2021-12-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1771,
+      "sha256": "247898c2ebb7abd8aed7e9d3e37975ea9e5272ef2a36c3b17d8f293e8caf6026"
+    },
+    "BIGTIMEUSDT": {
+      "first_open_time": "2025-04-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 552,
+      "sha256": "1920cba552308b4850bff4456b714df82df92d76b41aac2c04fdb9a044af3067"
+    },
+    "BIOUSDT": {
+      "first_open_time": "2025-01-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 650,
+      "sha256": "92e919f5f6779f11f136a651a9ddd26f84bc775c8fd5b6bdc11714400337feb2"
+    },
+    "BLURUSDT": {
+      "first_open_time": "2023-11-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1056,
+      "sha256": "d25738cb7eeabfb5ab02a6e297122bfff1a6d56356ac1f9baa565a5a010edbd4"
+    },
+    "BMNRBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "af04e3a453714d83474d3ab07669711542419670df1e7aabc74bf6605ec366d8"
+    },
+    "BMTUSDT": {
+      "first_open_time": "2025-03-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 576,
+      "sha256": "c99741be667b55ccd856a33d60fa32152472a3bf36abce1547f85d170cb9ecec"
+    },
+    "BNBUSDT": {
+      "first_open_time": "2017-11-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3265,
+      "sha256": "75fbaf026db8dc1259b70371cdb715d01d1e64d56b9da43aff52b3e662c4e5e2"
+    },
+    "BNCBUSDT": {
+      "first_open_time": "2026-09-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 31,
+      "sha256": "827d55aa13652d23b851ec5b8da7f3fb48e1fb0e02b1a0303f123d04d90454a2"
+    },
+    "BNSOLUSDT": {
+      "first_open_time": "2024-10-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 728,
+      "sha256": "1063d1e2bdbc38bea7881a3c3830f12fae0d3cac9030ca40920e1a46c8f8f801"
+    },
+    "BNTUSDT": {
+      "first_open_time": "2020-02-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2443,
+      "sha256": "1617f2d38418b29320beb277c2949e9cab9b712579bbb8335e9c432f2de14c11"
+    },
+    "BOMEUSDT": {
+      "first_open_time": "2024-03-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 943,
+      "sha256": "43822b4a886dda78d4cf57acc588c44c34bd7597f091106d29130b35d72123ca"
+    },
+    "BONKUSDT": {
+      "first_open_time": "2023-12-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1035,
+      "sha256": "b804a462dc2754ebdfd5d356a0e65c36d951e29fe7eff419c0b10b67a0f8e923"
+    },
+    "BREVUSDT": {
+      "first_open_time": "2026-01-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 282,
+      "sha256": "5c1453d94b66d827740aad31b9fd8658e3e79f245965ab4219d8ecb6b9423d87"
+    },
+    "BROCCOLI714USDT": {
+      "first_open_time": "2025-03-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 567,
+      "sha256": "43ea48802b7bdf78c8a47f52f1fae7b953f7ffc9e14c94c7222561d56adca4a4"
+    },
+    "BTCUSDT": {
+      "first_open_time": "2017-08-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3346,
+      "sha256": "e82c39b44d7a0e63fd829d25d7bccea7341f160a2d87d7e4364edc1330d463a0"
+    },
+    "BTTCUSDT": {
+      "first_open_time": "2022-01-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1724,
+      "sha256": "99fa3f09d3a02c7a05400a2a364cb4cfc37e1c2ec698e2fa672b22ca7d370ed6"
+    },
+    "C98USDT": {
+      "first_open_time": "2021-07-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1910,
+      "sha256": "4c2f5c818df751eea3566bf23571decee6c7a7f579fa5cfde8456ff3b08a842b"
+    },
+    "CAKEUSDT": {
+      "first_open_time": "2021-02-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2064,
+      "sha256": "a630d57860e886ac481dfa70fe4419a0077aa1258618d4422a29b0498a701794"
+    },
+    "CATIUSDT": {
+      "first_open_time": "2024-09-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 755,
+      "sha256": "d997d4324507148ff925e8ccb6004eec96ef39dbd6c6eab36530ab7179dda639"
+    },
+    "CBRSBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "0f98608501b1ec44c87a2ce00835779bd8665c620eea0354a6b14f1d839c3544"
+    },
+    "CELOUSDT": {
+      "first_open_time": "2021-01-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2109,
+      "sha256": "820adf346bb86035dda71554fbaf4b94bd953b21b8f692d03646e3ee51a79d9a"
+    },
+    "CELRUSDT": {
+      "first_open_time": "2019-03-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2761,
+      "sha256": "61f194b61f5195cb05b6829ee9e3326e129f50501a6a227f362357a11396209a"
+    },
+    "CETUSUSDT": {
+      "first_open_time": "2024-11-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 708,
+      "sha256": "34c165ab159025e5965d13a40ccf237a757ea88c4a66909f1857caede06d66ca"
+    },
+    "CFGUSDT": {
+      "first_open_time": "2026-03-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 213,
+      "sha256": "da8f61878fb9208c60f3dd997cf577787911072e2e87a70374d93be931d8cbeb"
+    },
+    "CFXUSDT": {
+      "first_open_time": "2021-03-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2026,
+      "sha256": "0fdbea8197ef059a143bec301ed9be92f9031dadd6fa11ae76e9850df723dec9"
+    },
+    "CGPTUSDT": {
+      "first_open_time": "2025-01-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 643,
+      "sha256": "df682e1e00b97afcff0c6dbeb54293f55499cc9da3e946987b7a3808385ce87d"
+    },
+    "CHIPUSDT": {
+      "first_open_time": "2026-04-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 177,
+      "sha256": "43dcd289b72885781f7c095617d84b3991ff0a58e4e37d2197a0a83fbc7272fe"
+    },
+    "CHRUSDT": {
+      "first_open_time": "2020-05-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2352,
+      "sha256": "a14f7bd0c29bd7c7317399751ff9fe11f6b916a8fe4d473495b8f27bdde2186b"
+    },
+    "CHZUSDT": {
+      "first_open_time": "2019-09-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2596,
+      "sha256": "e510c1f8ccca224f1be79181ea830f4a23d0c11e90b5fabed0554b316e2648f5"
+    },
+    "CITYUSDT": {
+      "first_open_time": "2021-11-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1800,
+      "sha256": "5444bad3cff90b381bdb11002069ea1f86638d71f440bf4686beda40ad1a9a9b"
+    },
+    "CKBUSDT": {
+      "first_open_time": "2021-01-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2088,
+      "sha256": "97b77a035fed5ae1a9c1f0590b2ee754ba8e571e521f66130fdf961dd2440bf2"
+    },
+    "COHRBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "a1172cb52393e14f1d27ff03e3c692022edc34f454730b08be2e4082f05a38de"
+    },
+    "COINBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "11cdc8b4c29db750a3e43ba7404ef10b38f5c43bf16135c5661e3cbf5202fb38"
+    },
+    "COMPUSDT": {
+      "first_open_time": "2020-06-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2303,
+      "sha256": "1808dbcc0e0e785582cf02242b948dceccf4c5f8641e89ba4e73b9f63e147e63"
+    },
+    "COOKIEUSDT": {
+      "first_open_time": "2025-01-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 643,
+      "sha256": "b43ac8cf495622e43513eec9a550c63bdd11fb46d1cb95989bec2269bbe0e6a3"
+    },
+    "COTIUSDT": {
+      "first_open_time": "2020-02-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2423,
+      "sha256": "51d3282b560670734dabdeab2675ff225bc1f9aabeee4fc3d68cce67bb621d2c"
+    },
+    "COWUSDT": {
+      "first_open_time": "2024-11-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 708,
+      "sha256": "9e6ba26ba0b7e849f8016026665be8d089e3f919bf8fae8ed59a64190837bb4a"
+    },
+    "CRCLBUSDT": {
+      "first_open_time": "2026-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 126,
+      "sha256": "201a6c40e3fd172fb2366b38e5ab6538416028037554ccd79474d3d0cd18ec8c"
+    },
+    "CRDOBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "684feee9704e200a507a0853a96f7cd640c6094ec4bbae116ec58d5109e74502"
+    },
+    "CRMBUSDT": {
+      "first_open_time": "2026-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 36,
+      "sha256": "6206972227a55503087860a2eab0d493caed9fe258842439ad08c9766a10bbbe"
+    },
+    "CRVUSDT": {
+      "first_open_time": "2020-08-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2252,
+      "sha256": "6c212fe386e7129a347701fe93c07e969da3ba7aa72db0b7c4d71342aca3010c"
+    },
+    "CRWDBUSDT": {
+      "first_open_time": "2026-09-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 43,
+      "sha256": "a03eb3969e84814e850c81558566b3b797abe591f1b9a20f47fd8500421f60bb"
+    },
+    "CRWVBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "f3541810fac7d6e015f2fe4f938f6fb41fc3e0d28432b230c5f2c69f25fa202e"
+    },
+    "CTKUSDT": {
+      "first_open_time": "2020-10-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2179,
+      "sha256": "9204b29ca0b9f46125c1998f581e67be913d5d0687abdf65720398bbe717cbc6"
+    },
+    "CTSIUSDT": {
+      "first_open_time": "2020-04-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2366,
+      "sha256": "e73f5371c96cb8c01e169a54a430ec6d6101470321a63f74db3e3e8cb515845b"
+    },
+    "CUSDT": {
+      "first_open_time": "2025-07-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 454,
+      "sha256": "e77efa9aea637d880a2da8eb16b0a4ab3a145f5ab26e1fe608f48c25c100af02"
+    },
+    "CVCUSDT": {
+      "first_open_time": "2019-08-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2453,
+      "sha256": "996521b1dce179c2fdb280b3591cac4187a0be5f6c13a3ae6e144bfa34587fbc"
+    },
+    "CVXUSDT": {
+      "first_open_time": "2021-12-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1757,
+      "sha256": "16e25d11256a9bff8388b8095316d34d6518d64d0056bc17ec52e89c030548ed"
+    },
+    "CYBERUSDT": {
+      "first_open_time": "2023-08-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1157,
+      "sha256": "67a61b1d1242d95b3af4bda77b4b5e411eed91f3bfb72faec14bcb484aa62468"
+    },
+    "CYPHBUSDT": {
+      "first_open_time": "2026-09-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 22,
+      "sha256": "7c4aefc813c42772270fc525daa42beca7b2cd270f5f3d6c988a8ab2417ad4a7"
+    },
+    "DASHUSDT": {
+      "first_open_time": "2019-03-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2758,
+      "sha256": "2f87c32225ae1ed3dd66cc736d215295a94c338dd952844b1d9fe90c033eee47"
+    },
+    "DCRUSDT": {
+      "first_open_time": "2020-07-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2268,
+      "sha256": "ffbf3070cd345b2980120a32765d69f908206dcfdec8eb234ac00c54a870056e"
+    },
+    "DELLBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "b10e1ca6fad822abec1aecf0f1f022c42a917fa1725e4f384f46fde58ec31f8f"
+    },
+    "DEXEUSDT": {
+      "first_open_time": "2021-07-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1910,
+      "sha256": "8ac3f4dac6fe507c91e86896c504a1add1c210bb372fbf38aab0f5eb78c2a422"
+    },
+    "DGBUSDT": {
+      "first_open_time": "2020-07-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2278,
+      "sha256": "de0a3f1024b3de8aa602a6ec945aba39019d006d60a11859c54cddc57ea7184d"
+    },
+    "DIAUSDT": {
+      "first_open_time": "2020-09-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2232,
+      "sha256": "ae775479237c04779ce2661a3392ecc912d57b901b5cc34d944453db50d77bb8"
+    },
+    "DJTBUSDT": {
+      "first_open_time": "2026-08-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 50,
+      "sha256": "95855596d4c268199bbc5dea7ac5f58c40ddc488e5baa3630829c579e3db8c64"
+    },
+    "DODOUSDT": {
+      "first_open_time": "2021-02-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2064,
+      "sha256": "233863f6cd98ea41ae6722789e347696dddc0554a092b7523743f3eec5715849"
+    },
+    "DOGEUSDT": {
+      "first_open_time": "2019-07-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2659,
+      "sha256": "14b79c7d5c503bd1250d6bfa4e027dd96c6b845d18f27556a3fdf3326a3dfda9"
+    },
+    "DOGSUSDT": {
+      "first_open_time": "2024-08-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 780,
+      "sha256": "5749dfb990d9d6f706eabd7c914b03845b06d4c581a067fddf3cda044bc86bd6"
+    },
+    "DOLOUSDT": {
+      "first_open_time": "2025-08-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 414,
+      "sha256": "676af092cde90ac4cbd72369ed8eb7d93e56ba0b1a85a1f1116b4c00736bd98c"
+    },
+    "DOTUSDT": {
+      "first_open_time": "2020-08-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2249,
+      "sha256": "5a54475ac892656c659f78d1f0dc6d16ea65dd30c6632b6369df8b83681b6cb6"
+    },
+    "DRAMBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "533bd7c3d6889fb7a810111dff2e05b97aed2e242fb89dc1e294623544675f40"
+    },
+    "DUSKUSDT": {
+      "first_open_time": "2019-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2642,
+      "sha256": "f8785c147af528f5de527465d68768527b57cdd5dc7172e210001381ba15f915"
+    },
+    "DYDXUSDT": {
+      "first_open_time": "2021-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1862,
+      "sha256": "10c345fc05c4c2f1e1fce2f9acc89442bca633cacc5040b83acc37e5b4728301"
+    },
+    "DYMUSDT": {
+      "first_open_time": "2024-02-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 982,
+      "sha256": "732b3845ea823637aab4d6ae9bbdcfc662a28719437b7c74847735e50dec77aa"
+    },
+    "EDENUSDT": {
+      "first_open_time": "2025-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 380,
+      "sha256": "ba73d1ef76ad7e870ef6d786f666860626e75a9d11861f6aa975cf95a8a0ebdd"
+    },
+    "EDUUSDT": {
+      "first_open_time": "2023-04-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1266,
+      "sha256": "e6aaeca64436b6e79600be479806026ae2facb919f87a82aeb2f0a9e43f015d0"
+    },
+    "EGLDUSDT": {
+      "first_open_time": "2020-09-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2233,
+      "sha256": "928a64acc57d1a986bffeee6db35d1f85be85617e66f37feb6d39c10d0111f02"
+    },
+    "EIGENUSDT": {
+      "first_open_time": "2024-10-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 744,
+      "sha256": "f58413d02da85db6aa007392b56f6b0644b3ce791d3cb63f8953e8ddb8bfc823"
+    },
+    "ENAUSDT": {
+      "first_open_time": "2024-04-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 926,
+      "sha256": "2ed3f79ed115e474f608a91062e9ab75e4270d31a562b81e11bc3bae97feedbf"
+    },
+    "ENJUSDT": {
+      "first_open_time": "2019-04-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2737,
+      "sha256": "6c4c7b2e946d90cf72dfcb121b57fd7ab3175a5d5f329fb5b0e2f30436bf3d4d"
+    },
+    "ENSOUSDT": {
+      "first_open_time": "2025-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 366,
+      "sha256": "719781e73481894bd22c0183f294ea7b4cdc93d5e60c95fe1b60b7b04e315977"
+    },
+    "ENSUSDT": {
+      "first_open_time": "2021-11-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1800,
+      "sha256": "4e836dbf3425b8d93d778a19885b583e7bb62191b6ff63e6895f0ee6feefdfed"
+    },
+    "EPICUSDT": {
+      "first_open_time": "2025-03-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 581,
+      "sha256": "766082f3e52f187a1d2bfc32638366d30a3ebf75b33334267c979bbffe86d9be"
+    },
+    "ERAUSDT": {
+      "first_open_time": "2025-07-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 455,
+      "sha256": "b22417ea6e5af9a18142fe7e3697ba8654f180e71d545e8f10f0058f6b2588ee"
+    },
+    "ESPUSDT": {
+      "first_open_time": "2026-02-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 245,
+      "sha256": "724be4efa35b26f6f526a7e28d82ad59312be78c7662b13fe00f98ab5c622112"
+    },
+    "ETCUSDT": {
+      "first_open_time": "2018-06-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3047,
+      "sha256": "08d80f2114518fe5cc7a351d3db6a1e805f3ee8ea8d4cd0d479a03174cc615ac"
+    },
+    "ETHFIUSDT": {
+      "first_open_time": "2024-03-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 941,
+      "sha256": "972dd51066045d16c61c6f16d6068d0aeb79e2ba5c9e0c4aa63907f4d0605bd7"
+    },
+    "ETHUSDT": {
+      "first_open_time": "2017-08-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3346,
+      "sha256": "4f4180c955d4375d4986dc8d68608d82ee918019a9dad88a1727307e36e309f0"
+    },
+    "EULUSDT": {
+      "first_open_time": "2025-10-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 367,
+      "sha256": "481fe76aa59492366c8fb3f5ab3b4f0262f17249cf800671f5be31cfe25ee0b5"
+    },
+    "EWYBUSDT": {
+      "first_open_time": "2026-06-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 114,
+      "sha256": "5dca7e5e7e986a66ade45ed1e40bc9f6fecf1f65be834925014ffc3efd29334b"
+    },
+    "FETUSDT": {
+      "first_open_time": "2019-02-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2786,
+      "sha256": "fda6aa1ad7c3d43c2d8776c4d24941c2271291ae34372c52572c270c27bf3e16"
+    },
+    "FFUSDT": {
+      "first_open_time": "2025-09-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 381,
+      "sha256": "a7a01ed113b3e7134bd00d0a9d4945e77d5a6fb8a8f00968a2161b2f49dee2ca"
+    },
+    "FIDAUSDT": {
+      "first_open_time": "2021-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1841,
+      "sha256": "0c5b40f25fae018bcf76af564065c76cfdcfdc931884b0c5fcc75f01cf10e620"
+    },
+    "FILUSDT": {
+      "first_open_time": "2020-10-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2191,
+      "sha256": "a455cf8fd6105f4591a50cc7d528051f9f60d8be3e8aaa764b5214e64c449191"
+    },
+    "FLNCBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "4a55251a0b9ab0a0576e3f69244ddad1248748e7403602ec4e8fb61201ee1aab"
+    },
+    "FLOKIUSDT": {
+      "first_open_time": "2023-05-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1259,
+      "sha256": "9520ebc66698a27d40ebf0ff639f4bde72aa64ba987a7d6091f3b63323158132"
+    },
+    "FLOWUSDT": {
+      "first_open_time": "2021-07-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1903,
+      "sha256": "320c710f49a289b661c3a41c9d11afb78e2d860ef83ae92c732a26ffdfe26cbc"
+    },
+    "FLUXUSDT": {
+      "first_open_time": "2021-12-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1770,
+      "sha256": "e494571c09e17bc030f7137847a57e810f01a1fdc91df976916505a7456dcc15"
+    },
+    "FOGOUSDT": {
+      "first_open_time": "2026-01-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 273,
+      "sha256": "1c0383b3dd66adff11b2aaca37790d3250ad6a5f5008b6c8321a0c1fa2bdb613"
+    },
+    "FORMUSDT": {
+      "first_open_time": "2025-03-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 575,
+      "sha256": "14998ac9ddc29f1f76ddcf707351ecf6874dc984e5a639cefd5336dd301358ab"
+    },
+    "FRAXUSDT": {
+      "first_open_time": "2026-01-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 273,
+      "sha256": "b4b2a435ab657558c92c7c71f3f57db2e22fca834e484e5191bb199776d18207"
+    },
+    "FTTUSDT": {
+      "first_open_time": "2019-12-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2181,
+      "sha256": "e32bca7e029a5408f5bb16e01ec3690358299d773cc1b8bd1214653c9b5304a0"
+    },
+    "FUSDT": {
+      "first_open_time": "2025-10-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 355,
+      "sha256": "aa23849a6e8a18bca189dc676481a80aa60765d0e393b76fd365f171d13db581"
+    },
+    "FWDIBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "26e79a149dbcf03c2a04398d099151b64b90929249b1a6671b280ceab049aca0"
+    },
+    "GALAUSDT": {
+      "first_open_time": "2021-09-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1858,
+      "sha256": "01dc631a4d2580377a514092fd9cebdb1368cfd5c1b2f90103812ae3aa51d1a5"
+    },
+    "GASUSDT": {
+      "first_open_time": "2023-03-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1308,
+      "sha256": "14e471c92e8497a46369aeb4d14af894e1b10c11bd42ccfa3d6ed8e9be27a19e"
+    },
+    "GENIUSUSDT": {
+      "first_open_time": "2026-05-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 146,
+      "sha256": "1ad0d409cd5e1aac88b56cb0a39cab728993fdcfa2b45ea20be08c3807bcc20a"
+    },
+    "GIGGLEUSDT": {
+      "first_open_time": "2025-10-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 355,
+      "sha256": "dfa16b2962605c320ac2db02f5b7a91cf6981a18571e12ebcf0b81a1c470e459"
+    },
+    "GLMRUSDT": {
+      "first_open_time": "2022-01-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1738,
+      "sha256": "2cbf4bbd32cc1929c465bdf80f036c5ad857d4efecef1db9eadf185d5908670f"
+    },
+    "GLMUSDT": {
+      "first_open_time": "2023-03-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1308,
+      "sha256": "b0095e4ff3a4390102bc573cc4295b32a94fc91bd99f922cd13b91f962edf902"
+    },
+    "GLWBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "d2b83feef1e8f048b4b7bad06d2b355d44b41885655e59f9505da07f453da962"
+    },
+    "GMEBUSDT": {
+      "first_open_time": "2026-08-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 64,
+      "sha256": "ce587897b3d7d64953df1ad9adae76101fcf57ea72450a9497b86a5213debb2d"
+    },
+    "GMTUSDT": {
+      "first_open_time": "2022-03-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1681,
+      "sha256": "13e75c8f54a4d118a23fc7125995ed498470069e659cf6ff0d740518937831ee"
+    },
+    "GMXUSDT": {
+      "first_open_time": "2022-10-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1471,
+      "sha256": "7209d11d8f37d91264d35299dc846bef94733bf00df6a3edfea98a4ec465127d"
+    },
+    "GNOUSDT": {
+      "first_open_time": "2021-08-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1872,
+      "sha256": "11b9c08e35f3a4675f2e061f68883275d2146a31af90fc2406210ec35e5eb7f5"
+    },
+    "GNSUSDT": {
+      "first_open_time": "2023-02-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1336,
+      "sha256": "1ee3d07a58c6391bd905e1950fa8235269051d2fe8a78e0ca68fccbde525e405"
+    },
+    "GOOGLBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "9b54d6fc24f2500bf76e6cddb886acc077434cc57e2d962821f3c53d67d433b6"
+    },
+    "GPROBUSDT": {
+      "first_open_time": "2026-09-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 29,
+      "sha256": "34cee48ecc194e2c74801258f3a70f23401105f53b3be336aa49b4afeb75abe3"
+    },
+    "GPSUSDT": {
+      "first_open_time": "2025-03-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 590,
+      "sha256": "c164a242bed1e6369edcbc3188e74e1f441717118da37a7327384635e5a9a961"
+    },
+    "GRAMUSDT": {
+      "first_open_time": "2026-07-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 105,
+      "sha256": "6c3b3b6d2d35270f170ca81424bc5d6592bfabee4f6b3788bbfab442b5d0e834"
+    },
+    "GRTUSDT": {
+      "first_open_time": "2020-12-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2128,
+      "sha256": "7d80fa20bcb1f7de7f7ddd4c89d2afbe37bd172add55b24a6d81a31aee71ee3d"
+    },
+    "GSBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "a85e2f36c5ee0b26639cffd8bb3549fbc7a917cbe0a2b19b0e156555d3cbc699"
+    },
+    "GTCUSDT": {
+      "first_open_time": "2021-06-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1953,
+      "sha256": "e508c8168f4839a2f9c80e7aaec2ba9e7b562b049a2587d52d95431b2e7c9e3a"
+    },
+    "GUNUSDT": {
+      "first_open_time": "2025-03-31T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 563,
+      "sha256": "59b4de471dcc5e37001b1d8bdf9b6a68f491018ac669a4cb747e8a9a4a03258c"
+    },
+    "GUSDT": {
+      "first_open_time": "2024-07-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 818,
+      "sha256": "fb3d4991c974d4615afb4d111331749621ee03501ce81e0bb2ff6d64f50191a9"
+    },
+    "HAEDALUSDT": {
+      "first_open_time": "2025-05-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 512,
+      "sha256": "b0f5dde2932a316aa57b6d8061cef984e6702a19de7827c8513d7729635ec028"
+    },
+    "HBARUSDT": {
+      "first_open_time": "2019-09-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2573,
+      "sha256": "1d8cf02c6cf63d56296858c3883e383ed89bea99ed31701941551f069a9f2197"
+    },
+    "HEIUSDT": {
+      "first_open_time": "2025-02-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 609,
+      "sha256": "e3225f65b20b0c7afeafeda87253180cf89c0d0fddb25068fdfa8df29eaf4061"
+    },
+    "HEMIUSDT": {
+      "first_open_time": "2025-09-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 387,
+      "sha256": "d43543344f5a4bddbb4afb26e2f8a4bb5afac7bb0e9371068a23d32d4311b443"
+    },
+    "HIMSBUSDT": {
+      "first_open_time": "2026-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 36,
+      "sha256": "a58d69ea0da18de003495b2ef4499aa449e051daebff081ed55f723662a31b57"
+    },
+    "HIVEUSDT": {
+      "first_open_time": "2020-04-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2362,
+      "sha256": "da2be89d795a3ee60192ada943b0bd81c33371d35932628fd0cb41e7a501d607"
+    },
+    "HMSTRUSDT": {
+      "first_open_time": "2024-09-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 749,
+      "sha256": "e457eb32a1204b670dc3cf84697a3ba6c655dcd10c78daeab4b1f471da7d5dd6"
+    },
+    "HOLOUSDT": {
+      "first_open_time": "2025-09-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 399,
+      "sha256": "6e7a20777678b188c8d2b1fb3ab4e895d8fb0170b0fcffb1ce93c37abe7ff451"
+    },
+    "HOMEUSDT": {
+      "first_open_time": "2025-06-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 490,
+      "sha256": "8ebe8e9b86548f1ecb7cf8886d9d407f87e7f9da2e1bce1d1ab7916c95c53eb5"
+    },
+    "HOODBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "85c991d8239424b9c600ceec84b29b7db078554df621c73748f77b23047b7a74"
+    },
+    "HOTUSDT": {
+      "first_open_time": "2019-02-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2796,
+      "sha256": "316048c15a41cbd41ac25ab4f07bbdd684533d7fe8dbcd097845224c98e784c5"
+    },
+    "HPEBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "9ff0d021ca9976d3eb6697f32899bb508dd514cd53786264194505d96649917c"
+    },
+    "HUMAUSDT": {
+      "first_open_time": "2025-05-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 507,
+      "sha256": "3e98817c537abc0237be701c0fc10f85d726cec25b35f233ec2040e4f8d38b1e"
+    },
+    "HYPERUSDT": {
+      "first_open_time": "2025-04-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 541,
+      "sha256": "08bb7897466fd31052a4cd9816cca205e08954c9e7b829ff4daac67bf5a4b857"
+    },
+    "HYPEUSDT": {
+      "first_open_time": "2026-09-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 21,
+      "sha256": "62226fc0ffe78e7f2fd7348a828bace1e7f35667ef6a5234ec076aaf5a51c314"
+    },
+    "IBMBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "be5a37f255944dc108b716b1ed44fce112c5ff6dceae81e8ad4b188260541efd"
+    },
+    "ICPUSDT": {
+      "first_open_time": "2021-05-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1983,
+      "sha256": "a8552482112ca2dcca5400d86c318286757a50077d9f34b6c50df5e329fcdd55"
+    },
+    "IDUSDT": {
+      "first_open_time": "2023-03-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1303,
+      "sha256": "a0c447d62522159550dd6271311e8bdff4fdf36d6696e674df45393c8f1eaeb7"
+    },
+    "ILVUSDT": {
+      "first_open_time": "2021-09-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1849,
+      "sha256": "854052c512fc6b2ec2d5eec93dfcca49ed3a4a8e3228002b91c2962fcf0a707a"
+    },
+    "IMXUSDT": {
+      "first_open_time": "2022-01-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1739,
+      "sha256": "14d78298100c57b080e8bcb67adaedddab4d22f999effd88ba82633a6555cf55"
+    },
+    "INITUSDT": {
+      "first_open_time": "2025-04-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 539,
+      "sha256": "660071a2404c1a02ef6e701c13e8f363f182ef8fd02ce832074d9bb317f6217e"
+    },
+    "INJUSDT": {
+      "first_open_time": "2020-10-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2185,
+      "sha256": "c71978ee3752124dd27a7701eb9855e781f4f7533f5e8a578f575d8b3368a89d"
+    },
+    "INTCBUSDT": {
+      "first_open_time": "2026-06-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 114,
+      "sha256": "1388564546581056217d92782208f6e4c3b2025d38f6bd9a02da8c5adf8fdee3"
+    },
+    "INTWBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "3ca672cedc53f25a0f86d02b56bb853caa246d75d041b3fba58dadea1bfb8e83"
+    },
+    "IOSTUSDT": {
+      "first_open_time": "2019-03-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2764,
+      "sha256": "5fdbc930c59731387052a58432443ea586babd57f3e1e3c5091f528d93b0ffcd"
+    },
+    "IOTAUSDT": {
+      "first_open_time": "2018-05-31T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3059,
+      "sha256": "1ba8a3c7821b1f2d886b9c4e9d02cd7bb946d27865a7465c1c451f1df317cdf4"
+    },
+    "IOTXUSDT": {
+      "first_open_time": "2019-11-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2527,
+      "sha256": "ce71c9a30c8c7b274f06a9d25f202e5fe00f00852ab410fc5ea4531374e44714"
+    },
+    "IOUSDT": {
+      "first_open_time": "2024-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 856,
+      "sha256": "9e2c7afb99e2c4096939e9d2d8d2bc40b2ee61a40c12ec740e66764077139676"
+    },
+    "IQUSDT": {
+      "first_open_time": "2023-09-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1119,
+      "sha256": "448dc9e8842df51328c20f83286863eeb5f3545ac5765a8344f5a1dd1d276652"
+    },
+    "IRENBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "3f17624aa092af0115fe256b983d864509853572bb6e5a0f99cf4b85c34c8d07"
+    },
+    "JASMYUSDT": {
+      "first_open_time": "2021-11-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1788,
+      "sha256": "20f5aace60614214c29195fcc8a759c2f0fa33bd38e5d2e46152f740ab96b0fc"
+    },
+    "JOEUSDT": {
+      "first_open_time": "2021-12-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1752,
+      "sha256": "fa63bf7c956049d92cd520d1c6dcb7eaca9e52d1a579e062a47080138d4bf54c"
+    },
+    "JPMBUSDT": {
+      "first_open_time": "2026-10-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 8,
+      "sha256": "4d9a17a820e9a5a79290414ab5f1c7c947634323d22ba0f6c02496442f0a68ce"
+    },
+    "JSTUSDT": {
+      "first_open_time": "2020-08-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2256,
+      "sha256": "44e4c127c7f5eb6d2930a2df1bef1b24a43f8b0384f721911ff1a61e6be0ba5d"
+    },
+    "JTOUSDT": {
+      "first_open_time": "2023-12-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1043,
+      "sha256": "e4c3d629936b42b9d8ab58a75ed9ed5cc88653b83caaf59d55c513d72a99ee08"
+    },
+    "JUVUSDT": {
+      "first_open_time": "2020-12-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2124,
+      "sha256": "22c88dbd2691aad48bb8738e5e7fe6ae3f1f12a0c224971f5e3f7246d451badb"
+    },
+    "KAIAUSDT": {
+      "first_open_time": "2024-10-31T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 714,
+      "sha256": "7d633bac493e23275d66f34d3c26d7159bb5c4ae277dd3129900d8c48e9900e2"
+    },
+    "KAITOUSDT": {
+      "first_open_time": "2025-02-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 602,
+      "sha256": "0e6c6a308589e436b5e2f4e6f337fdd5aabf3e25345769aefabea35fc84c956a"
+    },
+    "KATUSDT": {
+      "first_open_time": "2026-03-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 211,
+      "sha256": "39c227b6b4f1d656fb292eef3a7b02e8820381a14146fe35bbaf2c384ea16e58"
+    },
+    "KAVAUSDT": {
+      "first_open_time": "2019-10-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2547,
+      "sha256": "a455a93ac5d8b006c58ffac2885277218135e2643e37e13aa2e50f52a318d9cc"
+    },
+    "KERNELUSDT": {
+      "first_open_time": "2025-04-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 549,
+      "sha256": "8267806c8b03a172310765a925d6c909d8ef5a3c9054968cd4e36265989052af"
+    },
+    "KGSTUSDT": {
+      "first_open_time": "2025-12-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 295,
+      "sha256": "e7b2adeba5f909505704c230f4befa8d88ca81f9fc2e58d989a5f3560735984b"
+    },
+    "KITEUSDT": {
+      "first_open_time": "2025-11-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 346,
+      "sha256": "a306d1abc3e8d0fff3a6061250cdc97d28dc34b5bfdecdccae00b38c1492a3f3"
+    },
+    "KMNOUSDT": {
+      "first_open_time": "2025-05-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 527,
+      "sha256": "be26b0ee9e475ea6bc4b8cc32feda93c0f1f1483cf7461e560a6532ccf693d71"
+    },
+    "KNCUSDT": {
+      "first_open_time": "2020-06-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2316,
+      "sha256": "8910318c8324df05dd751f4f017f274e3f365ee631a52d1b9760a2c4a7514326"
+    },
+    "KORUBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "8dd69fb693d37c79365157837ad91d62ad0e01946da1c9a2e1c05b8609a10895"
+    },
+    "KSMUSDT": {
+      "first_open_time": "2020-09-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2232,
+      "sha256": "f4e05daccfce766a4767a5a5fc7557b1807fa03847670762f9d58a3f929e64fe"
+    },
+    "LAUSDT": {
+      "first_open_time": "2025-07-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 463,
+      "sha256": "6e7c23f14e5830f4d9eb35dcd4d53facb0628630f63bb999df9a7119fc6ecc5a"
+    },
+    "LAYERUSDT": {
+      "first_open_time": "2025-02-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 611,
+      "sha256": "846a796ff00b785066459e420d6fbed2b1bdd836ae7193afe6c687c970059c4f"
+    },
+    "LAZIOUSDT": {
+      "first_open_time": "2021-10-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1820,
+      "sha256": "b8d4afb9151fd04ec37cc95dd4e4ccf9c9f369c040002f9732d028b3c235c925"
+    },
+    "LDOUSDT": {
+      "first_open_time": "2022-05-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1620,
+      "sha256": "abb0618b8e9994cfe52688171f182a3c80030b516cd07c6276b63a061769e264"
+    },
+    "LINEAUSDT": {
+      "first_open_time": "2025-09-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 400,
+      "sha256": "3e0be17bd2783b8ad5e467f0e07455ad9362baf8fbbd465dfd8b0d99b6a2363d"
+    },
+    "LINKUSDT": {
+      "first_open_time": "2019-01-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2829,
+      "sha256": "17c3708ec4d071f40c82f9be9c63f1fafd1c532de55c15d45600da44c3d9aef2"
+    },
+    "LISTAUSDT": {
+      "first_open_time": "2024-06-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 847,
+      "sha256": "c907a7fc8a5ee979bd62aa51efdb824a1a8293d4b7e23c27d0a2627fdc33169d"
+    },
+    "LITEBUSDT": {
+      "first_open_time": "2026-06-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 107,
+      "sha256": "72849f6173e1010d7e876e38c3a2ae1baef7f0134450f3f27a22de72adac7c8f"
+    },
+    "LLYBUSDT": {
+      "first_open_time": "2026-10-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 8,
+      "sha256": "0da91497cf06ae8fe3beb10a207c9c0a4dbc3b71a50d5c1846e67b28294c661e"
+    },
+    "LPTUSDT": {
+      "first_open_time": "2021-05-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1966,
+      "sha256": "e3235f04d9f3370b633a6ffedc2e05d7d2ea95bb1ed5c42e44a70a0f981d768b"
+    },
+    "LQTYUSDT": {
+      "first_open_time": "2023-02-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1325,
+      "sha256": "ddee6c602fc941cf7751cb6ff17c2eb3de253d69459f9943efe79c18ce4dfbf8"
+    },
+    "LSKUSDT": {
+      "first_open_time": "2020-02-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2443,
+      "sha256": "3a8ad24bc39d25ef3d1a1589068cc73c72bef502bce896f0e54d707c6082c5ed"
+    },
+    "LTCUSDT": {
+      "first_open_time": "2017-12-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3228,
+      "sha256": "75f2ad21c3b78e7dd9d4ce3cae3f96572492321d6e5af8dc9f2cf2bd738c5a5c"
+    },
+    "LUMIAUSDT": {
+      "first_open_time": "2024-10-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 727,
+      "sha256": "6125924f636257425a016bf1a0e3b2d317f1747a47eab5f63f63ad3587a29306"
+    },
+    "LUNAUSDT": {
+      "first_open_time": "2020-08-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2229,
+      "sha256": "3a4a4449a9a61754fb44bb04a212fadb2f67090cf4d9f2aa1119e9811e81443d"
+    },
+    "LUNCUSDT": {
+      "first_open_time": "2022-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1497,
+      "sha256": "4eb652cfda1cd3c2c3101ee310cbbac61876ecec1e35e6ba8480216db3c4c3dd"
+    },
+    "MAGICUSDT": {
+      "first_open_time": "2022-12-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1403,
+      "sha256": "a423937499c0c1a9d3dddf4e32ab0c9970e236ed28d0880a0c386a7983a4d80c"
+    },
+    "MANAUSDT": {
+      "first_open_time": "2020-08-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2261,
+      "sha256": "9bbd63b7e1e3041e90707b0599b45bed15aa1ba2019064bc7795e919f7f92c4b"
+    },
+    "MANTAUSDT": {
+      "first_open_time": "2024-01-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1001,
+      "sha256": "3a2c248a7557b71c6258f77ee3804ad81aa53a7060704850178efa0564cdbaba"
+    },
+    "MANTRAUSDT": {
+      "first_open_time": "2026-03-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 225,
+      "sha256": "742d72d544f936f23fbdbba8a5b2ebaeb7bde39458f806e6c9d13f5602d31da4"
+    },
+    "MARSCOINUSDT": {
+      "first_open_time": "2026-09-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 41,
+      "sha256": "42e524c38c96dac6cefaf2c3f45e5ae69a842e4e90e96342283d53a9af6d99dd"
+    },
+    "MASKUSDT": {
+      "first_open_time": "2021-05-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1969,
+      "sha256": "0e5ca71703ce2d8f44d9859dbb3c3b5eb41cb90835b94d40f4612ca867d588b8"
+    },
+    "MAVUSDT": {
+      "first_open_time": "2023-06-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1205,
+      "sha256": "fb1141ed8fad42d1f3a99834d6d9c1c4ec165e1aeffc61b3cad2d5fa5c73f04e"
+    },
+    "MBLUSDT": {
+      "first_open_time": "2020-02-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2428,
+      "sha256": "dc7ac60abf38d7d85d224a65ca93e36a2e302c68bcf6114883e7c864b227b320"
+    },
+    "MDBBUSDT": {
+      "first_open_time": "2026-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1,
+      "sha256": "7af08b49a850274e2ccd77998188f2f5be9a2a22de1c4ee41059960ebc903f56"
+    },
+    "MEGAUSDT": {
+      "first_open_time": "2026-04-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 168,
+      "sha256": "915f457cbcf8c856106fd6b5f6e0237010333a410c491f97d6cd1f05f1dfe1b8"
+    },
+    "MEMEUSDT": {
+      "first_open_time": "2023-11-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1077,
+      "sha256": "1719eb73d2485f3a70435545cd463571d5811f649c9e9726ed1970ce30496a24"
+    },
+    "METABUSDT": {
+      "first_open_time": "2026-06-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 107,
+      "sha256": "8115c2daeb53d4dad3bd3f98fbaaf60e58d2f58de5cfd016a38f40ca31b269ca"
+    },
+    "METISUSDT": {
+      "first_open_time": "2024-03-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 948,
+      "sha256": "fcdc0c36a2949153987638109302d081344e6ae8ba7c350afc0ea4fb4ced886b"
+    },
+    "METUSDT": {
+      "first_open_time": "2025-11-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 336,
+      "sha256": "06271c3bcb01abf0d4530abe9e029a437cd7600d8020e3c5fac9beb75d2e908e"
+    },
+    "MEUSDT": {
+      "first_open_time": "2024-12-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 674,
+      "sha256": "0caeef5a570b7c9771de46a34997c47fe2748a0ca551143b1a947dd8c5caa9fa"
+    },
+    "MINAUSDT": {
+      "first_open_time": "2021-08-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1892,
+      "sha256": "c9af236ca0cab7e246dea97460d55c2c77ac5c24456924dda6a1298a91ba2a89"
+    },
+    "MIRAUSDT": {
+      "first_open_time": "2025-09-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 384,
+      "sha256": "e443e42c02ddaf77256b4498df67a27c19ded862010f860f54b2442183109cfd"
+    },
+    "MITOUSDT": {
+      "first_open_time": "2025-08-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 412,
+      "sha256": "67b657e5df52f91c24b6ad20190bbe697a7c16979e13a9c2247064782dc184b6"
+    },
+    "MMTUSDT": {
+      "first_open_time": "2025-11-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 345,
+      "sha256": "279279f7016fbaa451a902eb553d2c6279260e05f83ac56f6b6ecaa51a5cf887"
+    },
+    "MORPHOUSDT": {
+      "first_open_time": "2025-10-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 377,
+      "sha256": "044659912e822e721f3391c97fb3205f991db5bdaa7b23fea9456d4a89e35b0d"
+    },
+    "MOVEUSDT": {
+      "first_open_time": "2024-12-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 675,
+      "sha256": "6321660c420e926cd5d44cff23629dcc31c2d7c8e0af727bde7cefb34d6db409"
+    },
+    "MOVRUSDT": {
+      "first_open_time": "2021-11-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1802,
+      "sha256": "f2490527258d2018ea725c1858e6d04e8109eff7444050e2ff000088f8827da9"
+    },
+    "MRNABUSDT": {
+      "first_open_time": "2026-09-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 43,
+      "sha256": "87200a094819d085c6d8365149fe97e2a81c8febf592cb1d324097d298d69e44"
+    },
+    "MRVLBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "b411c718e495cda558c31c0a8866dac3a6b28796cc27035e65ad5a8eb079adbd"
+    },
+    "MSFTBUSDT": {
+      "first_open_time": "2026-06-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 107,
+      "sha256": "00750a72f24463e71af5e5dca6d60f05ab842767965ae2db00b3e9ae8e19196f"
+    },
+    "MSTRBUSDT": {
+      "first_open_time": "2026-06-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 114,
+      "sha256": "5cf2cc0ae9468360ed4ea3e0425733357058dc9d4590b9c82048dbc2c1538e76"
+    },
+    "MTLUSDT": {
+      "first_open_time": "2019-08-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2610,
+      "sha256": "6c3c78f5677f0621ab041c987dc3c139fe3d98fc573805fb99d20e2c83d31fd3"
+    },
+    "MUBARAKUSDT": {
+      "first_open_time": "2025-03-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 567,
+      "sha256": "0ec97c14c198f385cc81dec0f1159d42b255f6896a5db0149e8c60bc64baf9ff"
+    },
+    "MUBUSDT": {
+      "first_open_time": "2026-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 126,
+      "sha256": "cda465c5ff7de58c2665cb87aaabc11d8b275df60c8a5954cf12700fa4204e8c"
+    },
+    "MUUBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "b51b2b4373feaf3baa79bfa020eca62c11d6a6e746eb1557e66b93c4d0d58b0a"
+    },
+    "MVLLBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "31253821fae5152030bd5c6c7906ac1f0f464214b6602deb47ebe2509c99a808"
+    },
+    "NBISBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "6e370aca23f37917915286e8526d240ca2aabef8431b6b7c94867e3de3b488f7"
+    },
+    "NEARUSDT": {
+      "first_open_time": "2020-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2192,
+      "sha256": "b0a466c47f710eaddd317db4220e0a71cf9450da9303b5035a6e6530d823a79e"
+    },
+    "NEIROUSDT": {
+      "first_open_time": "2024-09-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 759,
+      "sha256": "4d1088d46ce61df30be3ff19d3a363da2ed2a68a8af8eb495fa62d807248f5a0"
+    },
+    "NEOUSDT": {
+      "first_open_time": "2017-11-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3251,
+      "sha256": "ebd6b5092ee81d1a427ae10bc72364db70786f2ba81f08f9b99a0131e8810160"
+    },
+    "NEWTUSDT": {
+      "first_open_time": "2025-06-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 478,
+      "sha256": "b342aa0b39ae90955d4ef51bbbac8f585a6cb7a5b9b67cf7e42bdb5c16c2eb2a"
+    },
+    "NEXOUSDT": {
+      "first_open_time": "2022-04-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1630,
+      "sha256": "44001af784b60efbdf22d73a221137e32a14241db258c87563299fd75108d94b"
+    },
+    "NFLXBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "3a005dff6dbfb215fad6870e9b1cf1ce0d1a4410da9206a2651a027fc52a3e1c"
+    },
+    "NIGHTUSDT": {
+      "first_open_time": "2026-03-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 218,
+      "sha256": "8a73a5dae342363a17ce9ef065176f3faca0fbcd9639638d3936bd7a33eecbad"
+    },
+    "NILUSDT": {
+      "first_open_time": "2025-03-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 570,
+      "sha256": "99f742f5e067c70ebbd9b7d240f28ea495ed25435a47360236e3c49caee1aa39"
+    },
+    "NMRUSDT": {
+      "first_open_time": "2020-08-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2248,
+      "sha256": "cfcd99118161d8f3270515cb2e67a406bd8a888f807f89c4f303496be6b20b0b"
+    },
+    "NOKBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "7aa4e9002e22b250d4bd89b6bcd4095cd5a43cf0f27e40a37b31dffe2750f64f"
+    },
+    "NOMUSDT": {
+      "first_open_time": "2025-10-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 379,
+      "sha256": "4485ada1deeac3d39eba15c8c9c945a7569bcd1c67f9b171d543f885ae8275b9"
+    },
+    "NOTUSDT": {
+      "first_open_time": "2024-05-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 882,
+      "sha256": "001948c8b4fd5ce3acad5a7ef78b450ab1f96619dd9cf75fe4edf0b802de1bc6"
+    },
+    "NVDABUSDT": {
+      "first_open_time": "2026-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 126,
+      "sha256": "3e827e97e5963116d7c08fb147b57af27146caf57b6a6735d290e5ef95d35029"
+    },
+    "NXPCUSDT": {
+      "first_open_time": "2025-05-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 518,
+      "sha256": "f98a8486e57fe6c2be26077c42ee9f7176572543d883385cb8780d0cb3838a62"
+    },
+    "OGNUSDT": {
+      "first_open_time": "2020-01-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2471,
+      "sha256": "2aafe3f16a49d04ebef71e0b3aa6717615c1d23d8d0e51d1b0869b35237729a0"
+    },
+    "OGUSDT": {
+      "first_open_time": "2020-12-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2115,
+      "sha256": "06ea619bed8cccdc0e13768f33be458b9499ea536dd701e4ce05bf935d894881"
+    },
+    "ONDOUSDT": {
+      "first_open_time": "2025-04-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 552,
+      "sha256": "386c666911c2356f9ae4ddad33fd93aee9f38cdf6603906559b8ebb5f09616f0"
+    },
+    "ONEUSDT": {
+      "first_open_time": "2019-06-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2693,
+      "sha256": "69509edb9d17de76aaf2af420320e173d43b551475a51fc05275c51dc4deee3c"
+    },
+    "ONGUSDT": {
+      "first_open_time": "2019-02-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2798,
+      "sha256": "5e409b7ef7db415c38c7bd32c23c12157b5a041ef7c47425d22d42a279dce24d"
+    },
+    "ONTUSDT": {
+      "first_open_time": "2018-06-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3051,
+      "sha256": "2e301d910089b1fe6d9077a1cd8ae6a9b585eb9b5adf03f4f6dcd8b560a93d5d"
+    },
+    "OPENUSDT": {
+      "first_open_time": "2025-09-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 402,
+      "sha256": "9fa807db35e3b36ba7d662e74771742406e66b4b4b5d62a8a904bb40c2221d5a"
+    },
+    "OPGUSDT": {
+      "first_open_time": "2026-05-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 146,
+      "sha256": "b9540ae1ea140440866acfa3c0b642e8d4b40eb373b735fd6686be3881629fcd"
+    },
+    "OPNUSDT": {
+      "first_open_time": "2026-03-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 224,
+      "sha256": "6bf7d8222b3326c1a136e87778b2cb2e88e86569434c420b6b68df3eb740bc26"
+    },
+    "OPUSDT": {
+      "first_open_time": "2022-06-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1597,
+      "sha256": "01e5db57632a10caa11dfa05418cfb86f48eadc1f4e22bc53f2121ae43cbe9f3"
+    },
+    "ORCAUSDT": {
+      "first_open_time": "2024-12-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 678,
+      "sha256": "8a5d4543cecfacf959073bb19cb8c98eea49b5628ae4d9872fec3f66fea34a8f"
+    },
+    "ORCLBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "0d7355d091ebec73fec408f980943b99f4d31f41cd6d5d2e1ed70f3ecaf27984"
+    },
+    "ORDIUSDT": {
+      "first_open_time": "2023-11-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1073,
+      "sha256": "6b8a3d71f623e6bba0ef2221cc58eca95b60031d709438dd24deac528e89e813"
+    },
+    "OSMOUSDT": {
+      "first_open_time": "2022-10-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1448,
+      "sha256": "bca55433d77deecc6ea9763e36cb26f59d96adb7583074134efb6cad03953b60"
+    },
+    "PARTIUSDT": {
+      "first_open_time": "2025-03-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 569,
+      "sha256": "3d98f594da5fc89423042ed0fa1bc3fce0606d72724eed9c4e7a7db931b1774c"
+    },
+    "PAXGUSDT": {
+      "first_open_time": "2020-08-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2239,
+      "sha256": "1961761ad3154948370d8803e0f5d023cff055c338b0fdc5fa7070da502eaa5d"
+    },
+    "PDDBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "c6fc43a3b34ab9b08fec203f3f6b30b74dd70538dc4d80dbeddc02cf8455b3c9"
+    },
+    "PENDLEUSDT": {
+      "first_open_time": "2023-07-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1200,
+      "sha256": "e3e56a8f3b7e955a6ef9c0df9b7583c17fa69f72131900f011a51a4f14dec073"
+    },
+    "PENGBUSDT": {
+      "first_open_time": "2026-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1,
+      "sha256": "9e836f0db68ddfc342e26aa6e7254e5b53e778a9eb725044bd32f2ac87e79015"
+    },
+    "PENGUUSDT": {
+      "first_open_time": "2024-12-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 667,
+      "sha256": "c9fe4f34f9218811ed356a191013ac92c025f6d377ca79a6e4779f7eef25cc37"
+    },
+    "PEOPLEUSDT": {
+      "first_open_time": "2021-12-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1757,
+      "sha256": "a54ce2c72ef22255293c0f5bed840b48e06d52c54aa7cce5fda819ccc0cbe6e7"
+    },
+    "PEPEUSDT": {
+      "first_open_time": "2023-05-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1259,
+      "sha256": "db0ef63a47a8cfca20a18092d8fb10433ca80d8514faa1170b126345d8ae9698"
+    },
+    "PHAUSDT": {
+      "first_open_time": "2021-06-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1938,
+      "sha256": "e30059cf5ccbb53ab31ee99afeaec9205a3017671db6c0a73ad8864c58f85086"
+    },
+    "PIXELUSDT": {
+      "first_open_time": "2024-02-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 969,
+      "sha256": "8d7757534c309580442d0c822fdaa8ffb6f0ea6b7632794640fd2deae74b1b95"
+    },
+    "PLTRBUSDT": {
+      "first_open_time": "2026-06-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 107,
+      "sha256": "29d352970371ea5b12d7f299f1b014a00189b780765f92b24440a8c03ebddb1b"
+    },
+    "PLUMEUSDT": {
+      "first_open_time": "2025-08-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 423,
+      "sha256": "a8e24957a80ba1276d908e1d25c7fdc4261caedd21c5c3fc7e1c6bc678117d0b"
+    },
+    "PNUTUSDT": {
+      "first_open_time": "2024-11-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 703,
+      "sha256": "51fd82b738baf20260976451f498cb15f1ca7f1d68f5aee4303d01ec6542a3e8"
+    },
+    "POLUSDT": {
+      "first_open_time": "2024-09-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 762,
+      "sha256": "dfe615475cb10495c3bf96da92848420366b8b32177c44b57f1301e40eb657ee"
+    },
+    "POLYXUSDT": {
+      "first_open_time": "2022-10-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1459,
+      "sha256": "e45555a5df6985a1764380da273658c88dded9ddad2a156c8f9a2f972d9cb852"
+    },
+    "PORTALUSDT": {
+      "first_open_time": "2024-02-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 959,
+      "sha256": "246b81c75251bfefb5a59cb662e20101c4bad6d68e76a5e29b95ecf00cab6e3e"
+    },
+    "PORTOUSDT": {
+      "first_open_time": "2021-11-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1794,
+      "sha256": "ad10ad0961f55d94be6d0db942f3293cf1c147829cbd60bb61a73fc4c787a69d"
+    },
+    "POWRUSDT": {
+      "first_open_time": "2021-11-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1793,
+      "sha256": "e8ba128f755c9ef8aa25e2561b88057a70cbf12e4ace8a7d092b6ef1112577ed"
+    },
+    "PROMUSDT": {
+      "first_open_time": "2023-03-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1308,
+      "sha256": "a3a96ff4b2d35c36e5a6ad22153c73038c754348c72529951ad51cec335b54f7"
+    },
+    "PROVEUSDT": {
+      "first_open_time": "2025-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 436,
+      "sha256": "702e571ad8c82f4b8293a366f4da815df28c8e3ad85df58490ac8a58ef95eb83"
+    },
+    "PSGUSDT": {
+      "first_open_time": "2020-12-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2124,
+      "sha256": "30630f089fb08e276485b4a2227f45c36d46fd85993f6889e608708a01a7acff"
+    },
+    "PUMPUSDT": {
+      "first_open_time": "2025-09-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 399,
+      "sha256": "ebcfd01f4dd3acdd9942e6a2c337ee6825b2397ec71ea4a2f4a1559320edfb6b"
+    },
+    "PUNDIXUSDT": {
+      "first_open_time": "2021-04-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2015,
+      "sha256": "6279cec69bf207e6ed22216c193e15099628fe6c463dc7e777d724a12464aa2a"
+    },
+    "PYPLBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "f57125bb6d24051b591ddb6bc62a982aa9a975dd43d0458208c24611f5ba6673"
+    },
+    "PYTHUSDT": {
+      "first_open_time": "2024-02-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 986,
+      "sha256": "0298af15189917116b386ea94d1825b19ab4083f87a506b031761d39575c9ed0"
+    },
+    "QCOMBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "b02c4e6500c6b40ed2a658e7a90872bf8f086b1acbe176b1a20a0911eaef5733"
+    },
+    "QIUSDT": {
+      "first_open_time": "2021-11-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1795,
+      "sha256": "baea449d49d7e1d9af4a01a74d06e6d75a4719409c3d5c8076bf25a92d55d70b"
+    },
+    "QKCUSDT": {
+      "first_open_time": "2023-03-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1308,
+      "sha256": "b43679af9d0a094f7964d817c42acf00f4d0907f7821b55dc63208575ebb177b"
+    },
+    "QNTBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "f3275a63df6ee8164064afc9dabff32b8520ce10ec9a33723fe4ffb16a40be57"
+    },
+    "QNTUSDT": {
+      "first_open_time": "2021-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1904,
+      "sha256": "73ac3180cbb5dfa742953b89f26786626195ffbac648199f5b7f165a32a6389c"
+    },
+    "QQQBUSDT": {
+      "first_open_time": "2026-06-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 107,
+      "sha256": "e39241f4897d2c32b716de493a9f33c47a2633a46b5bcf4c2179e78b7a473326"
+    },
+    "QTUMUSDT": {
+      "first_open_time": "2018-03-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3132,
+      "sha256": "eeac8b424b7c0573baf47a0624a227cb7ac4c3260323d2e0b3c7e551020c4f80"
+    },
+    "QUICKUSDT": {
+      "first_open_time": "2021-08-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1886,
+      "sha256": "5158ceffe6c62f344ded9db362de5bd92efe268f4ac899595a19bc163a187431"
+    },
+    "RADUSDT": {
+      "first_open_time": "2021-10-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1834,
+      "sha256": "16185b1f623b4171fd8835be68a85122939db6d5f7b2ca40fcc44e31a1696f99"
+    },
+    "RAREUSDT": {
+      "first_open_time": "2021-10-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1830,
+      "sha256": "f39819fd17be0d5636a2b50427aa76d2632238ce4fe5ef1f8c88548d2eef82d5"
+    },
+    "RAYUSDT": {
+      "first_open_time": "2021-08-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1892,
+      "sha256": "b1682cbd2a213f3870e2cec73f9a6c23937f179e008bd0f0cd5f2fa2a2411442"
+    },
+    "RDDTBUSDT": {
+      "first_open_time": "2026-09-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 29,
+      "sha256": "6bcdbf80c7ded06c6b3d446e989cdc3bd69746464dd08b4054ca4fa155088d6f"
+    },
+    "REDUSDT": {
+      "first_open_time": "2025-02-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 594,
+      "sha256": "dc5510e3abe3f7ba6025fee7f136b9ca18296d361311fc1952d4b7a5eb1f564e"
+    },
+    "RENDERUSDT": {
+      "first_open_time": "2024-07-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 811,
+      "sha256": "ab10bf70852653f847ae4726a314e23ecd6ce7b43aa38ceb9fb124db8c690164"
+    },
+    "REQUSDT": {
+      "first_open_time": "2021-08-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1882,
+      "sha256": "38f6c08af6e8d5ec0d9a4cdc00d2e84199fca88ac5a16f8901c3d522104d5fdd"
+    },
+    "RESOLVUSDT": {
+      "first_open_time": "2025-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 491,
+      "sha256": "442b9e026a6eea127154f8319154bbc0c66f84d4bb4e58830d1f079ca8d7eb03"
+    },
+    "REUSDT": {
+      "first_open_time": "2026-06-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 119,
+      "sha256": "20262c41f9c0d8e563cc1642f021832270235d0d984159035c5c2d10440ff3b9"
+    },
+    "REZUSDT": {
+      "first_open_time": "2024-04-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 898,
+      "sha256": "6a0f29f172c7d63cde9d6d47792953a298b75e10d81fcf6c3ddd80e3f7b8292d"
+    },
+    "RIFUSDT": {
+      "first_open_time": "2021-01-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2107,
+      "sha256": "67ab53d6ed134c6ebec11c13f35cc92d0b5ba1e9f29739d961db32215aec0fff"
+    },
+    "RKLBBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "74a9346ddefe155ce75dac7f7c49fa663ac5f0efa7a6da4485aa887c2a123ca9"
+    },
+    "RLCUSDT": {
+      "first_open_time": "2019-11-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2527,
+      "sha256": "f65ac5f4332a1e0798e98d614a5577fdc16c1f15ef0e52a45a709c9600f670d0"
+    },
+    "RLUSDUSDT": {
+      "first_open_time": "2026-01-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 266,
+      "sha256": "4142402703468855cbdf91093fe1c628aeec7568f77a8bf564914a57f414d1ec"
+    },
+    "ROBOUSDT": {
+      "first_open_time": "2026-03-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 225,
+      "sha256": "699f6b02c49ccba92999a800b4aab3ab30e491729094d26da5a319cdb61d7c52"
+    },
+    "RONINUSDT": {
+      "first_open_time": "2024-02-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 983,
+      "sha256": "a6f348cf935df7e5636598c85731dd92958cf879d28012e7393d51a04bd3c6d4"
+    },
+    "ROSEUSDT": {
+      "first_open_time": "2020-11-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2156,
+      "sha256": "0e6146bc320a658dcde25ce78f8e75044ca62e448aad31d28aca32cf50728fad"
+    },
+    "RPLUSDT": {
+      "first_open_time": "2023-01-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1366,
+      "sha256": "96cc6e60873320db0df1f950cc9b487a4967a26aa9ce791bf1a4b613249b21db"
+    },
+    "RSRUSDT": {
+      "first_open_time": "2020-08-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2240,
+      "sha256": "f38ad700c6e7cda58278d62329ed5d869c0669ab003020cf1ef21c99ef8a8309"
+    },
+    "RUNEUSDT": {
+      "first_open_time": "2020-09-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2232,
+      "sha256": "15629eadc78b99ebef6a1b6d66a37897c40ecb1c99c0a2b4d909bec563ed0dcc"
+    },
+    "RVNUSDT": {
+      "first_open_time": "2019-09-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2577,
+      "sha256": "61cb11e452cfc94611c8c0307c039af0affeedd2a0bd73b04b42907d3fdcc260"
+    },
+    "RWUSDUSDT": {
+      "first_open_time": "2026-10-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2,
+      "sha256": "87e58d682f238eea36bbf22b9369ef8fc71e377fc0d08de0a286b5b4092f3976"
+    },
+    "SAGAUSDT": {
+      "first_open_time": "2024-04-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 919,
+      "sha256": "ced31adce4a3ae23b46c082a47d542b0dfe09bdad0c48b3ba2dbdabb4e5b88c8"
+    },
+    "SAHARAUSDT": {
+      "first_open_time": "2025-06-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 476,
+      "sha256": "762c0a94d549879ca1052d362404a8cd320662a4afe8f3b5d546913f2f1e7d2e"
+    },
+    "SANDUSDT": {
+      "first_open_time": "2020-08-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2253,
+      "sha256": "236ba24624e03f562547028342bc041a7ac0c8053c323944d783ad99136a167b"
+    },
+    "SANTOSUSDT": {
+      "first_open_time": "2021-12-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1779,
+      "sha256": "7a372b4f55032b3df50ca8343258a700c56e875778dbf82608cabd2a731ed3c0"
+    },
+    "SAPIENUSDT": {
+      "first_open_time": "2025-11-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 343,
+      "sha256": "6ce9520dcdf037093e10eb445253ae3b5ce23f185c8499358f6a0873ba978e24"
+    },
+    "SCRUSDT": {
+      "first_open_time": "2024-10-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 734,
+      "sha256": "fc021fe4b12b35fa1fd905764e0fb6754b533e602ab4c3fe431583c059ecacd9"
+    },
+    "SCUSDT": {
+      "first_open_time": "2020-07-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2292,
+      "sha256": "f7f7c1f83f9cc2d58ca6306113b6a9a6ca681e3818488caa94ba02deaac4fb28"
+    },
+    "SECZBUSDT": {
+      "first_open_time": "2026-10-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 8,
+      "sha256": "9587eff3fac4b60e51c3b59097d31d3836483c7d6567152e9e6f2d5fedefacd4"
+    },
+    "SEIUSDT": {
+      "first_open_time": "2023-08-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1157,
+      "sha256": "bf285d8977613c2da865499006dda59e75517b2ead26e3f382032f892a370fa5"
+    },
+    "SENTUSDT": {
+      "first_open_time": "2026-01-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 266,
+      "sha256": "00ef69c719ab652d75e71fb6f82f0012ffdf117d07622f5b2941d34f8f676a9f"
+    },
+    "SFPUSDT": {
+      "first_open_time": "2021-02-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2075,
+      "sha256": "42b712be985cec4a96a5c94dd9ea42970be8fc1d315882a97e227094832ec8dc"
+    },
+    "SHAZBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "1b201ac4ddc346312b35bea5e164f7ca36afc1b786a70bf362703d2f2f20cd75"
+    },
+    "SHELLUSDT": {
+      "first_open_time": "2025-02-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 595,
+      "sha256": "62b4e734e21e9e331d37b6fa8cb28b8440e55875794d31af2da0310b54da1221"
+    },
+    "SHIBUSDT": {
+      "first_open_time": "2021-05-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1984,
+      "sha256": "fc4063116a4d422a86bfabe7e7f264cd7afcf5a5d6e5ce03f2945750cda26b85"
+    },
+    "SIGNUSDT": {
+      "first_open_time": "2025-04-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 535,
+      "sha256": "c798857abbea2b744afdec83ead955d3503a99bf1e6bd1ae238061cb5db3b825"
+    },
+    "SKHYBUSDT": {
+      "first_open_time": "2026-07-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 94,
+      "sha256": "a66f259d7a623b1bdb6e2f922ada8dc52c3a5ccdf5a5294adc3e8118d7c7c487"
+    },
+    "SKLUSDT": {
+      "first_open_time": "2020-12-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2144,
+      "sha256": "4ae3238d5a9dd61d532a99042e9de18ddaef6f8fc9ea32b1dc168398a13e0e50"
+    },
+    "SKYUSDT": {
+      "first_open_time": "2025-09-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 393,
+      "sha256": "121fd0f0a4de2923569f44ca4d25b295a164cc682bb18b76671c224611d4c40a"
+    },
+    "SLPUSDT": {
+      "first_open_time": "2021-04-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1994,
+      "sha256": "95d4d72c693d6e9caf31857747b022ae75c4b94efafe5c65abc95b8eaf01fad9"
+    },
+    "SMCIBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "23c55d8ab5ebbab36435e52faf02521b254ccf003a17de7c9233091dbf25807b"
+    },
+    "SMHBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "bb9d0ba935c4beed149464ab2ac7d2f932cbed8be3b747bb76ba43c94aff31a2"
+    },
+    "SNDKBUSDT": {
+      "first_open_time": "2026-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 126,
+      "sha256": "ebe0414dec29235438766ac2d9adbfe8f663c5e1a0301b0eebe0e2a47454e0f4"
+    },
+    "SNXUSDT": {
+      "first_open_time": "2020-07-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2289,
+      "sha256": "7147d3942ee70b6a2aa8117b7d4ff1c965344516c91e010e768ffd4470234328"
+    },
+    "SNXXBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "40c979618daa7fa23eccd7e8b39030803ef306c92bdba1b788fb6599aaf9c447"
+    },
+    "SOLUSDT": {
+      "first_open_time": "2020-08-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2256,
+      "sha256": "d4fff32512d962da8c99abd6f8e06ea1455b03757a1fab25d6a35ce5e79948a3"
+    },
+    "SOLVUSDT": {
+      "first_open_time": "2025-01-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 636,
+      "sha256": "6145af8b11563921a85146a99ffb2674d87d37fc3f4eef5ec4bc91c60571403b"
+    },
+    "SOMIUSDT": {
+      "first_open_time": "2025-09-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 408,
+      "sha256": "bfbd94e3a3e216eba4ad861534d4c7cb22cad47f3c79d8defdbc35dda9d935e5"
+    },
+    "SOPHUSDT": {
+      "first_open_time": "2025-05-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 505,
+      "sha256": "867704ad3f7376f268afeff97b088be16e1f8bf8dc1ece0d36c56f4a599e3507"
+    },
+    "SOXLBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "778eb89add20487e4411dd5d2dd98d572ff75cec3729d6ed8f2850db1bd65deb"
+    },
+    "SOXSBUSDT": {
+      "first_open_time": "2026-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 78,
+      "sha256": "27913e65757d60ea5a98f97e733ed8996f8e21fe1a6e7f4d70be665e51f975d1"
+    },
+    "SPCXBUSDT": {
+      "first_open_time": "2026-06-12T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 125,
+      "sha256": "86828582298ad772bd482d7b2bd898247a393798d0efcb1b7aa75d5081ae5f28"
+    },
+    "SPELLUSDT": {
+      "first_open_time": "2021-12-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1756,
+      "sha256": "1f5331fc58232438bcd991584ac012a9389ebba8d5bb8c27e3ad69fc2138b6de"
+    },
+    "SPKUSDT": {
+      "first_open_time": "2025-06-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 485,
+      "sha256": "6056ce696f004872be8b62db0b8d384002cd53e46b1ce030481c84c115e54f2c"
+    },
+    "SPYBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "bf7888b0daef92a9c302717713ff99aa82372f09355af8580fc086ce1e0846d4"
+    },
+    "SQQQBUSDT": {
+      "first_open_time": "2026-09-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 43,
+      "sha256": "69229c85a8a3f72c571f73afbf6b4f56077839da2c288736e22479ee0a7f0f55"
+    },
+    "SSVUSDT": {
+      "first_open_time": "2023-02-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1329,
+      "sha256": "2cb67e003777db78cc67082059ac24d71948f7da3a387bb5ef1dbba5b39c1f05"
+    },
+    "STEEMUSDT": {
+      "first_open_time": "2022-04-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1637,
+      "sha256": "2c48fdb0a30392c62edeff7f482c26ea46181ba8e88d29aaf3be1bebc212bcf2"
+    },
+    "STOUSDT": {
+      "first_open_time": "2025-05-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 531,
+      "sha256": "65464b5aa29a1142e6ff69723b085d3cc82aec62c905de4ffc4332652fcf7a69"
+    },
+    "STRAXUSDT": {
+      "first_open_time": "2020-11-18T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2150,
+      "sha256": "955a361085166aedec4ef94c86f142983a13539e345416c829a55790ead9bacc"
+    },
+    "STRKUSDT": {
+      "first_open_time": "2024-02-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 968,
+      "sha256": "8f2df88538b22f058146038a271f6bac7d202a9d1348d0d6a9f2e87733591350"
+    },
+    "STXBUSDT": {
+      "first_open_time": "2026-09-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 43,
+      "sha256": "048eb59ea9a1aedb0004dadf6339018d98cfd04f835444d451d6251511e5f2e0"
+    },
+    "STXUSDT": {
+      "first_open_time": "2019-10-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2547,
+      "sha256": "ae062d8d9ab09b8dbb1dcad875d872c93820d29955c9073afeb06c7385d92b00"
+    },
+    "SUIUSDT": {
+      "first_open_time": "2023-05-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1261,
+      "sha256": "ae8c487d3c88002c97055a28c892ffc875465799486e918b24a1345e10225de3"
+    },
+    "SUNUSDT": {
+      "first_open_time": "2020-09-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2212,
+      "sha256": "e3e2349cf4ce534396df92105710d7bda00e5f015b67ccafc74c1cdc97699ebd"
+    },
+    "SUPERUSDT": {
+      "first_open_time": "2021-03-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2030,
+      "sha256": "a37bab186392ef48cc2b6d1f1cb518720b58d81992e83f58e5dd7199d43db7f4"
+    },
+    "SUSDT": {
+      "first_open_time": "2025-01-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 637,
+      "sha256": "dd905c1b40f0181e488e8f5e4be02da0500bb30b88f54100449b6d9c4c2b7f78"
+    },
+    "SUSHIUSDT": {
+      "first_open_time": "2020-09-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2235,
+      "sha256": "d89443991e5a69391adfdfc4ddf883498282b8ea6e1c0cd3eecd54ffe41ebb66"
+    },
+    "SXTUSDT": {
+      "first_open_time": "2025-05-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 525,
+      "sha256": "bde1b86a42ac9891f962767023bce9039147f60451f7c9803eafa407a06e5dfd"
+    },
+    "SYNUSDT": {
+      "first_open_time": "2023-02-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1331,
+      "sha256": "4f112726dc6c64813706328f57770db521d9cc9076e301e34e9bba6059bdf4b4"
+    },
+    "TAOUSDT": {
+      "first_open_time": "2024-04-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 917,
+      "sha256": "436dcabf633f39431deae65377b6f75f9fd1cd0dbcc5c776fc56be45bc571a1c"
+    },
+    "TFUELUSDT": {
+      "first_open_time": "2019-05-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2701,
+      "sha256": "56ca493523131cdde59a5c566c1d54f1884cc42b2e358738282f78932e918a9c"
+    },
+    "THETAUSDT": {
+      "first_open_time": "2019-04-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2745,
+      "sha256": "3a7d031cc25afcac1f5cfe1a12b7a9eb06507bc33f7bb8f828d6984c72c45339"
+    },
+    "THEUSDT": {
+      "first_open_time": "2024-11-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 687,
+      "sha256": "6fa6b2ed3932a1ce710005af9e93f310e998a78d24f145472e36f1f4deace24e"
+    },
+    "TIAUSDT": {
+      "first_open_time": "2023-10-31T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1080,
+      "sha256": "bbf8e61eb6385ef63bf0038d9081317642af63c0af141f7fe82677f1c1e31ffd"
+    },
+    "TKOUSDT": {
+      "first_open_time": "2021-04-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2017,
+      "sha256": "fca98c1b10d4d42de939f82fe6b53ccafb2ca1f6490d0a5e8a34572b650e53cb"
+    },
+    "TLMUSDT": {
+      "first_open_time": "2021-04-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2011,
+      "sha256": "ab943d86bec1f6773d5352c4a20f2ad04683e8908dff1030cb6431f560207a8b"
+    },
+    "TNSRUSDT": {
+      "first_open_time": "2024-04-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 920,
+      "sha256": "adfb1ad56b5c972c128262834f49e8ac27bd41ea9ea012e218cfe06f53495d42"
+    },
+    "TOWNSUSDT": {
+      "first_open_time": "2025-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 436,
+      "sha256": "cb9e790a9feea3f97b52dececdbfa72918b6e398684a1730ac92df754b347b80"
+    },
+    "TQQQBUSDT": {
+      "first_open_time": "2026-07-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 85,
+      "sha256": "f831d426c15f447f4ad69425c02e1e04e3e1e5661835f71ce7fa80604e758356"
+    },
+    "TRBUSDT": {
+      "first_open_time": "2020-08-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2238,
+      "sha256": "8558e94f8a95069bcccc8661a284a9322eada45b358cf0a52b9c0830fc03677f"
+    },
+    "TREEUSDT": {
+      "first_open_time": "2025-07-29T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 443,
+      "sha256": "498103c5ead148c4c011d9a59cde3d3cc3a90da2781992be229ace50b5798bd8"
+    },
+    "TRUMPUSDT": {
+      "first_open_time": "2025-01-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 634,
+      "sha256": "1452a6705374e84cfdc830101b5439a97b5b33beb04cd5c03e9b90ccac74bb4c"
+    },
+    "TRXUSDT": {
+      "first_open_time": "2018-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3048,
+      "sha256": "2d9fbb570e53244a8ed8a404815e151845656e4b1d1f09c19c2b8b80e5df969c"
+    },
+    "TSLABUSDT": {
+      "first_open_time": "2026-06-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 126,
+      "sha256": "08077180f052bd1f6a2ebe8a1dafb6a465c1974a5e8300bd2e28ec6903f0b24b"
+    },
+    "TSMBUSDT": {
+      "first_open_time": "2026-07-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 92,
+      "sha256": "97a0928de3bd68489e80fb5fd1c5b1d74d66eeb8a5f3abbe9f60c055a9cd36d2"
+    },
+    "TSTUSDT": {
+      "first_open_time": "2025-02-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 613,
+      "sha256": "64c6a4f48d2c7d280c8f2269ddeeaea47c5d0dd2ca6ce1ce5cd30e1c99a6a5b8"
+    },
+    "TURBOUSDT": {
+      "first_open_time": "2024-09-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 759,
+      "sha256": "4c6e1f5b532d67f9ce1f2a4ac5bca03fb36a2a2bd736a68e54035a64fcbd908b"
+    },
+    "TURTLEUSDT": {
+      "first_open_time": "2025-10-22T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 358,
+      "sha256": "df89e0e388267b8a1a987aa755fe88b9425528a9e671d9658a663f2301703e92"
+    },
+    "TUSDT": {
+      "first_open_time": "2022-02-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1693,
+      "sha256": "ee3f5723a7b2860270588193bfd10eb5191124558c9d9ef9819a29c9aec88943"
+    },
+    "TUTUSDT": {
+      "first_open_time": "2025-03-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 567,
+      "sha256": "371bd7202c84b1b99a33eb936a02adb0379f02d62e8b5c056fd3dc2961654a31"
+    },
+    "TWTUSDT": {
+      "first_open_time": "2021-01-27T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2087,
+      "sha256": "50704ddef9ebf632615a1596fe85089bab1728d49166bcc6562e3e504288e3df"
+    },
+    "UMAUSDT": {
+      "first_open_time": "2020-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2227,
+      "sha256": "f41e73eab7e0f888749a47475300d83b8184b8bf54e5fc21fb6b919dc1cb7598"
+    },
+    "UNIUSDT": {
+      "first_open_time": "2020-09-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2219,
+      "sha256": "a936f2740223f30cb12501dc7fc00f2bcd5a9d022ab1ee769e60ae443f1fbe14"
+    },
+    "USARBUSDT": {
+      "first_open_time": "2026-08-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 71,
+      "sha256": "465885aee038eb79ba37144f05f7d1851aef17d535b9d3060f9f0d2dbe21c335"
+    },
+    "USDEBUSDT": {
+      "first_open_time": "2026-10-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 8,
+      "sha256": "04accc0a2c8ac1a34f7cc7dc4bba8a74f467ea6f6289aaacd5cb29f4e5399f22"
+    },
+    "USDEUSDT": {
+      "first_open_time": "2025-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 401,
+      "sha256": "ef2248a3e25e7af7ec715de3035d7972012f5b23585fceb1b4a63f6a76d8d36a"
+    },
+    "USTCUSDT": {
+      "first_open_time": "2023-03-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1315,
+      "sha256": "7b41901e4c6a1c7c572e15bf147a6abca3d082ea34d374c524330bbbbb55fd22"
+    },
+    "USUALUSDT": {
+      "first_open_time": "2024-11-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 695,
+      "sha256": "a6d10850846afcc6450206f80039ddf0e5a39f61d58550b5c19418b0918815e5"
+    },
+    "UUSDT": {
+      "first_open_time": "2026-01-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 275,
+      "sha256": "5de3503b415451d2b1d866a3905c8bfe50c3320b9f3be78082360d8fe9ec81db"
+    },
+    "UVXYBUSDT": {
+      "first_open_time": "2026-10-14T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1,
+      "sha256": "51172d45bf95ebc54878577caffd32294490452c5fbe4e64a7253205a8b64f7e"
+    },
+    "VANAUSDT": {
+      "first_open_time": "2024-12-16T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 668,
+      "sha256": "4169f555032a396ca79c2cf276bbc5433f34f4b6a1f1f028fb6fdc01b45ed83b"
+    },
+    "VELODROMEUSDT": {
+      "first_open_time": "2024-12-13T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 671,
+      "sha256": "1571cfaef71b54b848609e0d41552592ef0a2ac6deb5b93453a02ab8bc1d16fb"
+    },
+    "VETUSDT": {
+      "first_open_time": "2018-07-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3004,
+      "sha256": "d6a6a6b8be742227df25cd3445131e42b5ce832ebcc21bcbaae274e78749d86a"
+    },
+    "VIRTUALUSDT": {
+      "first_open_time": "2025-04-11T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 552,
+      "sha256": "01ece2e9c80a1a1b16fbef0fd39c1277e31beb2f409b10a2ce5db37970c76ae4"
+    },
+    "VTHOUSDT": {
+      "first_open_time": "2020-07-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2281,
+      "sha256": "0e0f38cf8afa18552c1ee214013b33a4cc1e033154bc13693fdf701770a74e43"
+    },
+    "WALUSDT": {
+      "first_open_time": "2025-10-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 370,
+      "sha256": "47ab63e32ed512a23a6421b5167f8fe78bc32d7e4753cdad9925a908a4962ee1"
+    },
+    "WAXPUSDT": {
+      "first_open_time": "2021-08-23T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1879,
+      "sha256": "a035ea78d7e5efd799f904dbd537eb91d14220ca90708f5212df0746bcf80481"
+    },
+    "WBETHUSDT": {
+      "first_open_time": "2023-07-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1184,
+      "sha256": "c7ce385d0d24e2e8ce533be6b465790bc91276d92d5e3f80bc8c43455e06a409"
+    },
+    "WBTCUSDT": {
+      "first_open_time": "2023-04-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1266,
+      "sha256": "163a6d36e81f9478b4501e09f3b44fb78f0fe8df8032bdb8662ca11faa4b7e6f"
+    },
+    "WCTUSDT": {
+      "first_open_time": "2025-04-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 548,
+      "sha256": "ac1f7900aef1b177038bb6177250da83ba5c36100814d8259632f4e5ac67ed88"
+    },
+    "WDCBUSDT": {
+      "first_open_time": "2026-07-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 100,
+      "sha256": "110eb688a52c3f12d23d3019fb19217aa9bb1f1c0745be3e61d6b2775713cbe5"
+    },
+    "WENBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "06dcfccd8127ba539443e0f2a40b16be10264f07fda23bafd3d3053be548c686"
+    },
+    "WIFUSDT": {
+      "first_open_time": "2024-03-05T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 954,
+      "sha256": "77e217de5abf2051f1312307d165571837520d87d2be33cec904b35fd9ec2f69"
+    },
+    "WINUSDT": {
+      "first_open_time": "2019-08-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2632,
+      "sha256": "7d28f93913abbbc7b41dfa7c5a4f71e27ae12626a401217a1ed0630f72755995"
+    },
+    "WLDUSDT": {
+      "first_open_time": "2023-07-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1179,
+      "sha256": "7cdf4c8f65a7031d73e21661dfc4a2c6b893a5695d18c49ef62e7f26f41a7fe2"
+    },
+    "WLFIUSDT": {
+      "first_open_time": "2025-09-01T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 409,
+      "sha256": "206d45fb096d6bdb523acd03208f29365c48a292862e729c9e7aaa1d294202b0"
+    },
+    "WOOUSDT": {
+      "first_open_time": "2022-02-08T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1710,
+      "sha256": "ad70d39f5718418ec431948924f5ec37e60c9bd28fe37a078809f00a16ca6786"
+    },
+    "WUSDT": {
+      "first_open_time": "2024-04-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 925,
+      "sha256": "aedac94c25d800bf568a4d211bbb3dfa15891885791ec9daccf1f414a45f0ea6"
+    },
+    "XAIUSDT": {
+      "first_open_time": "2024-01-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1010,
+      "sha256": "a2c411a38de2be773ef37d1fb1590c3902960f91d515351360804502c867f846"
+    },
+    "XAUTUSDT": {
+      "first_open_time": "2026-03-26T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 203,
+      "sha256": "32c37893ef83c8d903aa178763826dd5cd94f442e6c14e7041efa064ab8b7d47"
+    },
+    "XECUSDT": {
+      "first_open_time": "2021-09-03T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1868,
+      "sha256": "2ecd36d4da97b4360d775596f6c9aebde4e75404e44d136bb7980cd7d0c9ad14"
+    },
+    "XLMUSDT": {
+      "first_open_time": "2018-05-31T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3059,
+      "sha256": "48c54cc4cf6f8df158969344a8ab90cb71a9f333fcb277ec9af1e7df8f8130a3"
+    },
+    "XNOUSDT": {
+      "first_open_time": "2022-01-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1721,
+      "sha256": "1a3a014cb24fc949aec8e8546ff87e06143b7d95098b085f9fe71b828c1739b3"
+    },
+    "XPLUSDT": {
+      "first_open_time": "2025-09-25T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 385,
+      "sha256": "b93a32eebff6628e6844b92e9376f1f1f7173629d660e7635b6fe089f6b84a9b"
+    },
+    "XRPUSDT": {
+      "first_open_time": "2018-05-04T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 3086,
+      "sha256": "ea6daff0c8c88d2877d17ed38dd4e15a93b6d5637870e376fc1f8c7e5797d2b9"
+    },
+    "XTZUSDT": {
+      "first_open_time": "2019-09-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2578,
+      "sha256": "ddc7ad7ebc81bcfd2ee32e90531da9763b64c9fa6a616e238fb9488b41c64c7a"
+    },
+    "XVGUSDT": {
+      "first_open_time": "2021-06-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1957,
+      "sha256": "9daba29430749350a69ec2348fe86f0840249d1512b809907b8a15ff7875ee76"
+    },
+    "XVSUSDT": {
+      "first_open_time": "2020-10-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2200,
+      "sha256": "16b4eac79ba8e05500956c5c055efca78c989becb6ebf6914884e6ed0ba3cb18"
+    },
+    "YBUSDT": {
+      "first_open_time": "2025-10-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 365,
+      "sha256": "06d321ca76567b18c112e1d998cd25b0a69002f650de14fe24b66155ec04311c"
+    },
+    "YFIUSDT": {
+      "first_open_time": "2020-08-10T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2257,
+      "sha256": "648cd4dfb8b45d074c5eccb213afc64f66247ed47f0cf5bb638869e05908130d"
+    },
+    "YGGUSDT": {
+      "first_open_time": "2021-09-24T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 1847,
+      "sha256": "01cd9e87a5386ab95fbb8a437d59bfd80b8c3738a033f5e798c66bfac4b77ea2"
+    },
+    "ZAMAUSDT": {
+      "first_open_time": "2026-02-02T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 255,
+      "sha256": "15ee4d03e4d5b12f860c650fbc81756579ad6b7c712fb1f2659a5d8dcb10ab4f"
+    },
+    "ZBTUSDT": {
+      "first_open_time": "2025-10-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 363,
+      "sha256": "caaf4f505b76c343f3261ef39523847adf6f41df1ae97221cbac45e20f174548"
+    },
+    "ZECUSDT": {
+      "first_open_time": "2019-03-21T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2765,
+      "sha256": "81b70ef6e7abc87be06dd2c9cb3b9b3ece365b0ae8f304ccdb377819b7de5037"
+    },
+    "ZENUSDT": {
+      "first_open_time": "2020-07-06T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2292,
+      "sha256": "80c8018e981da85959d3cfab3c1dd89c69712ddb0d59d744d34d1970e1f67946"
+    },
+    "ZILUSDT": {
+      "first_open_time": "2019-02-19T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2795,
+      "sha256": "e6000ed0c937f5db659f79ff7326d38ca9c709f394ebfc501ff4048ec7ec8b66"
+    },
+    "ZKCUSDT": {
+      "first_open_time": "2025-09-15T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 395,
+      "sha256": "fbea8d6da6302a1b95a3a4727a4fabfa6cbab9a4214ec1b7480ead0ab2462413"
+    },
+    "ZKPUSDT": {
+      "first_open_time": "2026-01-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 281,
+      "sha256": "b0e91180ad8f1787aa81ee44973732be840feeacaac5cc31af8e11d2bdf9de8d"
+    },
+    "ZKUSDT": {
+      "first_open_time": "2024-06-17T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 850,
+      "sha256": "1cda3c3300287621710e56193b86af2e28563cc80a446dd5b5fd8e96ee4ba921"
+    },
+    "ZMBUSDT": {
+      "first_open_time": "2026-09-30T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 15,
+      "sha256": "31dff81d00c38469d374efa2f8e6d2f4b43bcb88cd3d3a0da1dc5f07ea0b04d6"
+    },
+    "ZROUSDT": {
+      "first_open_time": "2024-06-20T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 847,
+      "sha256": "2001a0fce7dd0c28654f39fba6ae9936e7f3ca5ec3026a9aef38ade31455581b"
+    },
+    "ZRXUSDT": {
+      "first_open_time": "2019-02-28T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 2786,
+      "sha256": "39a9fe84d9e69fb48a5c4929f94d1d6494750308e77ae112c7ce57b2eb06e6a3"
+    },
+    "\u5e01\u5b89\u4eba\u751fUSDT": {
+      "first_open_time": "2026-01-07T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 281,
+      "sha256": "e639c500c64bef6ba46e99be1c3a2e0e65d5df521c507882c446d7ef51eb4338"
+    },
+    "\u725b\u6765USDT": {
+      "first_open_time": "2026-09-09T00:00:00+00:00",
+      "last_open_time": "2026-10-14T00:00:00+00:00",
+      "rows": 36,
+      "sha256": "abc0c129e39b3162a72b87e595db3c11b057af13b638fa499f209a05004d1b96"
+    }
+  },
+  "tool": "binance_klines_fetch.py",
+  "tool_version": "1.0.0",
+  "universe_counts": {
+    "exchange_info_total": 3729,
+    "excluded_by_name": 10,
+    "kept": 501,
+    "quote_usdt": 765,
+    "spot_allowed": 511,
+    "status_trading": 511
+  },
+  "vintage": "20261015",
+  "wall_seconds_this_run": 0.7
+}
