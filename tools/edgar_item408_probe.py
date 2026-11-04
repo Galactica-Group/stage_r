@@ -55,7 +55,7 @@ import random
 import re
 import sys
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from html.parser import HTMLParser
 import zipfile
 
@@ -1091,7 +1091,7 @@ def cmd_fetch(args):
         "skipped": skipped,
         "failed": failed,
         "wall_s": round(time.time() - t0, 1),
-        "finished_utc": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "finished_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     write_manifest(mpath, manifest)
     say(
@@ -1216,7 +1216,7 @@ def cmd_parse(args):
         "flag_counts": flag_counts,
         "events_parquet_sha256": sha256_file(ev_path),
         "untagged_csv_sha256": sha256_file(ut_path),
-        "finished_utc": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "finished_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     write_manifest(mpath, manifest)
     tracked = tracked_manifest_path(args.vintage)
@@ -1490,7 +1490,7 @@ def cmd_fsn(args):
             "coverage": coverage,
             "rows": int(len(df)),
             "events_parquet_sha256": sha256_file(ev),
-            "finished_utc": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "finished_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
     )
     write_manifest(manifest_path(args.vintage), vman)
