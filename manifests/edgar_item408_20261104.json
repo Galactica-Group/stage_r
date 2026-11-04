@@ -1,0 +1,512 @@
+{
+ "archives": {
+  "2023q2_notes.zip": {
+   "bytes": 516928926,
+   "sha256": "7e6df1b41e51e649bb5a0ff923c4f41e9488c4c592286f4c1c2b6c1fe25faa40",
+   "status": 200,
+   "wall_s": 4.8
+  },
+  "2023q3_notes.zip": {
+   "bytes": 627139541,
+   "sha256": "1b102217ac767a627537b90f5d9c9d0a9b297a192e012e478d38bcd47773dbbd",
+   "status": 200,
+   "wall_s": 6.2
+  },
+  "2023q4_notes.zip": {
+   "bytes": 435789146,
+   "sha256": "8fdbd209683e8010ad8360fef0fc268bb957620976288fea2140a35594cd74cd",
+   "status": 200,
+   "wall_s": 4.1
+  },
+  "2024q1_notes.zip": {
+   "bytes": 619443584,
+   "sha256": "7d32ab3c55b73518da7ed2806585d1af2cb43cf9e70315021daaa3d4ccaca9e2",
+   "status": 200,
+   "wall_s": 6.0
+  },
+  "2024q2_notes.zip": {
+   "bytes": 533034079,
+   "sha256": "0cd96e543861de383be5b4a45fc780d2c2e00148c577102531de42c0fef615a1",
+   "status": 200,
+   "wall_s": 8.4
+  },
+  "2024q3_notes.zip": {
+   "bytes": 438987421,
+   "sha256": "4f9df2afb9f13cc59332041732d65615befc807e34419a4d529c727796b88761",
+   "status": 200,
+   "wall_s": 4.8
+  },
+  "2024q4_notes.zip": {
+   "bytes": 430780795,
+   "sha256": "9170c007b27cc886b4bf772e569c0202796635cacb620972e272de83f75ecaa3",
+   "status": 200,
+   "wall_s": 4.1
+  },
+  "2025_10_notes.zip": {
+   "bytes": 97554203,
+   "sha256": "023d5ea5fd4ccd8626447dfb7d9fa036e0fca8a7b8bf39159ac4163d041faef7",
+   "status": 200,
+   "wall_s": 1.7
+  },
+  "2025_11_notes.zip": {
+   "bytes": 291956067,
+   "sha256": "a58753e3ad42fbb38bc154beb34c74c211e4b3649c7bd4b1b9faabf1f4ca1094",
+   "status": 200,
+   "wall_s": 2.9
+  },
+  "2025_12_notes.zip": {
+   "bytes": 56910813,
+   "sha256": "b8204dd58360c782da4d15c88a4c5b9f737baefc886c8a265601535caee39030",
+   "status": 200,
+   "wall_s": 0.8
+  },
+  "2025q1_notes.zip": {
+   "bytes": 663293756,
+   "sha256": "f2e45bc99c25d615cf2261d537e35e0d4c0b6ab3e61c4dbdae46a82625181426",
+   "status": 200,
+   "wall_s": 11.0
+  },
+  "2025q2_notes.zip": {
+   "bytes": 519984351,
+   "sha256": "088afacafbd37170d24cef1102d66db0bd0e5bbe901ecbf3b36a25023a14d3a9",
+   "status": 200,
+   "wall_s": 4.8
+  },
+  "2025q3_notes.zip": {
+   "bytes": 463365283,
+   "sha256": "194ec982f296e8ddbfd0de7d60f0b0de3b74101d1bfc0d1230a96441d366cdd9",
+   "status": 200,
+   "wall_s": 4.4
+  },
+  "2026_01_notes.zip": {
+   "bytes": 43055315,
+   "sha256": "ca33a8f8f60a0be26793c143094a45ed9f6829ce767d59ab390fd0c27ea7d9a9",
+   "status": 200,
+   "wall_s": 0.6
+  },
+  "2026_02_notes.zip": {
+   "bytes": 329381774,
+   "sha256": "b136c03e65d09cae85317daf76c6f368e7331add69cd41f970ca9cb0070506b8",
+   "status": 200,
+   "wall_s": 3.4
+  },
+  "2026_03_notes.zip": {
+   "bytes": 307533198,
+   "sha256": "d1c1711e6cee2f197fb91879521da178329d1c1ed369f9086aa501aff45f83d4",
+   "status": 200,
+   "wall_s": 3.2
+  },
+  "2026_04_notes.zip": {
+   "bytes": 178348604,
+   "sha256": "5c0d73348971b33e03a195a1b2806fe5bddaac80e0a6c1567efc16e75447b17e",
+   "status": 200,
+   "wall_s": 1.9
+  },
+  "2026_05_notes.zip": {
+   "bytes": 304197920,
+   "sha256": "be53d43208bd8a37fd1c8e074767a89647137d85b616404d6007aa1ec9f3b9e2",
+   "status": 200,
+   "wall_s": 3.1
+  },
+  "2026_06_notes.zip": {
+   "bytes": 75305795,
+   "sha256": "33b66c361c7300ba2c9329fa1e99a606d090296d0e009c8c0176acb3076b7745",
+   "status": 200,
+   "wall_s": 1.0
+  },
+  "2026_07_notes.zip": {
+   "bytes": 107907905,
+   "sha256": "e3dddc51764c4b8932b0444690648f42775c9569b7d257cc41bcbccd19c8443b",
+   "status": 200,
+   "wall_s": 1.8
+  },
+  "2026_08_notes.zip": {
+   "bytes": 312729503,
+   "sha256": "b94cca57b452afcf2acbdf6de7dee71c1f9c1231a63619e3e6e28d43c576a6a6",
+   "status": 200,
+   "wall_s": 3.4
+  },
+  "2026_09_notes.zip": {
+   "bytes": 56074923,
+   "sha256": "c747318c0cdd6ac2802ab20ecce80a2c9ba5032232eeb2ae020307e92108c244",
+   "status": 200,
+   "wall_s": 0.8
+  }
+ },
+ "coverage": [
+  {
+   "archive": "2023q2_notes.zip",
+   "filings_with_any_item408_fact": 0,
+   "item408_facts": 0,
+   "present": true,
+   "rows": 0,
+   "rows_by_form": {}
+  },
+  {
+   "archive": "2023q3_notes.zip",
+   "filings_with_any_item408_fact": 1933,
+   "item408_facts": 12827,
+   "present": true,
+   "rows": 2903,
+   "rows_by_form": {
+    "10-K": 94,
+    "10-Q": 2791,
+    "10-Q/A": 18
+   }
+  },
+  {
+   "archive": "2023q4_notes.zip",
+   "filings_with_any_item408_fact": 2315,
+   "item408_facts": 15603,
+   "present": true,
+   "rows": 3504,
+   "rows_by_form": {
+    "10-K": 198,
+    "10-Q": 3296,
+    "10-Q/A": 10
+   }
+  },
+  {
+   "archive": "2024q1_notes.zip",
+   "filings_with_any_item408_fact": 3314,
+   "item408_facts": 20952,
+   "present": true,
+   "rows": 4709,
+   "rows_by_form": {
+    "10-K": 3984,
+    "10-K/A": 31,
+    "10-KT": 3,
+    "10-Q": 647,
+    "10-Q/A": 28,
+    "20-F": 16
+   }
+  },
+  {
+   "archive": "2024q2_notes.zip",
+   "filings_with_any_item408_fact": 4338,
+   "item408_facts": 25881,
+   "present": true,
+   "rows": 5854,
+   "rows_by_form": {
+    "10-K": 675,
+    "10-K/A": 33,
+    "10-KT": 2,
+    "10-Q": 5108,
+    "10-Q/A": 26,
+    "20-F": 9,
+    "8-K": 1
+   }
+  },
+  {
+   "archive": "2024q3_notes.zip",
+   "filings_with_any_item408_fact": 4212,
+   "item408_facts": 25173,
+   "present": true,
+   "rows": 5562,
+   "rows_by_form": {
+    "10-K": 332,
+    "10-K/A": 29,
+    "10-KT": 1,
+    "10-KT/A": 1,
+    "10-Q": 5155,
+    "10-Q/A": 36,
+    "20-F": 5,
+    "424B3": 2,
+    "8-K": 1
+   }
+  },
+  {
+   "archive": "2024q4_notes.zip",
+   "filings_with_any_item408_fact": 4576,
+   "item408_facts": 27925,
+   "present": true,
+   "rows": 6127,
+   "rows_by_form": {
+    "10-K": 386,
+    "10-K/A": 20,
+    "10-KT": 1,
+    "10-Q": 5624,
+    "10-Q/A": 86,
+    "10-QT": 1,
+    "20-F": 3,
+    "424B3": 3,
+    "DEF 14A": 1,
+    "POS AM": 2
+   }
+  },
+  {
+   "archive": "2025q1_notes.zip",
+   "filings_with_any_item408_fact": 4795,
+   "item408_facts": 29337,
+   "present": true,
+   "rows": 6401,
+   "rows_by_form": {
+    "10-K": 5313,
+    "10-K/A": 40,
+    "10-KT": 6,
+    "10-Q": 988,
+    "10-Q/A": 38,
+    "20-F": 10,
+    "DEF 14A": 2,
+    "PRE 14A": 1,
+    "S-1": 1,
+    "S-1/A": 1,
+    "SP 15D2": 1
+   }
+  },
+  {
+   "archive": "2025q2_notes.zip",
+   "filings_with_any_item408_fact": 5273,
+   "item408_facts": 29470,
+   "present": true,
+   "rows": 6602,
+   "rows_by_form": {
+    "10-K": 534,
+    "10-K/A": 65,
+    "10-KT": 2,
+    "10-Q": 5922,
+    "10-Q/A": 31,
+    "20-F": 18,
+    "20-F/A": 2,
+    "DEF 14A": 22,
+    "PRE 14A": 2,
+    "S-1/A": 4
+   }
+  },
+  {
+   "archive": "2025q3_notes.zip",
+   "filings_with_any_item408_fact": 5136,
+   "item408_facts": 28933,
+   "present": true,
+   "rows": 6448,
+   "rows_by_form": {
+    "10-K": 372,
+    "10-K/A": 48,
+    "10-KT": 2,
+    "10-Q": 5954,
+    "10-Q/A": 59,
+    "20-F": 1,
+    "20-F/A": 1,
+    "424B3": 3,
+    "8-K": 1,
+    "DEF 14A": 2,
+    "PRE 14A": 1,
+    "S-1/A": 4
+   }
+  },
+  {
+   "archive": "2025_10_notes.zip",
+   "filings_with_any_item408_fact": 1054,
+   "item408_facts": 7075,
+   "present": true,
+   "rows": 1505,
+   "rows_by_form": {
+    "10-K": 72,
+    "10-K/A": 4,
+    "10-Q": 1411,
+    "10-Q/A": 9,
+    "20-F": 6,
+    "6-K/A": 1,
+    "DEF 14A": 1,
+    "S-1": 1
+   }
+  },
+  {
+   "archive": "2025_11_notes.zip",
+   "filings_with_any_item408_fact": 3755,
+   "item408_facts": 21616,
+   "present": true,
+   "rows": 4760,
+   "rows_by_form": {
+    "10-K": 198,
+    "10-K/A": 9,
+    "10-KT": 2,
+    "10-Q": 4501,
+    "10-Q/A": 43,
+    "20-F": 2,
+    "20-F/A": 1,
+    "424B3": 1,
+    "6-K": 1,
+    "8-K": 1,
+    "DEF 14A": 1
+   }
+  },
+  {
+   "archive": "2025_12_notes.zip",
+   "filings_with_any_item408_fact": 403,
+   "item408_facts": 2411,
+   "present": true,
+   "rows": 536,
+   "rows_by_form": {
+    "10-K": 141,
+    "10-K/A": 5,
+    "10-Q": 364,
+    "10-Q/A": 18,
+    "20-F": 1,
+    "8-K": 4,
+    "DEF 14A": 1,
+    "DEF 14C": 1,
+    "PRE 14C": 1
+   }
+  },
+  {
+   "archive": "2026_01_notes.zip",
+   "filings_with_any_item408_fact": 265,
+   "item408_facts": 1543,
+   "present": true,
+   "rows": 342,
+   "rows_by_form": {
+    "10-K": 84,
+    "10-K/A": 5,
+    "10-Q": 239,
+    "10-Q/A": 8,
+    "20-F": 2,
+    "DEF 14A": 1,
+    "PRE 14A": 3
+   }
+  },
+  {
+   "archive": "2026_02_notes.zip",
+   "filings_with_any_item408_fact": 2397,
+   "item408_facts": 16863,
+   "present": true,
+   "rows": 3552,
+   "rows_by_form": {
+    "10-K": 2843,
+    "10-K/A": 13,
+    "10-KT": 2,
+    "10-Q": 677,
+    "10-Q/A": 10,
+    "20-F": 4,
+    "DEF 14A": 2,
+    "S-1": 1
+   }
+  },
+  {
+   "archive": "2026_03_notes.zip",
+   "filings_with_any_item408_fact": 2330,
+   "item408_facts": 13028,
+   "present": true,
+   "rows": 2907,
+   "rows_by_form": {
+    "10-K": 2698,
+    "10-K/A": 14,
+    "10-KT": 6,
+    "10-Q": 167,
+    "10-Q/A": 8,
+    "20-F": 8,
+    "8-K": 2,
+    "DEF 14A": 4
+   }
+  },
+  {
+   "archive": "2026_04_notes.zip",
+   "filings_with_any_item408_fact": 1062,
+   "item408_facts": 6613,
+   "present": true,
+   "rows": 1449,
+   "rows_by_form": {
+    "10-K": 277,
+    "10-K/A": 30,
+    "10-KT": 1,
+    "10-Q": 1105,
+    "10-Q/A": 8,
+    "20-F": 7,
+    "DEF 14A": 12,
+    "POS AM": 6,
+    "PRE 14A": 2,
+    "S-4/A": 1
+   }
+  },
+  {
+   "archive": "2026_05_notes.zip",
+   "filings_with_any_item408_fact": 3991,
+   "item408_facts": 22653,
+   "present": true,
+   "rows": 5053,
+   "rows_by_form": {
+    "10-K": 140,
+    "10-K/A": 7,
+    "10-Q": 4890,
+    "10-Q/A": 9,
+    "20-F": 3,
+    "DEF 14A": 2,
+    "POS AM": 1,
+    "S-1/A": 1
+   }
+  },
+  {
+   "archive": "2026_06_notes.zip",
+   "filings_with_any_item408_fact": 412,
+   "item408_facts": 2201,
+   "present": true,
+   "rows": 495,
+   "rows_by_form": {
+    "10-K": 134,
+    "10-K/A": 13,
+    "10-Q": 323,
+    "10-Q/A": 19,
+    "20-F": 1,
+    "DEF 14A": 2,
+    "DEFR14A": 1,
+    "PRE 14A": 1,
+    "S-4": 1
+   }
+  },
+  {
+   "archive": "2026_07_notes.zip",
+   "filings_with_any_item408_fact": 965,
+   "item408_facts": 6178,
+   "present": true,
+   "rows": 1344,
+   "rows_by_form": {
+    "10-12G": 1,
+    "10-K": 70,
+    "10-K/A": 4,
+    "10-Q": 1254,
+    "10-Q/A": 13,
+    "DEF 14A": 1,
+    "S-1": 1
+   }
+  },
+  {
+   "archive": "2026_08_notes.zip",
+   "filings_with_any_item408_fact": 3904,
+   "item408_facts": 22512,
+   "present": true,
+   "rows": 4977,
+   "rows_by_form": {
+    "10-K": 134,
+    "10-K/A": 11,
+    "10-KT": 1,
+    "10-Q": 4806,
+    "10-Q/A": 19,
+    "20-F": 2,
+    "8-K": 2,
+    "DEF 14A": 2
+   }
+  },
+  {
+   "archive": "2026_09_notes.zip",
+   "filings_with_any_item408_fact": 376,
+   "item408_facts": 1995,
+   "present": true,
+   "rows": 443,
+   "rows_by_form": {
+    "10-K": 145,
+    "10-K/A": 3,
+    "10-KT": 2,
+    "10-Q": 276,
+    "10-Q/A": 13,
+    "20-F": 1,
+    "6-K/A": 1,
+    "DEF 14A": 2
+   }
+  }
+ ],
+ "events_parquet_sha256": "ca2f86aa878f5c34aa841a15c5057d24e2c143f6e372510914c5e26e7753d1bd",
+ "finished_utc": "2026-11-04T07:12:11Z",
+ "route": "bulk_dataset_fsn",
+ "rows": 75473,
+ "vintage": "20261104"
+}
