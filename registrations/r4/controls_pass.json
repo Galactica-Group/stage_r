@@ -1,0 +1,151 @@
+{
+  "registration_sha": "490017c7bdc0fd28d258ebbb1ca7df0502bb3d53ed970a19134f2267e2c840af",
+  "mde": 0.32632831659340295,
+  "known_null_share": 0.05,
+  "q_chosen": 0.6,
+  "detection": 0.94,
+  "utc": "2026-10-17T07:06:41.710450+00:00",
+  "runner_version": "1.0.0",
+  "engine_version": "1.0.0",
+  "engine_sha256": "45eab82ce4a953e2a61bfdd90412537881ba1ddadecaab8cf5c6d0361d61fa4e",
+  "manifest_sha256": "454d60edf2f2a43aa77b681e3187c60579a2b232bc02ca2c33620219a2a201a4",
+  "rates_frequency_only": {
+    "switches_total": 104,
+    "sleeves_with_member_months": 47,
+    "p01_median": 0.6666666666666666,
+    "p10_median": 0.07407407407407407,
+    "p01_mean": 0.5983081981986863,
+    "p10_mean": 0.13069281527354115
+  },
+  "known_null_control": {
+    "N": 200,
+    "R_each": 500,
+    "seed": 777,
+    "share_p_le_bar": 0.05,
+    "band": [
+      0.01,
+      0.1
+    ],
+    "mean_p": 0.52552,
+    "median_p": 0.562,
+    "in_band": true
+  },
+  "positive_control": {
+    "q_grid": [
+      {
+        "q": 0.5,
+        "planted_dsr": 0.04205869643483373
+      },
+      {
+        "q": 0.52,
+        "planted_dsr": 0.10637143005109428
+      },
+      {
+        "q": 0.54,
+        "planted_dsr": 0.3045559550731448
+      },
+      {
+        "q": 0.56,
+        "planted_dsr": 0.4091906361450165
+      },
+      {
+        "q": 0.58,
+        "planted_dsr": 0.46626913969369477
+      },
+      {
+        "q": 0.6,
+        "planted_dsr": 0.5184656984941128
+      },
+      {
+        "q": 0.62,
+        "planted_dsr": 0.6107482298561658
+      },
+      {
+        "q": 0.65,
+        "planted_dsr": 0.7052585481060621
+      },
+      {
+        "q": 0.7,
+        "planted_dsr": 0.9640840376833154
+      },
+      {
+        "q": 0.75,
+        "planted_dsr": 1.2631825468339999
+      },
+      {
+        "q": 0.8,
+        "planted_dsr": 1.3674618716452085
+      }
+    ],
+    "q_star": 0.6,
+    "one_draw_dsr_at_q_star": 0.5184656984941128,
+    "N_draws": 50,
+    "R_each": 500,
+    "seed": 4242,
+    "detection_rate": 0.94,
+    "floor": 0.8,
+    "median_p": 0.0,
+    "passes": true,
+    "leak": "DELIBERATE and named by a test: the planted state reads the sign of the return it is about to earn"
+  },
+  "panel": {
+    "first_two_eligible_month_end": "2018-05",
+    "first_scored_month": "2018-06",
+    "last_scored_month": "2021-12",
+    "months": 43,
+    "sleeves_in_panel": 47,
+    "sleeves_total": 167,
+    "assets": 48,
+    "n_members_min": 2,
+    "n_members_max": 20,
+    "n_members_months_at_top_n": 25,
+    "n_members_path": [
+      2,
+      2,
+      2,
+      4,
+      5,
+      5,
+      5,
+      6,
+      7,
+      10,
+      13,
+      14,
+      14,
+      14,
+      14,
+      14,
+      14,
+      15,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20,
+      20
+    ],
+    "forced_exit_member_months": 0
+  },
+  "note": "steps 1-3 formed no figure of either observed book; step 4 formed the buy-and-hold Sharpe to calibrate q and neither printed nor recorded it",
+  "wall_seconds": 4.6
+}

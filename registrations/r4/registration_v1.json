@@ -1,0 +1,110 @@
+{
+  "registration": "T-R4 crypto trend, half A, v1",
+  "sealed": "Strategist draft 2026-10-15; operator approval by running Sprint R4-1 (RUN-IS-APPROVAL)",
+  "look_budget": "one Stage R registered look drawn forward from the Q1 2027 allowance; Q4 2026's three (T-R1, T-R1b, T-R3) are spent; T-R3b is a confirmation and does not count",
+  "data": {
+    "vintage": "binance_spot_1d_20261015",
+    "manifest_tracked_copy": "manifests/binance_spot_1d_20261015.json",
+    "manifest_sha256": "454d60edf2f2a43aa77b681e3187c60579a2b232bc02ca2c33620219a2a201a4",
+    "price": "the close of the Binance 1d kline stamped (open_time) on each UTC calendar day; the vintage holds closed days only",
+    "monthly_price": "the close of the kline stamped on the last calendar day of the month; if that kline is absent, the last available close before it INSIDE THE SAME SLEEVE",
+    "known_omission": "JUPUSDT and SYRUPUSDT were excluded at fetch by the leveraged-token suffix clause and are absent from the vintage; recorded, not patched; both books share the omission"
+  },
+  "universe": {
+    "name": "binance_usdt_top20_pit_halfA",
+    "pool": "every symbol in the vintage except the exclusions below",
+    "exclusions": {
+      "pegged_or_metal_backed": ["BFUSDUSDT", "FRAXUSDT", "RLUSDUSDT", "RWUSDUSDT", "USDEUSDT", "USDEBUSDT", "PAXGUSDT", "XAUTUSDT"],
+      "wrapped_or_staked_duplicates": ["WBTCUSDT", "WBETHUSDT", "BNSOLUSDT"],
+      "tokenized_equities_rule": "every symbol whose base ends in the letter B and whose first_open_time in the manifest is on or after 2026-06-11; the resolved set must number exactly 95 or HALT"
+    },
+    "sleeve_split_rule": "a symbol's history is cut into separate sleeves at every interior gap of one or more missing calendar days; a sleeve ends with a forced exit to USDT at its last close in BOTH books; no return is ever computed across a gap; each sleeve earns eligibility on its own history",
+    "eligibility": "a sleeve is eligible at month-end t when it has at least 10 month-end closes (t included) and at least 90 daily bars ending at t",
+    "ranking": "at each month-end t, eligible sleeves are ranked by the sum of quote_volume over the 90 daily bars ending at t",
+    "membership": "the top 20 by that ranking; all eligible sleeves when fewer than 20",
+    "weights": "equal, 1/N_t across the N_t members, set at month-end t, earning in month t+1",
+    "survivorship": "the vintage holds only symbols listed on the venue at 2026-10-15; delisted coins are absent; both books hold the same survivors, so dSR and dMu are survivorship-neutral to first order; the LEVEL of buy-and-hold return is biased upward and is not adjudicated"
+  },
+  "books": {
+    "TREND": "each member sleeve holds its coin for the following month when its month-end close is above the mean of its last 10 month-end closes (current month included); otherwise it holds USDT",
+    "BUY_AND_HOLD": "the same weights, always holding the coin",
+    "cash": "USDT at zero yield in both books; any USDT yield forgone is not credited to TREND (conservative)"
+  },
+  "window": {
+    "half_A_earning_months": "2018-06 .. 2021-12",
+    "first_scored_month": "the month after the first month-end with at least two eligible sleeves; expected 2018-06 (BTC and ETH reach ten month-ends at 2018-05-31); both months are stated in the report",
+    "first_month_buy_in": "the first scored month pays a full 1.0 turnover buy-in in BOTH books (the R3 convention)",
+    "half_B_earning_months": "2022-01 .. 2024-12, UNOPENED; one registered confirmation look, only on SOMETHING",
+    "holdout_earning_months": "2025-01 onward, SEALED",
+    "signal_history": "month-end closes before the first scored month are signal history only; nothing earns before it"
+  },
+  "costs": {
+    "base_bps_per_side": 10.0,
+    "stress_bps_per_side": 25.0,
+    "applied_to": "both books, on traded notional (state switches, membership changes, rebalancing), aggregated by ASSET: every sleeve in USDT is one USDT position",
+    "drift": "weights drift with realised returns inside the month; turnover is measured between the drifted weights and the next month's targets; cost is charged to the month the new positions earn; cost is not compounded into the drift",
+    "adjudication": "base costs adjudicate; stress is reported"
+  },
+  "statistic": {
+    "sharpe": "annualised Sharpe of monthly returns, mean/std * sqrt(12), std ddof=1; cash yield is zero so raw returns are excess returns",
+    "dSR": "Sharpe(TREND NET) minus Sharpe(BUY_AND_HOLD NET) over the same months; the statistic the null votes on",
+    "dMu": "annualised arithmetic mean monthly return (mean * 12) of TREND NET minus BUY_AND_HOLD NET; the materiality bar, not a test",
+    "descriptives": "invested share k, number of state switches, turnover per book, max drawdown per book, N_t path; reported, not adjudicated"
+  },
+  "voting_null": {
+    "name": "random-timing books (two-state Markov at the book-under-test's own measured rates); the R3 null unchanged",
+    "R": 2000,
+    "seed": 20261016,
+    "rates": "per sleeve, p01 and p10 estimated from the state path of the book under test over consecutive months in which the sleeve is a member; initial state drawn from the implied stationary distribution",
+    "degenerate_rates": "n0 == 0 -> p01 = 1.0; n1 == 0 -> p10 = 0.0; p01 + p10 == 0 -> stationary set to the empirical mean state",
+    "p": "the share of random books with dSR >= the dSR of the book under test",
+    "what_it_asks": "whether the rule times better than chance AT THE SAME CASH LEVEL AND TURNOVER",
+    "second_null": "none at half A; a block-bootstrap premium null is added to the half-B confirmation if half A promotes"
+  },
+  "order_of_operations": [
+    "1. STATE PATH AND RATES: the rule's state path on half A is computed only to measure switching rates (frequency, not performance); no performance figure of the observed book is computed or printed before step 5",
+    "2. MDE: the dSR detectable at 80% power from the random books' spread, (null p95 - null median) + 0.8416 * sd(null dSR); printed before anything else",
+    "3. KNOWN-NULL CONTROL: 200 random-timing books fed in as the observed book, each against a fresh 500-book null; the share at p <= 0.05 must lie in [0.01, 0.10] or HALT",
+    "4. POSITIVE CONTROL: semi-synthetic on the real half-A data; each member sleeve's state set to the sign of its next-month return with probability q and the opposite otherwise; q calibrated on ONE draw so dSR is about 0.5; then 50 fresh draws; detection at p <= 0.05 must be >= 0.80 or HALT",
+    "5. OBSERVED: only then, and only on a pass receipt from steps 3 and 4"
+  ],
+  "controls": {
+    "known_null": {"N": 200, "R_each": 500, "seed": 777, "band": [0.01, 0.10]},
+    "positive_control": {
+      "N_draws": 50, "R_each": 500, "seed": 4242,
+      "q_grid": [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62, 0.65, 0.70, 0.75, 0.80],
+      "q_target_dSR": 0.5,
+      "detection_floor": 0.80,
+      "leak": "DELIBERATE and named by a test: the planted state reads the sign of the return it is about to earn"
+    },
+    "q_target_rationale": "a Sharpe lift of 0.5 is the smallest effect worth acting on in a spot long-only basket; R3 targeted 0.4 on about 125 months; half A here has about 43, so the positive control is also the power test"
+  },
+  "halts": {
+    "known_null_outside_band": "HALT before the observed read; no look spent; no ledger row",
+    "positive_control_below_floor": "HALT before the observed read; no look spent; no ledger row; the design returns to the Strategist because the window cannot see an effect of the registered size",
+    "tokenized_equity_set_not_95": "HALT at universe resolution",
+    "return_computed_across_a_gap": "HALT, asserted in code and pinned by a test"
+  },
+  "verdict": {
+    "bar": 0.05,
+    "single_test": true,
+    "SOMETHING": "timing p <= 0.05 AND dSR > 0 AND dMu >= 0 at base costs -> promoted to one registered half-B look (2022-2024)",
+    "RISK_ONLY": "timing p <= 0.05 AND dSR > 0 AND dMu < 0 -> recorded as risk reduction without return (the R3 class); not promoted; a nil for discovery",
+    "SUGGESTIVE": "p in (0.05, 0.10] with dSR > 0 -> recorded, not promoted",
+    "NOTHING": "otherwise"
+  },
+  "interpretation_rulings": [
+    {"id": "RULE-ABOVE-IS-STRICT", "ruling": "above means strictly greater; equality holds USDT"},
+    {"id": "RULE-FIRST-SCORED-MONTH", "ruling": "states are decided at month-end t and earn in month t+1; the first scored month is the first RETURN month; both months are stated"},
+    {"id": "RULE-DRIFT-THEN-REBALANCE", "ruling": "weights drift with realised returns inside the month; turnover is measured between the drifted weights and the next month's target weights; cost is charged to the month the new positions earn"},
+    {"id": "RULE-MEMBERSHIP-EXIT", "ruling": "a sleeve leaving the top 20 at month-end t is sold at its month-end close in both books; the turnover is charged to month t+1"},
+    {"id": "RULE-STATE-ON-ENTRY", "ruling": "a sleeve entering the membership at month-end t takes the TREND state computed on its own history at t"},
+    {"id": "RULE-FORCED-EXIT", "ruling": "a sleeve that ends (gap or vintage end) is sold at its last close in both books; the month's return runs to that close"}
+  ],
+  "ledger": {
+    "batch_id": "T-R4",
+    "universe_string": "binance_usdt_top20_pit_halfA",
+    "vintage_string": "binance_spot_1d_20261015",
+    "row_schema": "run_t_r3.py's, unchanged"
+  }
+}

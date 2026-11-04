@@ -1,0 +1,167 @@
+{
+  "registration": "R3 v4",
+  "look": "look 3 of Q4 2026",
+  "batch_id": "T-R3",
+  "sealed_before": "any analysis load of fund prices",
+  "run_date_planned": "20261005",
+  "vintage_label": "funds_20261005f",
+  "windows_authority": "config/windows.json (unchanged); half A = daily rows dated strictly before 2013-01-01",
+
+  "data": {
+    "table": "funds",
+    "fields": ["ticker", "date", "closeadj"],
+    "fields_validated_against": "descriptions dictionary (data/sharadar/snapshot_20261005r30/dict_all.parquet), table=funds",
+    "queries": 17,
+    "tickers": ["SPY","IWM","QQQ","EFA","EEM","TLT","IEF","TIP","LQD","HYG","IYR","VNQ","GLD","SLV","DBC","USO","SHY"],
+    "destination": "data/sharadar/funds_20261005f/",
+    "manifest_shape": "R0-A probe manifest.json",
+    "tracked_copy": "manifests/sharadar_funds_20261005f.json (byte-identical)",
+    "load_guard": "filter date < 2013-01-01 at read AND assert max loaded date < 2013-01-01 after load; assert each ticker's raw span extends to or past 2013-01-01 so the half-A slice is not a truncation"
+  },
+
+  "interpretation_rulings": [
+    {
+      "id": "RULE-CASH-NOT-A-WEIGHTED-CLASS",
+      "question": "The brief lists 'cash: SHY' inside the asset-class list. Is SHY a sixth weighted class?",
+      "ruling": "NO. SHY is the cash proxy and the risk-free leg, not a weighted sleeve. Five weighted classes over sixteen ETFs.",
+      "grounds": [
+        "Section A names the sixteen ETFs and then 'plus SHY (the cash proxy)'.",
+        "The TREND rule's fallback is 'otherwise it holds SHY', which makes a SHY sleeve self-referential and vacuous.",
+        "'BUY-AND-HOLD book: the same weights, always holding the ETF' would put a permanent 1/6 in cash, contradicting the sprint's 'buy-and-hold of the same ETFs'.",
+        "'time in cash by class' would read a constant 100% for a cash class."
+      ],
+      "mitigation": "The six-class variant dSR is additionally reported as a descriptive robustness line so the ruling is falsifiable from the artifact."
+    },
+    {
+      "id": "RULE-TURNOVER-AGGREGATED-BY-ASSET",
+      "ruling": "Traded notional is measured on weights aggregated by ASSET, not by sleeve: two sleeves sitting in SHY are one SHY position.",
+      "grounds": "That is the notional actually traded; per-sleeve accounting would charge offsetting trades that never reach the market."
+    },
+    {
+      "id": "RULE-DRIFT-THEN-REBALANCE",
+      "ruling": "Weights drift with realised returns inside the month; turnover is measured between the drifted weights and the next month's target weights. Cost is charged to the month the new positions earn.",
+      "note": "Cost is not compounded into the drift (second order)."
+    },
+    {
+      "id": "RULE-WORST-12-MONTHS",
+      "ruling": "'worst 12 months' = the worst rolling twelve-month NET total return."
+    },
+    {
+      "id": "RULE-FIRST-SCORED-MONTH",
+      "ruling": "States are decided at month-end t and earn in month t+1. The first scored month is the first RETURN month, i.e. the month after the first month-end with at least two classes eligible. Both months are stated."
+    }
+  ],
+
+  "universe": {
+    "classes": {
+      "us_equity": ["SPY","IWM","QQQ"],
+      "intl_equity": ["EFA","EEM"],
+      "bonds": ["TLT","IEF","TIP","LQD","HYG"],
+      "real_estate": ["IYR","VNQ"],
+      "commodities": ["GLD","SLV","DBC","USO"]
+    },
+    "cash_proxy": "SHY",
+    "monthly_price": "the last closeadj of each calendar month",
+    "eligibility": "a sleeve is eligible from the first month-end at which it has 10 month-end closes",
+    "class_weight": "1 / (number of classes with at least one eligible member), recomputed each month-end",
+    "within_class_weight": "equal across that class's eligible members",
+    "rebalance": "monthly"
+  },
+
+  "books": {
+    "TREND": "each sleeve holds its ETF for the following month when its month-end closeadj is above the mean of its last 10 month-end closeadj (current month included); otherwise it holds SHY",
+    "BUY_AND_HOLD": "the same weights, always holding the ETF"
+  },
+
+  "costs": {
+    "base_bps_per_side": 5.0,
+    "stress_bps_per_side": 15.0,
+    "applied_to": "both books, on traded notional (switches and rebalancing)",
+    "financing": "none (cash account, long only)",
+    "taxes": "ignored"
+  },
+
+  "statistic": {
+    "sharpe": "annualised Sharpe of monthly returns in EXCESS of SHY: mean/std * sqrt(12), std ddof=1",
+    "dSR": "annualised Sharpe of TREND NET minus annualised Sharpe of BUY-AND-HOLD NET, over the same months"
+  },
+
+  "voting_null": {
+    "name": "random-timing books (two-state Markov at the book-under-test's own measured rates)",
+    "R": 2000,
+    "seed": 20261005,
+    "rates": "per sleeve, p01 and p10 estimated from the state path of the book under test over consecutive eligible month pairs; initial state drawn from the implied stationary distribution",
+    "degenerate_rates": "n0 == 0 -> p01 = 1.0; n1 == 0 -> p10 = 0.0; p01 + p10 == 0 -> stationary set to the empirical mean state",
+    "p": "the share of random books with dSR >= the dSR of the book under test",
+    "what_it_asks": "whether the rule times better than chance AT THE SAME CASH LEVEL AND TURNOVER",
+    "what_the_rate_measurement_leaks": "measuring the switching reveals FREQUENCY, not PERFORMANCE: the rates fix how often a random book switches and hence its invested share, never when the switches fall",
+    "why_not_a_no_information_null_against_buy_and_hold": "random timing at invested share k carries a Sharpe near sqrt(k) of buy-and-hold, so a no-information null sits BELOW zero and a positive dSR against it would be unearned",
+    "uniformity": "the same procedure is applied to every book under test: its own rates are measured, a fresh null is generated at those rates, p is read off"
+  },
+
+  "order_of_operations": [
+    "1. MDE: the dSR detectable at 80% power from the random books' spread",
+    "2. KNOWN-NULL CONTROL: 200 random-timing books fed in as the observed book, each against a fresh 500-book null; the share at p <= 0.05 must lie in [0.01, 0.10] or HALT",
+    "3. POSITIVE CONTROL: semi-synthetic on the real half-A ETF data; each sleeve's state set to the sign of its next-month excess return with probability q and the opposite otherwise; q calibrated on ONE draw so dSR is about 0.4; then 50 fresh draws, detection at p <= 0.05 must be >= 0.80 or HALT",
+    "4. OBSERVED: only then"
+  ],
+
+  "controls": {
+    "mde_definition": "(null p95 - null median) + z(0.80) * sd(null dSR), z(0.80) = 0.8416",
+    "known_null": {"N": 200, "R_each": 500, "seed": 777, "band": [0.01, 0.10]},
+    "positive_control": {
+      "N_draws": 50, "R_each": 500, "seed": 4242,
+      "q_grid": [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62, 0.65, 0.70, 0.75, 0.80],
+      "q_target_dSR": 0.4,
+      "detection_floor": 0.80,
+      "leak": "DELIBERATE and named by a test: the planted state reads the sign of the return it is about to earn"
+    }
+  },
+
+  "observed_emissions": [
+    "per book: CAGR, annual vol, Sharpe, maximum drawdown, worst rolling 12 months",
+    "dSR and its timing p",
+    "paired stationary-block bootstrap (mean block 6, R = 5000, ONE shared month index, seed 20261005) 90% interval for dSR and for the mean monthly return difference - REPORTED, NOT VOTING",
+    "time in cash by class; switches per year",
+    "dSR by sub-period 2001-2002 / 2003-2007 / 2008-2012",
+    "dSR with calendar 2008 excluded - DESCRIPTIVE, measuring how much the result rests on one event",
+    "STRESS dSR at 15 bps per side"
+  ],
+
+  "verdict": {
+    "bar": 0.05,
+    "single_test": true,
+    "SOMETHING": "timing p <= 0.05 AND dSR > 0 -> promoted to one registered half-B look (2013-2020)",
+    "SUGGESTIVE": "p in (0.05, 0.10] with dSR > 0 -> recorded, not promoted",
+    "NOTHING": "otherwise"
+  },
+
+  "prior_stated_now": "SOMETHING. Half A holds 2001-2002 and 2008, the declines trend timing is known for side-stepping; the decisive question is half B, where the literature reports timing roughly matching or trailing buy-and-hold. A SOMETHING here is expected and settles little on its own.",
+
+  "dating_test": {
+    "purpose": "establish whether the vendor's daily valuation table is as-filed (point-in-time usable) or restated",
+    "names": ["KO", "NKE", "WMT"],
+    "max_requests": 15,
+    "planned_requests": 9,
+    "fundamentals_fields": ["ticker","dimension","date","reportperiod","netinccmnusd","sharesbas"],
+    "fundamentals_dimensions": ["ART","MRT"],
+    "daily_fields": ["ticker","date","marketcap","pe"],
+    "units_resolved_from_dictionary": "marketcap is USD MILLIONS; netinccmnusd is USD; implied earnings are therefore scaled by 1e6 before comparison",
+    "dictionary_note": "for AR dimensions (ART) the fundamentals date IS the SEC filing date; for MR dimensions (MRT) it is the reportperiod - this is what makes the contrast readable",
+    "statistic": "implied trailing earnings E(t) = marketcap / pe each day; locate the days E steps; compare each step date with the ART filing dates and reportperiods",
+    "classification": "a step on or after a filing date is AS-FILED (point-in-time usable); a step before its filing date is LOOK-AHEAD",
+    "verdict_space": ["AS-FILED", "RESTATED", "MIXED"],
+    "caveat": "assumes the free sample is built the same way as the paid table",
+    "brief_discrepancy_recorded": "the brief states KO, NKE and WMT were all answered on the free tier in R3-0; the R3-0 manifest contains no KO, NKE or WMT request (its ten metrics names were AAPL MSFT JPM XOM JNJ MVL SMTL NRGN MAXX TRAC, and the daily and fundamentals per-ticker gate probes were issued for TSLA and answered 403 'Exceeds free tier'). The premise is therefore UNVERIFIED at sealing and is settled empirically by the requests themselves."
+  },
+
+  "budget": {"sprint_requests": 40, "planned": 26, "rule": "HALT rather than exceed"},
+  "scope": {
+    "half_b": "NEVER loaded for analysis",
+    "holdout": "SEALED",
+    "factory": "read-only",
+    "purchase": "none",
+    "plan_change": "none",
+    "bulk_pull": "none"
+  }
+}

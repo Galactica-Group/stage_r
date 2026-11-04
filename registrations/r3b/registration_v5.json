@@ -1,0 +1,106 @@
+{
+  "registration": "R3b v5",
+  "look": "half-B confirmation of T-R3 (not a discovery look; does not spend a Q4 look)",
+  "batch_id": "T-R3b",
+  "sealed_before": "the first load of any half-B row",
+  "run_date_planned": "20261005",
+
+  "inherits": {
+    "registration": "logs/r3/registration_v4.json",
+    "registration_sha256": "c3349c76745f93ca9bded73b2ee38ed52cb3ad2b1a273c42ddcea72a93ee614b",
+    "what_is_inherited_unchanged": [
+      "universe: the sixteen ETFs in five classes; SHY the cash proxy and risk-free leg",
+      "RULE-CASH-NOT-A-WEIGHTED-CLASS and RULE-TURNOVER-AGGREGATED-BY-ASSET and RULE-DRIFT-THEN-REBALANCE and RULE-WORST-12-MONTHS",
+      "eligibility: ten month-end closes; class weight 1/(classes with an eligible member); equal weight within class; monthly rebalance",
+      "the ten-month rule: hold the ETF when the month-end closeadj is above the mean of its last ten month-end closeadj (current month included), else hold SHY",
+      "costs: 5 bps per side base, 15 bps STRESS, on traded notional aggregated by asset; no financing; taxes ignored",
+      "Sharpe: annualised, on monthly returns in excess of SHY, std ddof=1",
+      "the statistic dSR = Sharpe(TREND net) - Sharpe(BUY-AND-HOLD net) over the same months",
+      "the voting null: 2000 two-state Markov random-timing books at each sleeve's OWN measured rates, measured from the book under test; p = share with dSR >= the observed dSR",
+      "R values: R_VOTING 2000, known-null N 200 x R 500, positive control N 50 x R 500, bootstrap R 5000 mean block 6 one shared index",
+      "the seed policy: SEED_VOTING 20261005, SEED_CONTROL 777, SEED_PLANT 4242, SEED_BOOT 20261005",
+      "both controls and their pass rules: known-null share at p<=0.05 in [0.01, 0.10]; positive control detection >= 0.80 at a q calibrated on ONE draw to dSR about 0.4"
+    ],
+    "nothing_is_redesigned": true
+  },
+
+  "vintage": {
+    "label": "funds_20261005f",
+    "manifest_sha256": "a915c416b29b93b242f77784291cfb61387ffe76ea892517575cfd5609a83f49",
+    "requests_this_sprint": 0,
+    "note": "the look reads data already on disk; no vendor request is issued"
+  },
+
+  "engine": {
+    "path": "tools/etf_trend_r3.py",
+    "sha256": "d024f6ff265a17ee4533c60cf1dc19b7e8f666d0619ede680efe4a5fdf2e91e8",
+    "rule": "NOT edited in this sprint; any change is a HALT, asserted in code and by a test"
+  },
+
+  "window": {
+    "scored_return_months": ["2013-01", "2020-12"],
+    "scored_months_expected": 96,
+    "warm_up": "the state for 2013-01 is formed from month-end closes through 2012-12; pre-2013 rows are signal inputs only and are never scored",
+    "holdout": "nothing dated 2021-01-01 or later is loaded: filtered at read AND asserted after load, with a test proving the guard bites on a constructed 2021 row",
+    "windows_json": "config/windows.json is NOT modified (sha f8b5394ae3dadabdd2c8112c3da2cde6120718d18b6e7029997da50eb512e73c)",
+    "first_month_buy_in": "the first scored month pays a full 1.0 turnover buy-in in BOTH books, the same convention half A used at 2002-08; it very largely cancels in dSR"
+  },
+
+  "interpretation_ruling": {
+    "id": "RULE-NEW-RUNNER-NOT-AN-EDITED-ONE",
+    "question": "The brief says the engine is not edited and 'the runner may gain a window parameter, nothing else'.",
+    "ruling": "The window is parameterised in a NEW runner, tools/run_t_r3b.py, which imports the UNCHANGED engine. tools/run_t_r3.py is left byte-identical.",
+    "grounds": [
+      "the constraint that matters is that the measurement is unchanged, and it is: the engine is untouched and sha-asserted at run time",
+      "T-R3's banked artifact and ledger row must stay reproducible from the script that produced them; editing run_t_r3.py would break that",
+      "R3b needs more than a window anyway (per-calendar-year sub-reads, ex-2020, the joined descriptive block, its own decision rule and its own ledger batch), none of which belongs in the T-R3 runner"
+    ],
+    "what_the_runner_does_to_the_window": "it builds the panel exactly as registered from the full pre-2021 history and then SLICES the scored rows to 2013-01..2020-12; slicing after the build is what makes the 2013-01 state identical to the registered construction"
+  },
+
+  "order_of_operations": [
+    "1. MDE from the half-B null's spread",
+    "2. KNOWN-NULL CONTROL: 200 random books as observed, fresh 500-book null each; share at p<=0.05 in [0.01, 0.10] or HALT",
+    "3. POSITIVE CONTROL: q calibrated on ONE half-B draw to dSR about 0.4; 50 fresh draws; detection >= 0.80 or HALT",
+    "4. OBSERVED",
+    "5. DESCRIPTIVE ONLY: the two halves joined"
+  ],
+
+  "observed_emissions": [
+    "per book: CAGR, annual vol, Sharpe, maximum drawdown, worst rolling 12 months",
+    "dSR and its timing p",
+    "paired bootstrap 90% intervals for dSR and for the mean monthly return difference - REPORTED, NOT VOTING",
+    "time in cash by class; switches per year",
+    "dSR by calendar year, 2013 through 2020",
+    "dSR excluding calendar 2020 - DESCRIPTIVE, the one fast crash in the window",
+    "STRESS dSR",
+    "the six-class variant - reported, NOT voted"
+  ],
+
+  "joined_block": {
+    "window": ["2002-08", "2020-12"],
+    "months_expected": 221,
+    "status": "DESCRIPTIVE ONLY, labelled as such because half A has been seen",
+    "emissions": ["both books' CAGR, vol, Sharpe, maximum drawdown",
+                  "dSR with its bootstrap 90% interval"]
+  },
+
+  "decision_rule": {
+    "CONFIRM": "timing p <= 0.05 and dSR > 0",
+    "CONSISTENT": "dSR > 0 and p > 0.05",
+    "REJECT": "dSR <= 0",
+    "single_test": true,
+    "bar": 0.05
+  },
+
+  "prior_stated_now": "CONSISTENT or REJECT. 2013-2020 is a long advance broken by fast reversals (2015-16, late 2018, March 2020), in which a monthly rule exits late and re-enters late; the literature reports timing roughly matching or trailing buy-and-hold over this stretch. The half-A result rested about four-fifths on 2008.",
+
+  "scope": {
+    "holdout": "2021-01-01 onward NEVER loaded",
+    "factory": "read-only",
+    "vendor_requests": 0,
+    "purchase": "none",
+    "plan_change": "none",
+    "doc_edits": "none"
+  }
+}
