@@ -1,16 +1,16 @@
 """
 ================================================================================
 Script:       edgar_item408_probe.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      Build the event table of Rule 10b5-1 trading-arrangement adoptions
               and terminations disclosed under Item 408(a) of Regulation S-K in
               10-Q and 10-K filings, from EDGAR full-text search plus the
               Inline XBRL (ecd:*) tags in the primary document.
-Entry Point:  Yes — python tools/edgar_item408_probe.py {count,fetch,parse,join,report}
+Entry Point:  Yes — python tools/edgar_item408_probe.py {count,fetch,parse,join,report,fsn}
 Dependencies: stdlib, requests, pandas, pyarrow. Imports nothing from any other
               repository.
-Last Sprint:  Sprint R5-0 — Item 408 event table and inventory (2026-11-04)
+Last Sprint:  Sprint R5-1 — bulk dataset route (2026-11-04)
 ================================================================================
 
 No credential is read, sent, or required; no .env file is opened. The only
@@ -26,9 +26,13 @@ single worker, and gzip is accepted. A 429 or 403 is retried up to three times
 with exponential backoff; after that the run stops and reports the status and
 the URL path, never the header.
 
-The event table is keyed by (adsh, contextRef). An Item 408 disclosure tags one
-individual per XBRL context, so one context is one trading arrangement: the
-grouping is the filing's own, not an inference of ours. Flags are resolved from
+The event table is keyed by (adsh, individual). The key is the ecd:IndividualAxis
+dimension member, NOT the raw contextRef: a filer tags an individual's duration
+facts and instant facts in different contexts (the aggregate-securities amount
+is an instant fact), so contextRef over-splits one arrangement into several
+rows. Resolving the context's dimension merges them. When a context carries no
+IndividualAxis member the contextRef is used, which keeps the entity-level
+summary flags as their own row. Flags are resolved from
 the ixt format attribute first and from the element text only as a fallback;
 anything that resolves to neither true nor false is recorded UNRESOLVED rather
 than guessed. The smallest enclosing table or paragraph is stored verbatim
@@ -44,6 +48,7 @@ import csv
 import collections
 import gzip
 import hashlib
+import io
 import json
 import os
 import random
@@ -52,6 +57,7 @@ import sys
 import time
 from datetime import date, datetime, timedelta
 from html.parser import HTMLParser
+import zipfile
 
 import pandas as pd
 
@@ -59,6 +65,11 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FTS_URL = "https://efts.sec.gov/LATEST/search-index"
 ARCHIVE_BASE = "https://www.sec.gov/Archives/edgar/data"
+# The Financial Statement and Notes data sets, found by walking sec.gov from
+# /data-research to the DERA data library to
+# /data-research/financial-statement-notes-data-sets. Archives are named
+# <YYYY>q<Q>_notes.zip through 2025q3 and <YYYY>_<MM>_notes.zip thereafter.
+FSN_BASE = "https://www.sec.gov/files/dera/data/financial-statement-notes-data-sets"
 CONTACT_ENV = "EDGAR_CONTACT"
 CONTACT_FILE = os.path.join("~", ".config", "stage_r", "edgar_contact")
 
@@ -569,7 +580,61 @@ def ecd_names(html):
     return sorted({f["name"] for f in extract_ecd_facts(html)})
 
 
-def facts_to_rows(facts):
+_CONTEXT_RE = re.compile(
+    r"<(?:\w+:)?context\b[^>]*\bid=\"([^\"]+)\"(.*?)</(?:\w+:)?context>",
+    re.S | re.I,
+)
+_MEMBER_RE = re.compile(
+    r"<(?:\w+:)?explicitMember\b[^>]*\bdimension=\"([^\"]+)\"[^>]*>(.*?)"
+    r"</(?:\w+:)?explicitMember>",
+    re.S | re.I,
+)
+INDIVIDUAL_AXIS = "IndividualAxis"
+
+
+def _localname(qname):
+    return str(qname).split(":")[-1].strip()
+
+
+def extract_context_dimensions(html):
+    """Map each XBRL context id to its explicit dimension members.
+
+    Returns {context_id: {axis_localname: member_localname}}. Contexts with no
+    segment map to an empty dict. Namespace prefixes vary between filers, so
+    both the element names and the dimension/member values are matched on their
+    local names.
+    """
+    if isinstance(html, bytes):
+        html = html.decode("utf-8", errors="replace")
+    out = {}
+    for mt in _CONTEXT_RE.finditer(html):
+        cid, body = mt.group(1), mt.group(2)
+        dims = {}
+        for mm in _MEMBER_RE.finditer(body):
+            axis = _localname(mm.group(1))
+            member = _localname(re.sub(r"<[^>]+>", "", mm.group(2)))
+            if axis:
+                dims[axis] = member
+        out[cid] = dims
+    return out
+
+
+def individual_key(context_ref, ctx_dims):
+    """The row key for a fact: its IndividualAxis member, else its contextRef.
+
+    Keying on the individual merges the duration-context and instant-context
+    facts a filer tags for the same person. A context with no IndividualAxis
+    member (the entity-level summary flags) keeps its own contextRef, so it
+    stays a row of its own rather than collapsing into somebody's arrangement.
+    """
+    if not ctx_dims:
+        return context_ref
+    dims = ctx_dims.get(context_ref) or {}
+    member = dims.get(INDIVIDUAL_AXIS)
+    return member if member else context_ref
+
+
+def facts_to_rows(facts, ctx_dims=None):
     """Group ecd facts into one row per contextRef.
 
     An Item 408 disclosure tags one individual per context, so the grouping is
@@ -580,7 +645,7 @@ def facts_to_rows(facts):
         ctx = f.get("context")
         if ctx is None:
             continue
-        by_ctx.setdefault(ctx, []).append(f)
+        by_ctx.setdefault(individual_key(ctx, ctx_dims), []).append(f)
 
     rows = []
     for ctx, group in by_ctx.items():
@@ -994,10 +1059,11 @@ _FIELD_MAP = {
 
 
 def event_rows_for_filing(meta, html):
-    """Rows for one filing: one per (adsh, contextRef). Empty when untagged."""
+    """Rows for one filing: one per (adsh, individual). Empty when untagged."""
     facts = extract_ecd_facts(html)
+    ctx_dims = extract_context_dimensions(html)
     out = []
-    for grouped in facts_to_rows(facts):
+    for grouped in facts_to_rows(facts, ctx_dims):
         row = {c: None for c in EVENT_COLUMNS}
         row["adsh"] = meta["adsh"]
         row["cik"] = meta["cik"]
@@ -1077,6 +1143,274 @@ def cmd_parse(args):
     say("events.parquet sha256 %s" % manifest["parse"]["events_parquet_sha256"])
     say("manifest %s" % mpath)
     say("tracked  %s" % tracked)
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# fsn: the Financial Statement and Notes bulk dataset route
+# ---------------------------------------------------------------------------
+
+# Bare tag names as they appear in the bulk dataset (no namespace prefix).
+_FSN_FIELD_MAP = {_k.split(":")[1]: _v for _k, _v in _FIELD_MAP.items()}
+FSN_TEXT_BLOCK_TAG = "MtrlTermsOfTrdArrTextBlock"
+
+
+def is_item408_fact(tag, version):
+    """True for an Item 408 trading-arrangement fact in the ecd taxonomy.
+
+    The version gate matters: a filer may define a custom tag of the same name
+    in its own namespace, and that is not the SEC concept.
+    """
+    if not str(version or "").startswith("ecd"):
+        return False
+    t = str(tag or "")
+    return t.startswith("TrdArr") or "10b51" in t
+
+
+def is_item408_payload(tag, version):
+    """is_item408_fact, plus the narrative text block the pivot stores.
+
+    MtrlTermsOfTrdArrTextBlock does not START with TrdArr, so it falls outside
+    the counting predicate above (which is kept exactly as specified, so the
+    reported tag counts mean what they say). The pivot needs it, so the read
+    path uses this wider predicate.
+    """
+    if is_item408_fact(tag, version):
+        return True
+    return str(version or "").startswith("ecd") and str(tag or "") == FSN_TEXT_BLOCK_TAG
+
+
+def parse_dim_segments(segments):
+    """Parse a dim.tsv segments string into {axis: member}.
+
+    The format is a semicolon-terminated list of Axis=Member pairs, e.g.
+    "Individual=DavidRanhoff;". An empty string is the entity-level context.
+    """
+    out = {}
+    for part in str(segments or "").split(";"):
+        part = part.strip()
+        if not part or "=" not in part:
+            continue
+        axis, _, member = part.partition("=")
+        axis = axis.strip()
+        if axis:
+            out[axis] = member.strip()
+    return out
+
+
+def fsn_individual_key(dimh, segments):
+    """Row key for a bulk fact: its Individual member, else the dimension hash."""
+    dims = parse_dim_segments(segments)
+    for axis, member in dims.items():
+        if axis.replace("Axis", "") == "Individual" and member:
+            return member
+    return dimh
+
+
+def fsn_url(name):
+    return "%s/%s" % (FSN_BASE, name)
+
+
+def fsn_dir(root=None):
+    return os.path.join(root or REPO_ROOT, "data", "edgar_item408", "fsn")
+
+
+def _tsv_rows(zf, member):
+    """Stream one TSV member as dicts, skipping short lines."""
+    with zf.open(member) as fh:
+        t = io.TextIOWrapper(fh, encoding="utf-8", errors="replace", newline="")
+        hdr = t.readline().rstrip("\r\n").split("\t")
+        width = len(hdr)
+        for line in t:
+            parts = line.rstrip("\r\n").split("\t")
+            if len(parts) < width:
+                continue
+            yield dict(zip(hdr, parts))
+
+
+def read_fsn_item408(zip_path):
+    """Extract the Item 408 facts, their submissions, and their dimensions.
+
+    Returns (facts, subs, dims). Only the dimension hashes actually used by an
+    Item 408 fact are resolved, so dim.tsv is read once and mostly discarded.
+    """
+    facts = []
+    with zipfile.ZipFile(zip_path) as zf:
+        names = set(zf.namelist())
+        for member, numeric in (("txt.tsv", False), ("num.tsv", True)):
+            if member not in names:
+                continue
+            for r in _tsv_rows(zf, member):
+                if not is_item408_payload(r.get("tag"), r.get("version")):
+                    continue
+                facts.append(
+                    {
+                        "adsh": r["adsh"], "tag": r["tag"], "version": r["version"],
+                        "ddate": r.get("ddate"), "dimh": r.get("dimh"),
+                        "value": r.get("value"), "numeric": numeric,
+                    }
+                )
+        wanted_adsh = {f["adsh"] for f in facts}
+        wanted_dimh = {f["dimh"] for f in facts}
+        subs = {}
+        if "sub.tsv" in names:
+            for r in _tsv_rows(zf, "sub.tsv"):
+                if r["adsh"] in wanted_adsh:
+                    subs[r["adsh"]] = r
+        dims = {}
+        if "dim.tsv" in names:
+            for r in _tsv_rows(zf, "dim.tsv"):
+                if r.get("dimhash") in wanted_dimh:
+                    dims[r["dimhash"]] = r.get("segments", "")
+    return facts, subs, dims
+
+
+def _iso_from_fsn(value):
+    v = str(value or "").strip()
+    if re.fullmatch(r"\d{8}", v):
+        return _safe_iso(int(v[:4]), int(v[4:6]), int(v[6:]))
+    return None
+
+
+def pivot_fsn_rows(facts, subs, dims):
+    """Pivot bulk facts into the R5-0 row schema, one row per (adsh, individual).
+
+    context_ref holds the row key - the Individual dimension member, or the
+    dimension hash for an entity-level row - so the schema is unchanged while
+    the key is the semantically correct one.
+    """
+    grouped = collections.OrderedDict()
+    for f in facts:
+        key = (f["adsh"], fsn_individual_key(f["dimh"], dims.get(f["dimh"], "")))
+        grouped.setdefault(key, []).append(f)
+
+    rows = []
+    for (adsh, key), group in grouped.items():
+        sub = subs.get(adsh, {})
+        row = {c: None for c in EVENT_COLUMNS}
+        row["adsh"] = adsh
+        row["cik"] = str(sub.get("cik", "")).zfill(10) if sub.get("cik") else None
+        row["form"] = sub.get("form")
+        row["file_date"] = _iso_from_fsn(sub.get("filed"))
+        row["period_ending"] = _iso_from_fsn(sub.get("period"))
+        row["context_ref"] = key
+        row["raw_text"] = ""
+        for f in group:
+            tag, value = f["tag"], f["value"]
+            if tag == FSN_TEXT_BLOCK_TAG:
+                row["raw_text"] = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", value or "")).strip()
+                continue
+            col = _FSN_FIELD_MAP.get(tag)
+            if col is None:
+                continue
+            if col.endswith("_flag"):
+                row[col] = resolve_flag(None, value)
+            elif col.endswith("_date"):
+                row[col] = parse_ix_date(None, value)
+                row[col + "_raw"] = value
+            else:
+                row[col] = value
+        rows.append(row)
+    return rows
+
+
+def cmd_fsn(args):
+    """Download bulk archives and/or build events.parquet from them."""
+    os.makedirs(fsn_dir(), exist_ok=True)
+    mpath = os.path.join(fsn_dir(), "archives.json")
+    manifest = load_manifest(mpath)
+    manifest.setdefault("archives", {})
+
+    if args.download:
+        import requests
+
+        contact, source = read_contact()
+        say("contact: source %s, byte length %d" % (source, len(contact.encode())))
+        limiter = RateLimiter(max_per_sec=args.rate)
+        for name in args.archives:
+            dest = os.path.join(fsn_dir(), name)
+            rec = manifest["archives"].get(name)
+            if rec and os.path.isfile(dest) and rec.get("bytes") == os.path.getsize(dest):
+                say("skip %s (already banked)" % name)
+                continue
+            limiter.acquire()
+            t0 = time.time()
+            h = hashlib.sha256()
+            n = 0
+            with requests.get(
+                fsn_url(name),
+                headers={"User-Agent": contact, "Accept-Encoding": "gzip, deflate"},
+                stream=True, timeout=600,
+            ) as resp:
+                if resp.status_code != 200:
+                    manifest["archives"][name] = {"status": resp.status_code}
+                    write_manifest(mpath, manifest)
+                    say("ABSENT %s HTTP %d" % (name, resp.status_code))
+                    continue
+                with open(dest, "wb") as fh:
+                    for chunk in resp.iter_content(1 << 20):
+                        fh.write(chunk)
+                        h.update(chunk)
+                        n += len(chunk)
+            manifest["archives"][name] = {
+                "bytes": n, "sha256": h.hexdigest(), "status": 200,
+                "wall_s": round(time.time() - t0, 1),
+            }
+            write_manifest(mpath, manifest)
+            say("got %-22s %12d bytes  %s  %.0fs" % (name, n, h.hexdigest()[:16], time.time() - t0))
+
+    if not args.build:
+        return 0
+
+    all_rows = []
+    coverage = []
+    for name in args.archives:
+        path = os.path.join(fsn_dir(), name)
+        if not os.path.isfile(path):
+            coverage.append({"archive": name, "present": False})
+            say("missing %s" % name)
+            continue
+        facts, subs, dims = read_fsn_item408(path)
+        rows = pivot_fsn_rows(facts, subs, dims)
+        forms = collections.Counter(r["form"] for r in rows)
+        coverage.append(
+            {
+                "archive": name, "present": True,
+                "item408_facts": len(facts),
+                "filings_with_any_item408_fact": len({f["adsh"] for f in facts}),
+                "rows": len(rows),
+                "rows_by_form": dict(forms),
+            }
+        )
+        all_rows.extend(rows)
+        say("%-22s facts %7d  filings %6d  rows %7d"
+            % (name, len(facts), len({f["adsh"] for f in facts}), len(rows)))
+
+    df = pd.DataFrame(all_rows, columns=EVENT_COLUMNS)
+    for c in df.columns:
+        df[c] = df[c].astype("object")
+    os.makedirs(vintage_dir(args.vintage), exist_ok=True)
+    ev = os.path.join(vintage_dir(args.vintage), "events.parquet")
+    df.to_parquet(ev, index=False)
+
+    vman = load_manifest(manifest_path(args.vintage))
+    vman.update(
+        {
+            "vintage": str(args.vintage),
+            "route": "bulk_dataset_fsn",
+            "archives": {k: v for k, v in manifest["archives"].items() if k in args.archives},
+            "coverage": coverage,
+            "rows": int(len(df)),
+            "events_parquet_sha256": sha256_file(ev),
+            "finished_utc": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
+    write_manifest(manifest_path(args.vintage), vman)
+    write_manifest(tracked_manifest_path(args.vintage), vman)
+    say("rows %d" % len(df))
+    say("events.parquet sha256 %s" % vman["events_parquet_sha256"])
+    say("manifest %s" % manifest_path(args.vintage))
+    say("tracked  %s" % tracked_manifest_path(args.vintage))
     return 0
 
 
@@ -1336,6 +1670,14 @@ def build_parser():
     r = sub.add_parser("report", help="counts and dates only")
     r.add_argument("--vintage", required=True)
     r.set_defaults(func=cmd_report)
+
+    n = sub.add_parser("fsn", help="bulk Financial Statement and Notes dataset route")
+    n.add_argument("--vintage", required=True)
+    n.add_argument("--archives", nargs="+", required=True)
+    n.add_argument("--download", action="store_true")
+    n.add_argument("--build", action="store_true")
+    n.add_argument("--rate", type=int, default=6)
+    n.set_defaults(func=cmd_fsn)
 
     j = sub.add_parser("join", help="join issuers to the Sharadar panel; presence counts only")
     j.add_argument("--vintage", required=True)
