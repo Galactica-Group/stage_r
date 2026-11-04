@@ -1,7 +1,7 @@
 """
 ================================================================================
 Script:       edgar_item408_probe.py
-Version:      1.1.0
+Version:      1.1.1
 Phase:        Stage R — External Data Evaluation
 Purpose:      Build the event table of Rule 10b5-1 trading-arrangement adoptions
               and terminations disclosed under Item 408(a) of Regulation S-K in
@@ -414,7 +414,9 @@ def parse_ix_date(fmt, text):
     if m:
         y, mo, d = (int(x) for x in m.groups())
         return _safe_iso(y, mo, d)
-    m = re.fullmatch(r"([A-Za-z]{3,9})\.?,?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})", t)
+    # The bulk dataset ships month-name dates with the space collapsed out
+    # ("December19, 2025"), so the separator is optional, not required.
+    m = re.fullmatch(r"([A-Za-z]{3,9})\.?,?\s*(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})", t)
     if m:
         mo = _MONTHS.get(m.group(1).lower())
         if mo:
@@ -590,6 +592,85 @@ _MEMBER_RE = re.compile(
     re.S | re.I,
 )
 INDIVIDUAL_AXIS = "IndividualAxis"
+INDIVIDUAL_DIM = "Individual"
+
+
+def _norm_axis(axis):
+    a = _localname(axis)
+    return a[:-4] if a.endswith("Axis") else a
+
+
+def _norm_member(member):
+    v = _localname(member)
+    return v[:-6] if v.endswith("Member") else v
+
+
+def canonical_dim_key(dims):
+    """A source-independent key for a dimension set.
+
+    The HTML path reads "IndividualAxis" -> "SanjayMehrotraMember" from the
+    document's context blocks; the bulk dataset writes "Individual=SanjayMehrotra".
+    Stripping the Axis and Member suffixes makes the two spell the same key, so
+    the routes are comparable fact by fact. An empty set returns "".
+    """
+    if not dims:
+        return ""
+    pairs = sorted((_norm_axis(a), _norm_member(mv)) for a, mv in dims.items())
+    return ";".join("%s=%s" % (a, mv) for a, mv in pairs)
+
+
+def parse_canonical_dim_key(key):
+    """Inverse of canonical_dim_key for a key this module produced."""
+    out = {}
+    for part in str(key or "").split(";"):
+        if "=" in part:
+            a, _, mv = part.partition("=")
+            out[a] = mv
+    return out
+
+
+_META_COLUMNS = ("adsh", "cik", "form", "file_date", "period_ending", "context_ref")
+
+
+def apply_individual_inheritance(rows):
+    """Push individual-level facts down onto that individual's arrangement rows.
+
+    A filer may tag a person's name, title and dates against the Individual
+    axis alone while tagging each separate trading arrangement's amount against
+    (Individual, TradingArr). The arrangements are the arrangements, so they are
+    the rows; the individual-level facts describe the person and are inherited
+    by each of them, never overwriting a value the arrangement states itself.
+    The now-redundant individual-only row is dropped. A person with no
+    arrangement-level row keeps their individual-level row unchanged.
+    """
+    groups = {}
+    for r in rows:
+        dims = parse_canonical_dim_key(r.get("context_ref"))
+        ind = dims.get(INDIVIDUAL_DIM)
+        if not ind:
+            continue
+        slot = groups.setdefault(ind, {"base": None, "arr": []})
+        if len(dims) == 1:
+            if slot["base"] is None:
+                slot["base"] = r
+        else:
+            slot["arr"].append(r)
+
+    dropped = set()
+    for _ind, slot in groups.items():
+        base, arr = slot["base"], slot["arr"]
+        if base is None or not arr:
+            continue
+        for a in arr:
+            for col, val in base.items():
+                if col in _META_COLUMNS:
+                    continue
+                if val in (None, "") or a.get(col) not in (None, ""):
+                    continue
+                a[col] = val
+        dropped.add(id(base))
+    return [r for r in rows if id(r) not in dropped]
+
 
 
 def _localname(qname):
@@ -620,18 +701,19 @@ def extract_context_dimensions(html):
 
 
 def individual_key(context_ref, ctx_dims):
-    """The row key for a fact: its IndividualAxis member, else its contextRef.
+    """The row key for a fact: its full canonical dimension set, else contextRef.
 
-    Keying on the individual merges the duration-context and instant-context
-    facts a filer tags for the same person. A context with no IndividualAxis
-    member (the entity-level summary flags) keeps its own contextRef, so it
-    stays a row of its own rather than collapsing into somebody's arrangement.
+    Keying on the dimension set merges the duration-context and instant-context
+    facts a filer tags for one arrangement, while keeping two arrangements of
+    the same person apart - a distinction that keying on the individual alone
+    destroys. A context with no dimensions (the entity-level summary flags)
+    keeps its own contextRef, so it stays a row of its own.
     """
     if not ctx_dims:
         return context_ref
     dims = ctx_dims.get(context_ref) or {}
-    member = dims.get(INDIVIDUAL_AXIS)
-    return member if member else context_ref
+    key = canonical_dim_key(dims)
+    return key if key else context_ref
 
 
 def facts_to_rows(facts, ctx_dims=None):
@@ -1079,7 +1161,7 @@ def event_rows_for_filing(meta, html):
             if raw_key in grouped and col.endswith("_date"):
                 row[col + "_raw"] = grouped[raw_key]
         out.append(row)
-    return out
+    return apply_individual_inheritance(out)
 
 
 def cmd_parse(args):
@@ -1199,12 +1281,12 @@ def parse_dim_segments(segments):
 
 
 def fsn_individual_key(dimh, segments):
-    """Row key for a bulk fact: its Individual member, else the dimension hash."""
-    dims = parse_dim_segments(segments)
-    for axis, member in dims.items():
-        if axis.replace("Axis", "") == "Individual" and member:
-            return member
-    return dimh
+    """Row key for a bulk fact: its full canonical dimension set, else the hash.
+
+    Same key as the HTML path produces, so the two routes are comparable.
+    """
+    key = canonical_dim_key(parse_dim_segments(segments))
+    return key if key else dimh
 
 
 def fsn_url(name):
@@ -1311,7 +1393,13 @@ def pivot_fsn_rows(facts, subs, dims):
             else:
                 row[col] = value
         rows.append(row)
-    return rows
+    out = []
+    for _adsh, group in collections.OrderedDict(
+        (a, [r for r in rows if r["adsh"] == a])
+        for a in collections.OrderedDict((r["adsh"], None) for r in rows)
+    ).items():
+        out.extend(apply_individual_inheritance(group))
+    return out
 
 
 def cmd_fsn(args):
