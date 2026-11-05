@@ -678,6 +678,107 @@ def verdict_of(p, distance, bar, materiality=MATERIALITY,
 
 
 # ---------------------------------------------------------------------------
+# Halt diagnostics: why a registered null could not be formed
+# ---------------------------------------------------------------------------
+RETENTION_THRESHOLDS = (0.90, 0.80, 0.70, 0.60)
+
+
+def retention_profile(wb, groups, d_idx, n_draws, rng,
+                      thresholds=RETENTION_THRESHOLDS):
+    """The retention a uniform bijection actually achieves, and the identity's.
+
+    Retention is a property of the PERMUTED pairings and of the issuers' own
+    trading histories: it says what share of (issuer, date) pairs an issuer can
+    cover at all. It forms no figure of any event's observed return, which is
+    why it can be measured when the registered null cannot be formed.
+    """
+    n = int(len(d_idx))
+    ident = permuted_mcar(wb, groups, d_idx, np.arange(n))
+    rets = np.empty(int(n_draws))
+    cons = np.empty(int(n_draws))
+    for i in range(int(n_draws)):
+        s = draw_permutation(rng, n)
+        _m, ret, _used, con = permuted_mcar(wb, groups, d_idx, s)
+        rets[i], cons[i] = ret, con
+    out = {
+        "n_events": n,
+        "identity_retention": float(ident[1]),
+        "identity_used": int(ident[2]),
+        "n_draws": int(n_draws),
+        "mean": float(rets.mean()),
+        "sd": float(rets.std(ddof=1)) if n_draws > 1 else 0.0,
+        "min": float(rets.min()), "max": float(rets.max()),
+        "p05": float(np.percentile(rets, 5)),
+        "median": float(np.median(rets)),
+        "p95": float(np.percentile(rets, 95)),
+        "mean_contaminated_share": float(cons.mean()),
+    }
+    out["share_at_or_above"] = {
+        ("%.2f" % t): float((rets >= float(t)).mean()) for t in thresholds}
+    req = float(RETENTION_MIN)
+    out["required"] = req
+    out["sd_to_the_requirement"] = (
+        float((req - out["mean"]) / out["sd"]) if out["sd"] > 0 else None)
+    out["reachable"] = bool(out["max"] >= req)
+    return out
+
+
+def coverage_density(wb, groups, d_idx):
+    """The exact (issuer, date) coverability matrix and what it implies.
+
+    Every distinct issuer is scored against every distinct date through the
+    SAME scorer the null uses, so the ceiling this reports is the mechanism's
+    own, not an estimate. The event-weighted mean is the retention a uniform
+    bijection must converge to, because it draws issuers and dates with their
+    event multiplicities.
+    """
+    g = np.asarray(groups, dtype=np.int64)
+    d = np.asarray(d_idx, dtype=np.int64)
+    uniq_g, gpos = np.unique(g, return_inverse=True)
+    uniq_d, dpos = np.unique(d, return_inverse=True)
+    cov = np.zeros((len(uniq_g), len(uniq_d)), dtype=bool)
+    for i, gg in enumerate(uniq_g):
+        cov[i] = score_pairs(wb, np.full(len(uniq_d), gg, dtype=np.int64),
+                             uniq_d)[2]
+    wg = np.bincount(gpos, minlength=len(uniq_g)).astype(float)
+    wd = np.bincount(dpos, minlength=len(uniq_d)).astype(float)
+    exp_ret = float((wg @ cov @ wd) / (wg.sum() * wd.sum()))
+    per_issuer = cov.mean(axis=1)
+    per_date = cov.mean(axis=0)
+    return {
+        "distinct_issuers": int(len(uniq_g)),
+        "distinct_dates": int(len(uniq_d)),
+        "pair_density_unweighted": float(cov.mean()),
+        "event_weighted_expected_retention": exp_ret,
+        "issuers_covering_every_date": int(cov.all(axis=1).sum()),
+        "issuers_covering_under_half_the_dates": int((per_issuer < 0.5).sum()),
+        "issuer_coverage_quartiles": [float(x) for x in
+                                      np.percentile(per_issuer, [25, 50, 75])],
+        "date_coverage_quartiles": [float(x) for x in
+                                    np.percentile(per_date, [25, 50, 75])],
+    }
+
+
+def issuer_span_profile(book, wb, groups, d_idx):
+    """Why coverage is short: the issuers' listing and delisting dates."""
+    uniq_g = np.unique(np.asarray(groups, dtype=np.int64))
+    first = np.array([int(book.dayidx[book.slice_of(wb.tickers[g])[0]])
+                      for g in uniq_g], dtype=np.int64)
+    last = np.asarray(wb.last_idx)[uniq_g]
+    lo, hi = int(np.min(d_idx)), int(np.max(d_idx))
+    return {
+        "date_range_idx": [lo, hi],
+        "date_range": [book.date_str(lo), book.date_str(hi)],
+        "issuers": int(len(uniq_g)),
+        "listing_after_the_earliest_date": int((first > lo).sum()),
+        "delisting_before_the_latest_date_plus_window":
+            int((last < hi + VOTE_TO).sum()),
+        "spanning_the_whole_window":
+            int(((first <= lo) & (last >= hi + VOTE_TO)).sum()),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Descriptives — formed only inside the observed stage
 # ---------------------------------------------------------------------------
 def events_by_year(d_dates, net, nullmed):

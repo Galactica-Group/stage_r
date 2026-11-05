@@ -378,8 +378,20 @@ def stage_controls(args):
     log("STEP 3 - MDE from the %s null (%d replicates, seed %d)"
         % (null_family, R_vote, seed_vote))
     tm = time.time()
-    nullo = e.permutation_null(wb, groups, d_idx, R_vote,
-                               np.random.default_rng(seed_vote))
+    try:
+        nullo = e.permutation_null(wb, groups, d_idx, R_vote,
+                                   np.random.default_rng(seed_vote))
+    except AssertionError as exc:
+        # The registered null could not produce a single replicate. Nothing is
+        # relaxed here: the retention rule is the seal's, the redraw cap is the
+        # reused R5 implementation's, and the diagnostic below says only how far
+        # the mechanism falls short. Changing either is a re-registration.
+        st["mde_null_s"] = round(time.time() - tm, 1)
+        diag = retention_halt_diagnostic(book, wb, groups, d_idx)
+        return halt_out(reg, "STEP 3: the registered %s null could not be "
+                        "formed - %s" % (null_family, exc),
+                        None, None, None, counts, n_events, msha, t0, st,
+                        None, diag)
     st["mde_null_s"] = round(time.time() - tm, 1)
     nm = nullo["mcar"]
     mde = e.mde_from_null(nm)
@@ -527,8 +539,47 @@ def stage_controls(args):
     return 0
 
 
+def retention_halt_diagnostic(book, wb, groups, d_idx, n_draws=200,
+                              seed=20261106):
+    """What a step-3 retention halt must say: how short, and why.
+
+    Every figure here lives on permuted pairings and on the issuers' trading
+    histories. No observed event return is formed, so a halt can be explained
+    without spending the look it refuses to take.
+    """
+    log("  measuring the shortfall (%d uniform bijections, the exact "
+        "issuer-date coverage matrix, and the issuers' spans)" % n_draws)
+    t = time.time()
+    prof = e.retention_profile(wb, groups, d_idx, n_draws,
+                               np.random.default_rng(int(seed)))
+    cov = e.coverage_density(wb, groups, d_idx)
+    spans = e.issuer_span_profile(book, wb, groups, d_idx)
+    log("  identity pairing retention %.6f (%d of %d) - the scorer covers "
+        "every real event by its own issuer"
+        % (prof["identity_retention"], prof["identity_used"], prof["n_events"]))
+    log("  uniform bijections: retention mean %.4f sd %.4f min %.4f max %.4f; "
+        "share >= %.2f = %.3f"
+        % (prof["mean"], prof["sd"], prof["min"], prof["max"],
+           prof["required"], prof["share_at_or_above"]["0.90"]))
+    log("  the requirement sits %.1f sd above the mean of the achievable "
+        "distribution" % (prof["sd_to_the_requirement"] or float("nan")))
+    log("  exact coverage: %d issuers x %d dates, event-weighted ceiling "
+        "%.4f (unweighted density %.4f)"
+        % (cov["distinct_issuers"], cov["distinct_dates"],
+           cov["event_weighted_expected_retention"],
+           cov["pair_density_unweighted"]))
+    log("  why: of %d issuers, %d list after %s, %d delist before %s plus the "
+        "window, and only %d span it whole"
+        % (spans["issuers"], spans["listing_after_the_earliest_date"],
+           spans["date_range"][0],
+           spans["delisting_before_the_latest_date_plus_window"],
+           spans["date_range"][1], spans["spanning_the_whole_window"]))
+    return {"retention_profile": prof, "coverage": cov,
+            "issuer_spans": spans, "seconds": round(time.time() - t, 1)}
+
+
 def halt_out(reg, reason, mde, known_null, positive, counts, n_events, msha, t0,
-             st=None, null_spread=None):
+             st=None, null_spread=None, diagnostic=None):
     log("HALT: %s" % reason)
     log("No observed figure is computed. No look is spent. No ledger row.")
     payload = {
@@ -538,8 +589,13 @@ def halt_out(reg, reason, mde, known_null, positive, counts, n_events, msha, t0,
         "X_calibrated": (positive or {}).get("X_calibrated"),
         "detection": (positive or {}).get("detection_rate"),
         "utc": utc_now(), "resolution_counts": counts,
+        "runner_version": VERSION, "engine_version": e.VERSION,
+        "engine_sha256": e.sha256_file(ROOT / "tools" / "form4_event_study_r6.py"),
+        "r5_engine_sha256": e.sha256_file(
+            ROOT / "tools" / "item408_event_study_r5.py"),
         "benchmark_sha256": msha, "null_spread": null_spread,
         "known_null_control": known_null, "positive_control": positive,
+        "diagnostic": diagnostic,
         "stage_times": st or {},
         "wall_seconds": round(time.time() - t0, 1),
     }

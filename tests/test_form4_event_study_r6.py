@@ -1038,9 +1038,10 @@ def test_registration_prose_pins_the_constants():
     assert "under %d percent retention is redrawn" % int(
         100 * c.RETENTION_MIN) in text
     assert "%s * sd(null mCAR)" % c.Z80 in text
-    assert "distance >= %s net" % c.MATERIALITY in text
+    assert "distance >= %.3f net" % c.MATERIALITY in text
     assert "p in (%.2f, %.2f]" % (0.05, c.SUGGESTIVE_HI) in text
-    assert "%d or more insiders" % c.INSIDER_SUBGROUP in text
+    assert "%s or more insiders" % (
+        {1: "one", 2: "two", 3: "three"}[c.INSIDER_SUBGROUP]) in text
     assert "total value over %d USD" % int(c.VALUE_SUBGROUP) in text
     assert "KEPT and counted as contaminated" in text
 
@@ -1187,3 +1188,137 @@ def test_the_r5_engine_and_runner_are_not_modified_by_this_look():
         src = (ROOT / "tools" / name).read_text()
         assert "form4" not in src, name
         assert "T-R6" not in src, name
+
+
+# ---------------------------------------------------------------------------
+# 14. the step-3 halt: diagnostics that spend no look
+# ---------------------------------------------------------------------------
+def _span_book():
+    """Two issuers, one of which stops long before the later dates."""
+    f = frame("2010-01-04", 400, rate=0.001)
+    book = make_book({"LONG": f, "STOP": f.iloc[:200]})
+    wb = c.WindowBook(book, ["LONG", "STOP"], flat_index(book))
+    return book, wb
+
+
+def test_the_identity_pairing_always_retains_every_resolved_event():
+    """Each real event is covered by its OWN issuer: the scorer's own floor."""
+    book, wb = _span_book()
+    groups = np.array([0, 1])
+    d_idx = np.array([300, 100])
+    prof = c.retention_profile(wb, groups, d_idx, 20, np.random.default_rng(0))
+    assert prof["identity_retention"] == pytest.approx(1.0)
+    assert prof["identity_used"] == 2
+
+
+def test_retention_profile_reports_the_shortfall_against_the_sealed_rule():
+    book, wb = _span_book()
+    groups = np.array([0, 1])
+    d_idx = np.array([300, 100])
+    prof = c.retention_profile(wb, groups, d_idx, 40, np.random.default_rng(1))
+    assert prof["required"] == c.RETENTION_MIN == 0.90
+    assert prof["min"] <= 0.5 and prof["max"] <= 1.0
+    assert "0.90" in prof["share_at_or_above"]
+    assert isinstance(prof["reachable"], bool)
+
+
+def test_a_reachable_retention_is_reported_as_reachable():
+    book = make_book({"AAA": frame("2010-01-04", 400, rate=0.001),
+                      "BBB": frame("2010-01-04", 400, rate=0.002)})
+    wb = c.WindowBook(book, ["AAA", "BBB"], flat_index(book))
+    prof = c.retention_profile(wb, np.array([0, 1]), np.array([100, 200]), 10,
+                               np.random.default_rng(2))
+    assert prof["mean"] == pytest.approx(1.0) and prof["reachable"]
+
+
+def test_coverage_density_is_the_exact_ceiling_a_bijection_converges_to():
+    book, wb = _span_book()
+    groups = np.array([0, 1])
+    d_idx = np.array([300, 100])
+    cov = c.coverage_density(wb, groups, d_idx)
+    assert cov["distinct_issuers"] == 2 and cov["distinct_dates"] == 2
+    # LONG covers both dates, STOP covers only the early one: 3 of 4 pairs
+    assert cov["pair_density_unweighted"] == pytest.approx(0.75)
+    assert cov["event_weighted_expected_retention"] == pytest.approx(0.75)
+    assert cov["issuers_covering_every_date"] == 1
+
+
+def test_the_coverage_ceiling_matches_the_measured_retention_mean():
+    book, wb = _span_book()
+    groups = np.array([0, 0, 1, 1])
+    d_idx = np.array([300, 100, 300, 100])
+    cov = c.coverage_density(wb, groups, d_idx)
+    prof = c.retention_profile(wb, groups, d_idx, 300, np.random.default_rng(3))
+    assert prof["mean"] == pytest.approx(
+        cov["event_weighted_expected_retention"], abs=0.03)
+
+
+def test_issuer_span_profile_names_the_listings_and_delistings():
+    book, wb = _span_book()
+    sp = c.issuer_span_profile(book, wb, np.array([0, 1]), np.array([100, 300]))
+    assert sp["issuers"] == 2
+    assert sp["delisting_before_the_latest_date_plus_window"] == 1
+    assert sp["spanning_the_whole_window"] == 1
+    assert sp["date_range"][0] == bday(100) and sp["date_range"][1] == bday(300)
+
+
+def test_the_diagnostic_forms_no_observed_figure():
+    """Nothing in the halt diagnostic touches the voted mean."""
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef)
+              and n.name == "retention_halt_diagnostic")
+    body = ast.dump(fn)
+    for forbidden in ("voted_returns", "mcar_net", "distance_of", "null_p",
+                      "mde_from_null", "subgroup_distances"):
+        assert forbidden not in body, forbidden
+    for name in ("retention_profile", "coverage_density",
+                 "issuer_span_profile"):
+        assert name in body, name
+
+
+def test_a_step3_null_failure_routes_through_the_halt_not_a_traceback():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
+    handlers = [h for n in ast.walk(fn) if isinstance(n, ast.Try)
+                for h in n.handlers]
+    assert handlers, "step 3 must not let the null's refusal escape"
+    dumped = " ".join(ast.dump(h) for h in handlers)
+    assert "halt_out" in dumped and "retention_halt_diagnostic" in dumped
+    assert "STEP 3" in dumped
+
+
+def test_the_step3_halt_precedes_the_known_null_and_the_plant():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
+    body = ast.dump(fn)
+    assert body.index("STEP 3") < body.index("plant_drift")
+    assert body.index("retention_halt_diagnostic") < body.index("plant_drift")
+
+
+def test_the_halt_payload_carries_its_diagnostic():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "halt_out")
+    assert "value='diagnostic'" in ast.dump(fn)
+    assert "diagnostic" in [a.arg for a in fn.args.args + fn.args.kwonlyargs] \
+        or any(a.arg == "diagnostic" for a in fn.args.args)
+
+
+def test_the_runner_never_relaxes_the_sealed_retention_rule():
+    """A halt explains the shortfall; it must not lower the bar it failed."""
+    for name in ("run_t_r6.py", "form4_event_study_r6.py"):
+        src = (ROOT / "tools" / name).read_text()
+        tree = ast.parse(src)
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Assign):
+                for t in n.targets:
+                    if isinstance(t, ast.Name):
+                        assert t.id != "RETENTION_MIN" or name == \
+                            "form4_event_study_r6.py"
+                    if isinstance(t, ast.Attribute):
+                        assert t.attr != "RETENTION_MIN", name
+    assert c.RETENTION_MIN == r5.RETENTION_MIN == 0.90
+    assert "RETENTION_MIN" in c.SHARED_WITH_R5

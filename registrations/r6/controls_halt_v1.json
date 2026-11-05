@@ -1,0 +1,140 @@
+{
+  "halt": "STEP 3: the registered issuer permutation at fixed dates null could not be formed - a replicate could not retain 90% of events in 200 redraws",
+  "registration_sha": "faf1beeec58707af740a02aeddbd1774e031304293034efe1ee6734b1971ecee",
+  "null_family": "issuer permutation at fixed dates",
+  "n_events": 19217,
+  "mde": null,
+  "known_null_share": null,
+  "X_calibrated": null,
+  "detection": null,
+  "utc": "2026-11-05T18:06:40.642435+00:00",
+  "resolution_counts": {
+    "rows_in_vintage": 579600,
+    "A_lag_0_to_90": 563115,
+    "A_removed_lag_negative": 206,
+    "A_removed_lag_over_90": 16279,
+    "A_removed_lag_missing": 0,
+    "B_not_routine": 528342,
+    "B_removed_routine": 34773,
+    "C_filing_day_on_the_calendar": 528342,
+    "C_dropped_off_calendar": 0,
+    "D_events": 88497,
+    "E_mapping": {
+      "matched": 73314,
+      "multi_permaticker": 10886,
+      "multi_resolved_by_row_count": 3188,
+      "dropped_no_usable_ticker": 15183
+    },
+    "E_duplicate_permaticker_D_pairs": 0,
+    "F_history_250_rows_before_D": 66720,
+    "G_price_floor_on_D_plus_1": 58071,
+    "G_dollar_volume_floor": 38548,
+    "H_window_status": {
+      "complete": 38030,
+      "delisted": 82,
+      "truncated": 427,
+      "hole": 0,
+      "no_entry": 0,
+      "too_short": 9,
+      "absent": 0
+    },
+    "H_complete_D1_to_D61": 38030,
+    "H_delisted_in_window": 82,
+    "H_truncated_at_snapshot_edge": 427,
+    "H_hole": 0,
+    "H_complete_or_delisted": 38112,
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "benchmark_members_on_probe_dates": {},
+    "r5_all_ticker_index_on_probe_dates": {
+      "2008-06-16": 5219,
+      "2012-06-15": 4605,
+      "2015-06-15": 4696
+    },
+    "I_half_A": 19217,
+    "I_half_B": 12897,
+    "I_holdout": 5998,
+    "I_outside_every_regime": 0
+  },
+  "runner_version": "1.0.0",
+  "engine_version": "1.0.0",
+  "engine_sha256": "9ad44011e1c651214a3c3b4d37f1b240d00c0fba3d5394ac0eaba4e374579a28",
+  "r5_engine_sha256": "9344069306b6c7982985ab993f20c91bbb4db067a9911a04cdc6e0a5ec3c7f86",
+  "benchmark_sha256": "c527a4fff2a8b84d23a5cc7ac0f6d8884dd3e082313ac5fbd053a759d8b47e72",
+  "null_spread": null,
+  "known_null_control": null,
+  "positive_control": null,
+  "diagnostic": {
+    "retention_profile": {
+      "n_events": 19217,
+      "identity_retention": 1.0,
+      "identity_used": 19217,
+      "n_draws": 200,
+      "mean": 0.8784219701306135,
+      "sd": 0.0018253540302606743,
+      "min": 0.8723005672061196,
+      "max": 0.8823437581308217,
+      "p05": 0.8753681636051412,
+      "median": 0.8785710568767238,
+      "p95": 0.8811000676484363,
+      "mean_contaminated_share": 0.41887794479353974,
+      "share_at_or_above": {
+        "0.90": 0.0,
+        "0.80": 1.0,
+        "0.70": 1.0,
+        "0.60": 1.0
+      },
+      "required": 0.9,
+      "sd_to_the_requirement": 11.821284809229583,
+      "reachable": false
+    },
+    "coverage": {
+      "distinct_issuers": 3857,
+      "distinct_dates": 2413,
+      "pair_density_unweighted": 0.7701807715338477,
+      "event_weighted_expected_retention": 0.8784096769273687,
+      "issuers_covering_every_date": 1952,
+      "issuers_covering_under_half_the_dates": 904,
+      "issuer_coverage_quartiles": [
+        0.5205138831330294,
+        1.0,
+        1.0
+      ],
+      "date_coverage_quartiles": [
+        0.7472128597355457,
+        0.7733990147783252,
+        0.7962146746175784
+      ]
+    },
+    "issuer_spans": {
+      "date_range_idx": [
+        2013,
+        4528
+      ],
+      "date_range": [
+        "2006-01-03",
+        "2015-12-30"
+      ],
+      "issuers": 3857,
+      "listing_after_the_earliest_date": 899,
+      "delisting_before_the_latest_date_plus_window": 1231,
+      "spanning_the_whole_window": 1921
+    },
+    "seconds": 0.6
+  },
+  "stage_times": {
+    "load_prices_s": 14.8,
+    "benchmark_s": 0.0,
+    "resolution_s": 3.3,
+    "window_book_s": 0.6,
+    "mde_null_s": 0.4
+  },
+  "wall_seconds": 20.6
+}

@@ -18,6 +18,15 @@ the half-A report are tracked, and every receipt is bound to the seal tracked
 beside it by the seal's own sha256, so a receipt copied from the wrong look
 cannot sit silently next to the right seal.
 
+Sprint R6-1 seals T-R6 and HALTS it at its own step 3: the registered issuer
+permutation could not retain the 90 per cent the seal demands, so no observed
+figure was formed and no look was spent. The T-R6 seal and the halt it produced
+are tracked here beside R5's, and T-R6 deliberately does NOT appear in
+BATCH_TO_REGISTRATION, because that mapping is for seals that govern a ledger
+row and T-R6 governs none. The assertion that protects the no-look-spent claim
+is test_a_halted_seal_governs_no_ledger_row, which now covers both halted
+seals.
+
 The mutation this battery is built to catch is a tracked copy that drifts from
 the sealed bytes the ledger row was written against -- a flipped byte, a
 re-serialised JSON, or a copy taken from the wrong look.
@@ -56,6 +65,8 @@ TRACKED_REGISTRATIONS = [
     Path("registrations/r5/registration_v2.json"),
     Path("registrations/r5/controls_pass_v2.json"),
     Path("registrations/r5/t_r5_halfA_report.json"),
+    Path("registrations/r6/registration_v1.json"),
+    Path("registrations/r6/controls_halt_v1.json"),
 ]
 
 # A look's receipts -> the seal they must name. The receipt carries the seal's
@@ -75,7 +86,16 @@ RECEIPT_TO_SEAL = {
 
 # A seal that governed no ledger row: v1 halted at its controls, before any
 # observed figure was formed.
-SEALED_BUT_NEVER_READ = [Path("registrations/r5/registration_v1.json")]
+SEALED_BUT_NEVER_READ = [Path("registrations/r5/registration_v1.json"),
+                         Path("registrations/r6/registration_v1.json")]
+
+# A halted seal -> the halt record tracked beside it, and the step it died at.
+HALTED = {
+    Path("registrations/r5/registration_v1.json"): (
+        Path("registrations/r5/controls_halt_v1.json"), "STEP 3"),
+    Path("registrations/r6/registration_v1.json"): (
+        Path("registrations/r6/controls_halt_v1.json"), "STEP 3"),
+}
 
 
 def sha256_hex(path: Path) -> str:
@@ -181,3 +201,55 @@ def test_the_half_a_report_names_the_controls_receipt_tracked_beside_it():
         (REPO / "registrations/r5/t_r5_halfA_report.json").read_text())
     assert report["controls_receipt_sha256"] == sha256_hex(
         REPO / "registrations/r5/controls_pass_v2.json")
+
+
+def test_every_halted_seal_has_its_halt_tracked_beside_it():
+    """A halt is the record of a look that was refused, not of one not taken."""
+    for seal_rel, (halt_rel, step) in HALTED.items():
+        halt = REPO / halt_rel
+        assert halt.is_file(), f"missing tracked halt: {halt_rel}"
+        h = json.loads(halt.read_text())
+        assert h["registration_sha"] == sha256_hex(REPO / seal_rel), (
+            f"{halt_rel} names a seal other than {seal_rel}")
+        assert step in h["halt"], (halt_rel, h["halt"])
+
+
+def test_a_halt_records_no_figure_downstream_of_where_it_died():
+    """Every figure the halted step never reached must be absent, not zero."""
+    h = json.loads(
+        (REPO / "registrations/r6/controls_halt_v1.json").read_text())
+    for key in ("mde", "known_null_share", "X_calibrated", "detection",
+                "null_spread", "known_null_control", "positive_control"):
+        assert h[key] is None, (key, h[key])
+    assert h["n_events"] >= 5000, "the resolution minimum was cleared"
+
+
+def test_the_t_r6_halt_says_why_the_null_could_not_be_formed():
+    """The shortfall is measured, not asserted: the halt must carry the numbers."""
+    h = json.loads(
+        (REPO / "registrations/r6/controls_halt_v1.json").read_text())
+    d = h["diagnostic"]
+    prof, cov = d["retention_profile"], d["coverage"]
+    # the scorer is sound: each real event is covered by its own issuer
+    assert prof["identity_retention"] == 1.0
+    # and no uniform bijection reaches the sealed requirement
+    assert prof["required"] == 0.90
+    assert prof["reachable"] is False
+    assert prof["max"] < prof["required"]
+    assert prof["share_at_or_above"]["0.90"] == 0.0
+    # the ceiling is structural: the exact coverage matrix agrees with the draws
+    assert abs(cov["event_weighted_expected_retention"] - prof["mean"]) < 1e-3
+    assert d["issuer_spans"]["spanning_the_whole_window"] < \
+        d["issuer_spans"]["issuers"]
+
+
+def test_the_t_r6_halt_was_produced_by_an_unmodified_r5_engine():
+    """T-R6 reuses R5's scorer; the ledger's own T-R5 row pins its bytes."""
+    h = json.loads(
+        (REPO / "registrations/r6/controls_halt_v1.json").read_text())
+    row = next(r for r in ledger_rows() if r["batch_id"] == "T-R5")
+    assert h["r5_engine_sha256"][:16] == row["harness_sha"]
+
+
+def test_the_ledger_carries_no_t_r6_row():
+    assert all(r["batch_id"] != "T-R6" for r in ledger_rows())
