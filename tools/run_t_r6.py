@@ -10,25 +10,25 @@ Entry Point:  Yes — python tools/run_t_r6.py --stage resolve|controls|observed
                      --registration logs/r6/registration_v1.json --sha <sha256>
 Dependencies: stdlib, numpy, pandas, tools/form4_event_study_r6.py,
               tools/ledger_chain.py. Imports nothing from any other repository.
-Last Sprint:  Sprint R6-1 — T-R6 insider open-market purchases: seal, controls,
-              half-A read (2026-11-05)
+Last Sprint:  Sprint R6-2 — T-R6 v2: re-pairing sampler, half-year cap,
+              re-seal, controls, half-A read (2026-11-05)
 ================================================================================
 
 The stages make the registered order of operations mechanical rather than a
 promise. --stage resolve walks steps 1 and 2 only — the event set resolved and
 counted at every clause, and the investable benchmark built and cached — and
 forms no figure of any event's return. --stage controls repeats those two and
-then walks steps 3 to 5 — the MDE, the known-null control, the positive control
-— writing logs/r6/controls_pass.json on a pass or logs/r6/controls_halt.json on
-a halt, exiting non-zero in the second case. Both name the null_family they were
+then walks steps 3a to 5 — the sampler check, the MDE, the known-null control,
+the positive control — writing logs/r6/controls_pass.json on a pass or
+logs/r6/controls_halt.json on a halt, exiting non-zero in the second case. Both name the null_family they were
 written under, so a receipt from one null design cannot be read as another's.
 --stage observed refuses to start unless that receipt exists AND its
 registration_sha equals the live seal's, so a read cannot be taken against a
 registration the controls never saw.
 
 Steps 1 to 4 form no figure of the observed event set: the counts are counts,
-the benchmark knows nothing of any filing, and the MDE and the control p values
-live entirely on permuted issuer-date pairings. Step 5 must form the observed
+the benchmark knows nothing of any filing, and the sampler check, the MDE and
+the control p values live entirely on permuted issuer-date pairings. Step 5 must form the observed
 mean inside the planted mean it tests, because the registered plant is added to
 the real events' own voted windows; that figure is used and discarded, printed
 in no log line and written into no receipt.
@@ -55,7 +55,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import form4_event_study_r6 as e  # noqa: E402
 import ledger_chain as lc  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 BATCH_ID = "T-R6"
 LOGDIR = ROOT / "logs" / "r6"
 REPORTS = ROOT / "reports"
@@ -225,7 +225,9 @@ def prepare(reg_path, sha):
     for k in ("rows_in_vintage", "A_lag_0_to_90", "A_removed_lag_negative",
               "A_removed_lag_over_90", "A_removed_lag_missing", "B_not_routine",
               "B_removed_routine", "C_filing_day_on_the_calendar",
-              "C_dropped_off_calendar", "D_events", "E_mapping",
+              "C_dropped_off_calendar", "D_events",
+              "D_events_before_half_year_cap", "D2_half_year_cap",
+              "D2_removed_by_cap", "E_mapping",
               "E_duplicate_permaticker_D_pairs", "F_history_250_rows_before_D",
               "G_price_floor_on_D_plus_1", "G_dollar_volume_floor",
               "H_window_status", "H_complete_D1_to_D61",
@@ -374,13 +376,35 @@ def stage_controls(args):
         % (trunc["latest_window_close_idx"], trunc["truncation_edge_idx"],
            trunc["margin_trading_days"]))
 
+    # ---- step 3a: the sampler check ----
+    log("STEP 3a - SAMPLER CHECK: one re-pairing draw (seed %d, up to %d "
+        "rounds); the floor is %.2f" % (seed_vote, e.MAX_REPAIR_ROUNDS,
+                                        e.SAMPLER_RETENTION_FLOOR))
+    ts = time.time()
+    samp = e.sampler_check(wb, groups, d_idx, seed_vote)
+    st["sampler_check_s"] = round(time.time() - ts, 1)
+    log("  retention %.6f (kept %d of %d, dropped %d) in %d rounds"
+        % (samp["retention"], samp["kept"], samp["n"], samp["dropped"],
+           samp["rounds"]))
+    log("  contaminated pair share %.6f; overlap-weighted c %.6f"
+        % (samp["contaminated_pair_share"], samp["c"]))
+    if not samp["passes"]:
+        return halt_out(reg, "STEP 3a: sampler retention %.6f below the "
+                        "registered floor %.2f (halt "
+                        "sampler_retention_below_0_98)"
+                        % (samp["retention"], e.SAMPLER_RETENTION_FLOOR),
+                        None, None, None, counts, n_events, msha, t0, st,
+                        None, retention_halt_diagnostic(book, wb, groups,
+                                                        d_idx), samp)
+    log("  SAMPLER CHECK PASSES")
+
     # ---- step 3: MDE from the null's own spread ----
     log("STEP 3 - MDE from the %s null (%d replicates, seed %d)"
         % (null_family, R_vote, seed_vote))
     tm = time.time()
     try:
-        nullo = e.permutation_null(wb, groups, d_idx, R_vote,
-                                   np.random.default_rng(seed_vote))
+        nullo = e.repairing_null(wb, groups, d_idx, R_vote,
+                                 np.random.default_rng(seed_vote))
     except AssertionError as exc:
         # The registered null could not produce a single replicate. Nothing is
         # relaxed here: the retention rule is the seal's, the redraw cap is the
@@ -391,7 +415,7 @@ def stage_controls(args):
         return halt_out(reg, "STEP 3: the registered %s null could not be "
                         "formed - %s" % (null_family, exc),
                         None, None, None, counts, n_events, msha, t0, st,
-                        None, diag)
+                        None, diag, samp)
     st["mde_null_s"] = round(time.time() - tm, 1)
     nm = nullo["mcar"]
     mde = e.mde_from_null(nm)
@@ -401,17 +425,30 @@ def stage_controls(args):
                    "redraws": nullo["redraws"],
                    "mean_retention": float(nullo["retention"].mean()),
                    "min_retention": float(nullo["retention"].min()),
-                   "mean_contaminated_share": float(nullo["contaminated"].mean()),
-                   "max_contaminated_share": float(nullo["contaminated"].max())}
+                   "mean_contaminated_pair_share":
+                       float(nullo["contaminated"].mean()),
+                   "max_contaminated_pair_share":
+                       float(nullo["contaminated"].max()),
+                   "mean_c": float(nullo["c"].mean()),
+                   "max_c": float(nullo["c"].max()),
+                   "mean_rounds": float(nullo["rounds"].mean()),
+                   "max_rounds_used": int(nullo["rounds"].max()),
+                   "mean_dropped": float(nullo["dropped"].mean()),
+                   "max_dropped": int(nullo["dropped"].max())}
     log("  null mCAR: median %+.6f  sd %.6f  p95 %+.6f  (R=%d, redraws %d, "
         "%.1fs)" % (null_spread["median"], null_spread["sd"],
                     null_spread["p95"], null_spread["R"], null_spread["redraws"],
                     st["mde_null_s"]))
-    log("  mean retention %.4f (min %.4f); mean contaminated share %.4f "
-        "(max %.4f)" % (null_spread["mean_retention"],
-                        null_spread["min_retention"],
-                        null_spread["mean_contaminated_share"],
-                        null_spread["max_contaminated_share"]))
+    log("  mean retention %.4f (min %.4f); mean dropped %.1f (max %d); mean "
+        "rounds %.2f (max %d)"
+        % (null_spread["mean_retention"], null_spread["min_retention"],
+           null_spread["mean_dropped"], null_spread["max_dropped"],
+           null_spread["mean_rounds"], null_spread["max_rounds_used"]))
+    log("  mean contaminated pair share %.4f (max %.4f); mean overlap-weighted "
+        "c %.6f (max %.6f)"
+        % (null_spread["mean_contaminated_pair_share"],
+           null_spread["max_contaminated_pair_share"],
+           null_spread["mean_c"], null_spread["max_c"]))
     log("  MDE at 80%% power = %+.6f distance" % mde)
 
     # ---- step 4: known-null control ----
@@ -422,11 +459,12 @@ def stage_controls(args):
     ps = np.empty(int(kn["N"]))
     for i in range(int(kn["N"])):
         while True:
-            sig_i = e.draw_permutation(rng_c, n_events)
-            m_i, ret, _, _ = e.permuted_mcar(wb, groups, d_idx, sig_i)
-            if np.isfinite(m_i) and ret >= e.RETENTION_MIN:
+            s_i = e.repairing_mcar(wb, groups, d_idx, rng_c)
+            m_i = s_i["mcar"]
+            if (np.isfinite(m_i)
+                    and s_i["retention"] >= e.SAMPLER_RETENTION_FLOOR):
                 break
-        nn = e.permutation_null(wb, groups, d_idx, int(kn["R_each"]), rng_c)
+        nn = e.repairing_null(wb, groups, d_idx, int(kn["R_each"]), rng_c)
         ps[i] = e.null_p(m_i, nn["mcar"])
         if (i + 1) % 25 == 0:
             log("  %d/%d  running share p<=%.2f = %.4f  (%.0fs)"
@@ -472,7 +510,7 @@ def stage_controls(args):
     for i in range(int(pc["N_draws"])):
         drift = e.plant_drift(n_events, cal["X"], rng_p)
         planted = _internal_obs + float(drift.mean())
-        nn = e.permutation_null(wb, groups, d_idx, int(pc["R_each"]), rng_p)
+        nn = e.repairing_null(wb, groups, d_idx, int(pc["R_each"]), rng_p)
         p = e.null_p(planted, nn["mcar"])
         pp.append(p)
         hits += p <= bar
@@ -522,12 +560,15 @@ def stage_controls(args):
         "known_null_control": known_null,
         "positive_control": positive,
         "truncation_reachability": trunc,
+        "sampler_check": samp,
         "note": "steps 1-4 formed no figure of the observed event set; step 5 "
                 "formed the observed mean inside the planted mean it tests, "
                 "because the registered plant rides the real events' own voted "
                 "windows, and neither printed nor recorded it",
         "mean_retention": null_spread["mean_retention"],
-        "mean_contaminated_share": null_spread["mean_contaminated_share"],
+        "mean_contaminated_pair_share":
+            null_spread["mean_contaminated_pair_share"],
+        "mean_c": null_spread["mean_c"],
         "stage_times": st,
         "wall_seconds": round(time.time() - t0, 1),
     }
@@ -557,10 +598,12 @@ def retention_halt_diagnostic(book, wb, groups, d_idx, n_draws=200,
     log("  identity pairing retention %.6f (%d of %d) - the scorer covers "
         "every real event by its own issuer"
         % (prof["identity_retention"], prof["identity_used"], prof["n_events"]))
-    log("  uniform bijections: retention mean %.4f sd %.4f min %.4f max %.4f; "
-        "share >= %.2f = %.3f"
+    log("  re-pairing draws: retention mean %.6f sd %.6f min %.6f max %.6f; "
+        "share >= %.2f = %.3f; mean rounds %.2f (max %d of %d allowed)"
         % (prof["mean"], prof["sd"], prof["min"], prof["max"],
-           prof["required"], prof["share_at_or_above"]["0.90"]))
+           prof["required"], prof["share_at_or_above"]["0.98"],
+           prof["mean_rounds"], prof["max_rounds_used"],
+           prof["max_rounds_allowed"]))
     log("  the requirement sits %.1f sd above the mean of the achievable "
         "distribution" % (prof["sd_to_the_requirement"] or float("nan")))
     log("  exact coverage: %d issuers x %d dates, event-weighted ceiling "
@@ -579,7 +622,7 @@ def retention_halt_diagnostic(book, wb, groups, d_idx, n_draws=200,
 
 
 def halt_out(reg, reason, mde, known_null, positive, counts, n_events, msha, t0,
-             st=None, null_spread=None, diagnostic=None):
+             st=None, null_spread=None, diagnostic=None, sampler_check=None):
     log("HALT: %s" % reason)
     log("No observed figure is computed. No look is spent. No ledger row.")
     payload = {
@@ -595,7 +638,7 @@ def halt_out(reg, reason, mde, known_null, positive, counts, n_events, msha, t0,
             ROOT / "tools" / "item408_event_study_r5.py"),
         "benchmark_sha256": msha, "null_spread": null_spread,
         "known_null_control": known_null, "positive_control": positive,
-        "diagnostic": diagnostic,
+        "diagnostic": diagnostic, "sampler_check": sampler_check,
         "stage_times": st or {},
         "wall_seconds": round(time.time() - t0, 1),
     }
@@ -645,6 +688,14 @@ def stage_observed(args):
     wb, groups, d_idx, n_real = build_window_book(book, index, res, half)
     st["window_book_s"] = round(time.time() - tw, 1)
     trunc = assert_truncation_unreachable(d_idx, wb.L)
+    samp = e.sampler_check(wb, groups, d_idx, seed_vote)
+    if not samp["passes"]:
+        raise AssertionError(
+            "sampler retention %.6f is below the registered floor %.2f; the "
+            "receipt should never have been written"
+            % (samp["retention"], e.SAMPLER_RETENTION_FLOOR))
+    log("STEP 3a (re-confirmed) retention %.6f in %d rounds; c %.6f"
+        % (samp["retention"], samp["rounds"], samp["c"]))
     log("STEP 6 - OBSERVED")
 
     net, n_ret, ok_obs, exit_obs = e.score_pairs(wb, groups, d_idx)
@@ -655,20 +706,24 @@ def stage_observed(args):
     mcar_net = float(net.mean())
     mcar_gross = float(gross.mean())
     tn = time.time()
-    nullo = e.permutation_null(wb, groups, d_idx, R_vote,
-                               np.random.default_rng(seed_vote))
+    nullo = e.repairing_null(wb, groups, d_idx, R_vote,
+                             np.random.default_rng(seed_vote))
     st["observed_null_s"] = round(time.time() - tn, 1)
     nullmed = e.null_median(nullo["mcar"])
     p = e.null_p(mcar_net, nullo["mcar"])
     dist = e.distance_of(mcar_net, nullo["mcar"])
     con_share = float(nullo["contaminated"].mean())
-    dist_corr = e.corrected_distance(dist, con_share)
+    c_bar = float(nullo["c"].mean())
+    dist_corr = e.corrected_distance(dist, c_bar)
     log("  n %d   mCAR net %+.6f   gross %+.6f" % (n_events, mcar_net,
                                                    mcar_gross))
     log("  null median %+.6f   DISTANCE %+.6f   p %.4f  (%s)"
         % (nullmed, dist, p, null_family))
-    log("  mean contaminated share %.4f   corrected distance %+.6f"
-        % (con_share, dist_corr))
+    log("  contaminated pair share %.6f   overlap-weighted c %.6f   "
+        "corrected distance %+.6f" % (con_share, c_bar, dist_corr))
+    log("  null mean retention %.6f; mean dropped %.1f; mean rounds %.2f"
+        % (float(nullo["retention"].mean()), float(nullo["dropped"].mean()),
+           float(nullo["rounds"].mean())))
 
     median = float(np.median(net))
     share_pos = float((net > 0).mean())
@@ -755,6 +810,7 @@ def stage_observed(args):
         "issuers": len(wb.tickers),
         "real_events_masked": n_real,
         "truncation_reachability": trunc,
+        "sampler_check": samp,
         "observed": {
             "n_events": n_events,
             "mCAR_net": mcar_net, "mCAR_gross": mcar_gross,
@@ -769,8 +825,14 @@ def stage_observed(args):
             "null_R": int(len(nullo["mcar"])), "null_redraws": nullo["redraws"],
             "null_mean_retention": float(nullo["retention"].mean()),
             "null_min_retention": float(nullo["retention"].min()),
-            "null_mean_contaminated_share": con_share,
-            "null_max_contaminated_share": float(nullo["contaminated"].max()),
+            "null_mean_contaminated_pair_share": con_share,
+            "null_max_contaminated_pair_share":
+                float(nullo["contaminated"].max()),
+            "null_mean_c": c_bar, "null_max_c": float(nullo["c"].max()),
+            "null_mean_rounds": float(nullo["rounds"].mean()),
+            "null_max_rounds_used": int(nullo["rounds"].max()),
+            "null_mean_dropped": float(nullo["dropped"].mean()),
+            "null_max_dropped": int(nullo["dropped"].max()),
             "median_net": median, "share_positive": share_pos,
             "window_status": wstat,
             "returns_per_event": {"min": int(nret.min()),

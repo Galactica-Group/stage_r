@@ -24,6 +24,7 @@ Each mutant is exercised against the real engine, which must disagree with it.
 from __future__ import annotations
 
 import ast
+import calendar
 import json
 import sys
 from pathlib import Path
@@ -137,11 +138,16 @@ def test_a_divergent_r5_constant_refuses_the_import(monkeypatch):
         c.assert_shared_constants()
 
 
-def test_the_scorer_and_null_are_the_r5_objects_not_copies():
+def test_the_scorer_is_r5s_but_the_sampler_is_this_looks_own():
+    """v2 reuses R5's scorer and predicates; its SAMPLER is not R5's."""
     assert c.score_pairs is r5.score_pairs
-    assert c.permutation_null is r5.permutation_null
     assert c.mde_from_null is r5.mde_from_null
     assert c.plant_drift is r5.plant_drift
+    assert c.null_p is r5.null_p
+    assert c.draw_permutation is not r5.draw_permutation
+    assert not hasattr(c, "permutation_null")
+    assert not hasattr(c, "permuted_mcar")
+    assert "RETENTION_MIN" not in c.SHARED_WITH_R5
 
 
 # ---------------------------------------------------------------------------
@@ -720,24 +726,30 @@ def _two_issuer_book(rate_a=0.002, rate_b=-0.001, n=400):
     return book, wb
 
 
-def test_M1_the_null_permutes_issuers_and_leaves_every_date_unchanged(monkeypatch):
-    """Mutant 1: a null that shifts dates instead of permuting issuers."""
+def test_M1_the_sampler_permutes_issuers_and_leaves_every_date_unchanged(
+        monkeypatch):
+    """Mutant 1: a sampler that shifts dates instead of permuting issuers."""
     book, wb = _two_issuer_book()
     groups = np.array([0, 1])
     d_idx = np.array([100, 200])
-    seen = {}
-
+    calls = []
     real = c.score_pairs
 
     def spy(w, g, d):
-        seen["g"] = np.asarray(g).copy()
-        seen["d"] = np.asarray(d).copy()
+        calls.append((np.asarray(g).copy(), np.asarray(d).copy()))
         return real(w, g, d)
 
-    monkeypatch.setattr(r5, "score_pairs", spy)
-    c.permuted_mcar(wb, groups, d_idx, np.array([1, 0]))
-    assert list(seen["d"]) == [100, 200], "a date moved: this is a shift null"
-    assert list(seen["g"]) == [1, 0], "the issuers were not permuted"
+    monkeypatch.setattr(c, "score_pairs", spy)
+    g, net, nret, ok, ex, rounds = c.repairing_sample(
+        wb, groups, d_idx, np.random.default_rng(0))
+    assert ok.all() and rounds == 0, "this fixture must need no repair"
+    assert len(calls) == 1
+    seen_g, seen_d = calls[0]
+    assert list(seen_d) == [100, 200], "a date moved: this is a shift sampler"
+    assert sorted(seen_g.tolist()) == [0, 1], "the issuers were not permuted"
+    # a date-shifting mutant would hand the scorer dates that are not these
+    shifted = (d_idx + 7).tolist()
+    assert list(seen_d) != shifted
 
 
 def test_the_permutation_is_a_bijection():
@@ -746,7 +758,7 @@ def test_the_permutation_is_a_bijection():
     assert sorted(s.tolist()) == list(range(50))
 
 
-def test_one_permutation_per_replicate_not_one_per_event(monkeypatch):
+def test_one_bijection_per_replicate_when_nothing_needs_repair(monkeypatch):
     book, wb = _two_issuer_book()
     calls = {"n": 0}
     real = c.draw_permutation
@@ -755,10 +767,10 @@ def test_one_permutation_per_replicate_not_one_per_event(monkeypatch):
         calls["n"] += 1
         return real(rng, n)
 
-    monkeypatch.setattr(r5, "draw_permutation", counted)
-    c.permutation_null(wb, np.array([0, 1]), np.array([100, 200]), 7,
-                       np.random.default_rng(0))
-    assert calls["n"] == 7
+    monkeypatch.setattr(c, "draw_permutation", counted)
+    c.repairing_null(wb, np.array([0, 1]), np.array([100, 200]), 7,
+                     np.random.default_rng(0))
+    assert calls["n"] == 7, "one draw per replicate, not one per event"
 
 
 def test_the_distance_is_mCAR_minus_the_null_median():
@@ -787,30 +799,54 @@ def test_the_distance_is_invariant_to_a_constant_drift_in_both():
 
 
 def test_contamination_is_counted_and_never_dropped():
+    """A contaminated pair is KEPT; only an uncoverable one is ever dropped."""
     book, wb = _two_issuer_book()
     groups = np.array([0, 1])
     d_idx = np.array([100, 200])
-    wb.set_real_voted(groups, d_idx, np.array([161, 261]))
-    m, ret, used, con = c.permuted_mcar(wb, groups, d_idx, np.array([0, 1]))
-    assert used == 2 and ret == pytest.approx(1.0)
-    assert con == pytest.approx(1.0)
-    m2, ret2, used2, con2 = c.permuted_mcar(wb, groups, d_idx, np.array([1, 0]))
-    assert used2 == 2 and con2 == pytest.approx(0.0)
+    # mark BOTH issuers' real windows across the whole span the pairs can land
+    # in, so every kept pair is contaminated whatever the bijection draws
+    wb.set_real_voted(np.array([0, 1, 0, 1]),
+                      np.array([100, 100, 200, 200]),
+                      np.array([161, 161, 261, 261]))
+    st = c.repairing_mcar(wb, groups, d_idx, np.random.default_rng(5))
+    assert st["kept"] == 2 and st["dropped"] == 0
+    assert st["retention"] == pytest.approx(1.0)
+    assert st["contaminated_pair_share"] == pytest.approx(1.0)
+    assert st["c"] > 0.0
+
+    clean = c.WindowBook(book, ["AAA", "BBB"], flat_index(book))
+    clean.set_real_voted(np.array([0, 1]), np.array([10, 10]),
+                         np.array([71, 71]))
+    st2 = c.repairing_mcar(clean, groups, d_idx, np.random.default_rng(5))
+    assert st2["kept"] == 2
+    assert st2["contaminated_pair_share"] == pytest.approx(0.0)
+    assert st2["c"] == pytest.approx(0.0)
 
 
-def test_the_corrected_distance_divides_by_one_minus_the_contaminated_share():
+def test_the_corrected_distance_divides_by_one_minus_c():
     assert c.corrected_distance(0.004, 0.20) == pytest.approx(0.005)
     assert c.corrected_distance(0.004, 0.0) == pytest.approx(0.004)
     assert c.corrected_distance(0.004, 1.0) is None
+    assert c.corrected_distance(0.004, -0.1) is None
 
 
-def test_a_pair_the_issuer_cannot_cover_is_dropped_and_counted():
+def test_a_pair_still_uncoverable_after_the_rounds_is_dropped_and_counted():
+    """Both bijections leave exactly one uncoverable pair, so this is exact.
+
+    SHORT can neither open a position at 300 (no row) nor yield five returns
+    from 100 (its history ends at 102), so whichever way the bijection falls one
+    pair is uncoverable; a lone uncoverable pair cannot be repaired by a
+    bijection of one, so it is dropped and counted.
+    """
     f = frame("2010-01-04", 400, rate=0.001)
     book = make_book({"AAA": f, "SHORT": f.iloc[:103]})
     wb = c.WindowBook(book, ["AAA", "SHORT"], flat_index(book))
-    m, ret, used, con = c.permuted_mcar(wb, np.array([0, 1]),
-                                        np.array([100, 300]), np.array([1, 0]))
-    assert used == 1 and ret == pytest.approx(0.5)
+    for seed in range(8):
+        st = c.repairing_mcar(wb, np.array([0, 1]), np.array([100, 300]),
+                              np.random.default_rng(seed))
+        assert st["kept"] == 1 and st["dropped"] == 1
+        assert st["retention"] == pytest.approx(0.5)
+        assert st["rounds"] == 0, "a bijection of one must not spin"
 
 
 def test_mde_formula_is_the_registered_expression():
@@ -990,8 +1026,14 @@ def test_a_data_pin_mismatch_is_refused(tmp_path):
         r.assert_data_pins({"manifest": (f, "0" * 64)})
 
 
-SEAL = ROOT / "registrations" / "r6" / "registration_v1.json"
-SEAL_LOG = ROOT / "logs" / "r6" / "registration_v1.json"
+SEAL = ROOT / "registrations" / "r6" / "registration_v2.json"
+SEAL_LOG = ROOT / "logs" / "r6" / "registration_v2.json"
+V1_SEAL = ROOT / "registrations" / "r6" / "registration_v1.json"
+V1_SEAL_SHA = ("faf1beeec58707af740a02aeddbd1774e031304"
+               "293034efe1ee6734b1971ecee")
+V1_HALT = ROOT / "registrations" / "r6" / "controls_halt_v1.json"
+V1_HALT_SHA = ("08e076b93e40f5230cfe85dcf86abda3d9d097"
+               "cc7b31ba1df7a15f4a09171215")
 
 
 def _seal_text():
@@ -1010,6 +1052,10 @@ def test_registration_prose_pins_the_constants():
         c.LAG_MIN, c.LAG_MAX) in text
     assert "is_routine false" in text
     assert "within the following %d trading days" % c.CLUSTER_WINDOW in text
+    assert "only the first event whose D falls in each calendar half-year" in text
+    assert "(January to %s, %s to December)" % (
+        calendar.month_name[c.HALF_YEAR_SPLIT_MONTH],
+        calendar.month_name[c.HALF_YEAR_SPLIT_MONTH + 1]) in text
     assert "at least %d bulk_stocks rows" % c.HISTORY_MIN_ROWS in text
     assert "closeunadj on D+1 >= %.2f USD" % c.PRICE_FLOOR in text
     assert "over the %d trading days ending D >= %d USD" % (
@@ -1035,8 +1081,12 @@ def test_registration_prose_pins_the_constants():
     assert "at %d, %d, %d, %d and %d days after D+1" % c.PATH_POINTS in text
     assert "the pre-purchase window T-%d..T" % c.PREPURCHASE_LAG in text
     assert "%d bps round trip" % int(c.COST_ROUND_TRIP_BPS) in text
-    assert "under %d percent retention is redrawn" % int(
-        100 * c.RETENTION_MIN) in text
+    assert "among themselves, up to %d rounds" % c.MAX_REPAIR_ROUNDS in text
+    assert "retaining fewer than %.2f of events is redrawn" % (
+        c.SAMPLER_RETENTION_FLOOR) in text
+    assert "retention below %.2f HALTs" % c.SAMPLER_RETENTION_FLOOR in text
+    assert "fewer than %d returns" % c.MIN_RETURNS in text
+    assert "distance divided by one minus c" in text
     assert "%s * sd(null mCAR)" % c.Z80 in text
     assert "distance >= %.3f net" % c.MATERIALITY in text
     assert "p in (%.2f, %.2f]" % (0.05, c.SUGGESTIVE_HI) in text
@@ -1061,12 +1111,20 @@ def test_the_seal_names_the_distance_as_the_adjudicated_quantity():
     reg = json.loads(text)
     assert reg["statistic"]["distance"].startswith(
         "mCAR minus the median of the null's mCAR")
-    assert reg["voting_null"]["name"] == "issuer permutation at fixed dates"
+    assert reg["voting_null"]["name"] == (
+        "re-pairing issuer permutation at fixed dates")
     assert int(reg["voting_null"]["R"]) == 2000
     assert int(reg["voting_null"]["seed"]) == 20261106
     assert c.calendar_min_tickers(reg) == c.CALENDAR_MIN_TICKERS
-    assert any(x["id"] == "RULE-BAR-FROM-NULL"
-               for x in reg["interpretation_rulings"])
+    ids = {x["id"] for x in reg["interpretation_rulings"]}
+    assert "RULE-BAR-FROM-NULL" in ids
+    assert "RULE-HALF-YEAR-CAP" in ids
+    assert "RULE-NO-DROP-FOR-CONTAMINATION" in ids
+    assert V1_SEAL_SHA in reg["supersedes"]
+    assert "No look was spent on v1." in reg["supersedes"]
+    assert "sampler_retention_below_0_98" in reg["halts"]
+    assert reg["ledger"]["universe_string"] == (
+        "form4_purchases_halfyearcap_halfA")
 
 
 def test_the_seal_carries_the_registered_control_parameters():
@@ -1136,7 +1194,7 @@ def test_the_runner_halts_below_the_registered_minimum_event_count():
               if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
     body = ast.dump(fn)
     i_min = body.index("MIN_EVENTS")
-    i_null = body.index("permutation_null")
+    i_null = body.index("repairing_null")
     assert i_min < i_null, "the minimum-event halt must precede the null"
     assert c.MIN_EVENTS == 5000
 
@@ -1216,9 +1274,12 @@ def test_retention_profile_reports_the_shortfall_against_the_sealed_rule():
     groups = np.array([0, 1])
     d_idx = np.array([300, 100])
     prof = c.retention_profile(wb, groups, d_idx, 40, np.random.default_rng(1))
-    assert prof["required"] == c.RETENTION_MIN == 0.90
-    assert prof["min"] <= 0.5 and prof["max"] <= 1.0
-    assert "0.90" in prof["share_at_or_above"]
+    assert prof["required"] == c.SAMPLER_RETENTION_FLOOR == 0.98
+    assert prof["min"] <= 1.0 and prof["max"] <= 1.0
+    assert "0.98" in prof["share_at_or_above"]
+    assert prof["max_rounds_allowed"] == c.MAX_REPAIR_ROUNDS == 20
+    assert "mean_c" in prof and "mean_rounds" in prof
+    assert prof["sampler"] == "re-pairing issuer permutation at fixed dates"
     assert isinstance(prof["reachable"], bool)
 
 
@@ -1309,16 +1370,426 @@ def test_the_halt_payload_carries_its_diagnostic():
 
 def test_the_runner_never_relaxes_the_sealed_retention_rule():
     """A halt explains the shortfall; it must not lower the bar it failed."""
-    for name in ("run_t_r6.py", "form4_event_study_r6.py"):
-        src = (ROOT / "tools" / name).read_text()
-        tree = ast.parse(src)
-        for n in ast.walk(tree):
-            if isinstance(n, ast.Assign):
-                for t in n.targets:
-                    if isinstance(t, ast.Name):
-                        assert t.id != "RETENTION_MIN" or name == \
-                            "form4_event_study_r6.py"
-                    if isinstance(t, ast.Attribute):
-                        assert t.attr != "RETENTION_MIN", name
-    assert c.RETENTION_MIN == r5.RETENTION_MIN == 0.90
-    assert "RETENTION_MIN" in c.SHARED_WITH_R5
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, ast.Assign):
+            for t in n.targets:
+                if isinstance(t, ast.Name):
+                    assert t.id not in ("SAMPLER_RETENTION_FLOOR",
+                                        "MAX_REPAIR_ROUNDS")
+                if isinstance(t, ast.Attribute):
+                    assert t.attr not in ("SAMPLER_RETENTION_FLOOR",
+                                          "MAX_REPAIR_ROUNDS"), "the runner"
+    assert c.SAMPLER_RETENTION_FLOOR == 0.98
+    assert c.MAX_REPAIR_ROUNDS == 20
+    # v1's 0.90 belonged to R5's sampler, which v2 does not use at all
+    assert "RETENTION_MIN" not in c.SHARED_WITH_R5
+    assert not hasattr(c, "RETENTION_MIN")
+
+
+# ===========================================================================
+# v2: the half-year cap, the re-pairing sampler, overlap-weighted c, step 3a
+#
+# The seven v2 mutants this block is built to catch, each with its own test:
+#   N1 the half-year cap removed;
+#   N2 re-pairing applied to ALL pairs instead of only the uncoverable ones;
+#   N3 dropped pairs not counted;
+#   N4 c computed as the PAIR SHARE instead of the overlap-weighted mean;
+#   N5 the 0.98 retention floor read as v1's 0.90;
+#   N6 the repair rounds removed, so the sampler is v1's again;
+#   N7 the correction MULTIPLYING by (1 - c) instead of dividing.
+# ===========================================================================
+def _ev_frame(rows):
+    """Minimal clustered-event frame: (issuer, D_idx) pairs."""
+    return pd.DataFrame([{
+        "issuer_cik": i, "D_idx": int(d), "n_insiders": 1, "n_purchases": 1,
+        "total_value": 1.0, "T": pd.Timestamp("2010-01-05"),
+        "T_last": pd.Timestamp("2010-01-05"), "issuer_name": "X",
+        "first_accession": "a%d" % k} for k, (i, d) in enumerate(rows)])
+
+
+def _cal_book(n=2000, start="2006-01-02"):
+    return make_book({"AAA": frame(start, n)})
+
+
+# --- the half-year cap -----------------------------------------------------
+def test_d_year_half_splits_the_calendar_at_the_end_of_june():
+    book = _cal_book()
+    jun = book.roll_forward("2008-06-30")
+    jul = book.roll_forward("2008-07-01")
+    y, h = c.d_year_half(book, np.array([jun, jul]))
+    assert list(y) == [2008, 2008]
+    assert list(h) == [1, 2]
+
+
+def test_the_cap_keeps_the_first_event_in_each_issuer_half_year():
+    book = _cal_book()
+    a1 = book.roll_forward("2008-02-01")
+    a2 = book.roll_forward("2008-05-01")
+    b1 = book.roll_forward("2008-09-01")
+    ev = _ev_frame([("C1", a2), ("C1", a1), ("C1", b1)])
+    counts = {}
+    out = c.apply_half_year_cap(ev, book, counts)
+    assert counts["D_events_before_half_year_cap"] == 3
+    assert counts["D2_half_year_cap"] == 2
+    assert counts["D2_removed_by_cap"] == 1
+    assert sorted(int(x) for x in out["D_idx"]) == sorted([a1, b1])
+
+
+def test_the_cap_is_per_issuer_and_per_year():
+    book = _cal_book()
+    a = book.roll_forward("2008-02-01")
+    b = book.roll_forward("2008-03-01")
+    later = book.roll_forward("2009-02-01")
+    ev = _ev_frame([("C1", a), ("C1", b), ("C2", a), ("C2", b), ("C1", later)])
+    counts = {}
+    out = c.apply_half_year_cap(ev, book, counts)
+    assert counts["D2_half_year_cap"] == 3
+    assert counts["D2_removed_by_cap"] == 2
+    assert sorted(zip(out["issuer_cik"], out["D_idx"])) == sorted(
+        [("C1", a), ("C2", a), ("C1", later)])
+
+
+def test_N1_dropping_the_cap_keeps_the_later_episodes():
+    """Mutant 1: no cap at all."""
+    book = _cal_book()
+    a = book.roll_forward("2008-02-01")
+    b = book.roll_forward("2008-05-01")
+    ev = _ev_frame([("C1", a), ("C1", b)])
+    out = c.apply_half_year_cap(ev, book, {})
+    assert len(out) == 1
+    assert len(ev) == 2, "the mutant keeps both"
+    assert len(out) != len(ev)
+
+
+def test_the_cap_sits_between_clustering_and_mapping():
+    src = (ROOT / "tools" / "form4_event_study_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "resolve_events")
+    body = ast.dump(fn)
+    assert body.index("cluster_events") < body.index("apply_half_year_cap")
+    assert body.index("apply_half_year_cap") < body.index("map_issuers")
+
+
+def test_the_cap_is_a_no_op_on_an_empty_frame():
+    book = _cal_book()
+    counts = {}
+    out = c.apply_half_year_cap(_ev_frame([]).iloc[:0], book, counts)
+    assert len(out) == 0 and counts["D2_removed_by_cap"] == 0
+
+
+# --- the re-pairing sampler ------------------------------------------------
+def _repairable_book():
+    """Three issuers; LATE cannot cover an early date, EARLY cannot a late one."""
+    f = frame("2010-01-04", 700, rate=0.001)
+    book = make_book({"FULL": f,
+                      "EARLY": f.iloc[:400],
+                      "LATE": f.iloc[300:]})
+    wb = c.WindowBook(book, ["FULL", "EARLY", "LATE"], flat_index(book))
+    return book, wb
+
+
+def test_a_fully_coverable_set_needs_zero_rounds():
+    book, wb = _two_issuer_book()
+    for seed in range(6):
+        g, net, nret, ok, ex, rounds = c.repairing_sample(
+            wb, np.array([0, 1]), np.array([100, 200]),
+            np.random.default_rng(seed))
+        assert ok.all() and rounds == 0
+
+
+def test_N2_the_repair_moves_only_the_uncoverable_pairs(monkeypatch):
+    """Mutant 2: redrawing the WHOLE bijection on each round.
+
+    The initial bijection is captured from the sampler's own first draw, so the
+    assertion is on what the real code chose, not on a fixture's guess: every
+    slot that was already coverable must still carry the issuer that first draw
+    gave it.
+    """
+    book, wb = _repairable_book()
+    groups = np.array([0, 1, 2, 0, 1, 2])
+    d_idx = np.array([100, 120, 140, 500, 520, 540])
+    real = c.draw_permutation
+    seen = []
+
+    def recorder(rng, n):
+        out = real(rng, n)
+        seen.append(np.asarray(out).copy())
+        return out
+
+    monkeypatch.setattr(c, "draw_permutation", recorder)
+    moved_any = False
+    for seed in range(25):
+        seen.clear()
+        g, net, nret, ok, ex, rounds = c.repairing_sample(
+            wb, groups, d_idx, np.random.default_rng(seed))
+        g0 = groups[seen[0]]
+        ok0 = c.score_pairs(wb, g0, d_idx)[2]
+        assert list(g[ok0]) == list(g0[ok0]), (
+            "a coverable pair's issuer was moved by the repair")
+        if rounds > 0:
+            moved_any = True
+            assert not ok0.all(), "rounds ran with nothing to repair"
+    assert moved_any, "this fixture must exercise at least one repair round"
+
+
+def test_the_repair_converges_or_drops_with_a_count():
+    book, wb = _repairable_book()
+    groups = np.array([0, 1, 2, 0, 1, 2])
+    d_idx = np.array([100, 120, 140, 500, 520, 540])
+    for seed in range(10):
+        st = c.repairing_mcar(wb, groups, d_idx, np.random.default_rng(seed))
+        assert st["kept"] + st["dropped"] == st["n"] == 6
+        assert st["retention"] == pytest.approx(st["kept"] / 6.0)
+        assert 0 <= st["rounds"] <= c.MAX_REPAIR_ROUNDS
+
+
+def test_N3_every_dropped_pair_is_counted():
+    """Mutant 3: a retention that forgets what it threw away."""
+    f = frame("2010-01-04", 400, rate=0.001)
+    book = make_book({"AAA": f, "SHORT": f.iloc[:103]})
+    wb = c.WindowBook(book, ["AAA", "SHORT"], flat_index(book))
+    st = c.repairing_mcar(wb, np.array([0, 1]), np.array([100, 300]),
+                          np.random.default_rng(0))
+    assert st["dropped"] == 1
+    assert st["kept"] + st["dropped"] == st["n"]
+    assert st["retention"] == pytest.approx(st["kept"] / st["n"])
+    mutant_retention = 1.0           # a null that reports kept/kept
+    assert st["retention"] != pytest.approx(mutant_retention)
+
+
+def test_N6_removing_the_repair_rounds_loses_pairs_the_repair_saves():
+    """Mutant 6: max_rounds = 0, i.e. v1's sampler."""
+    book, wb = _repairable_book()
+    groups = np.array([0, 1, 2, 0, 1, 2])
+    d_idx = np.array([100, 120, 140, 500, 520, 540])
+    better, worse = 0, 0
+    for seed in range(40):
+        a = c.repairing_mcar(wb, groups, d_idx, np.random.default_rng(seed))
+        b = c.repairing_mcar(wb, groups, d_idx, np.random.default_rng(seed),
+                             max_rounds=0)
+        assert a["kept"] >= b["kept"], "the repair can only help"
+        if a["kept"] > b["kept"]:
+            better += 1
+        if b["kept"] < 6:
+            worse += 1
+    assert better > 0, "the repair must rescue pairs on this fixture"
+    assert worse > 0
+
+
+def test_the_composition_is_preserved_when_nothing_is_dropped():
+    """Re-pairing is a permutation: at retention 1.0 no issuer gains or loses."""
+    book = make_book({"AAA": frame("2010-01-04", 700, rate=0.001),
+                      "BBB": frame("2010-01-04", 700, rate=0.002),
+                      "CCC": frame("2010-01-04", 700, rate=0.003)})
+    wb = c.WindowBook(book, ["AAA", "BBB", "CCC"], flat_index(book))
+    groups = np.array([0, 0, 1, 2, 2, 2])
+    d_idx = np.array([300, 320, 340, 360, 380, 400])
+    want = np.bincount(groups, minlength=3)
+    for seed in range(12):
+        g, net, nret, ok, ex, rounds = c.repairing_sample(
+            wb, groups, d_idx, np.random.default_rng(seed))
+        assert ok.all(), "this fixture is fully coverable"
+        assert list(np.bincount(g, minlength=3)) == list(want)
+
+
+def test_the_sampler_loop_is_over_rounds_not_over_pairs():
+    src = (ROOT / "tools" / "form4_event_study_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "repairing_sample")
+    loops = [n for n in ast.walk(fn) if isinstance(n, (ast.For, ast.While))]
+    assert len(loops) == 1 and isinstance(loops[0], ast.While)
+    assert "max_rounds" in ast.dump(loops[0])
+
+
+# --- the 0.98 floor --------------------------------------------------------
+def test_the_null_redraws_a_replicate_below_the_floor():
+    f = frame("2010-01-04", 400, rate=0.001)
+    book = make_book({"AAA": f, "SHORT": f.iloc[:103]})
+    wb = c.WindowBook(book, ["AAA", "SHORT"], flat_index(book))
+    with pytest.raises(AssertionError, match="could not retain 0.98"):
+        c.repairing_null(wb, np.array([0, 1]), np.array([100, 300]), 1,
+                         np.random.default_rng(0), max_redraw=5)
+
+
+def test_N5_the_floor_is_the_v2_one_not_v1s():
+    """Mutant 5: reading 0.90 where the v2 seal says 0.98."""
+    assert c.SAMPLER_RETENTION_FLOOR == 0.98
+    assert c.SAMPLER_RETENTION_FLOOR != 0.90
+    # a set retaining 24 of 25 clears 0.90 and fails 0.98
+    ret = 24 / 25.0
+    assert ret >= 0.90 and ret < c.SAMPLER_RETENTION_FLOOR
+
+
+def test_a_null_over_a_coverable_set_reports_its_own_spread():
+    book, wb = _two_issuer_book()
+    out = c.repairing_null(wb, np.array([0, 1]), np.array([100, 200]), 9,
+                           np.random.default_rng(0))
+    assert len(out["mcar"]) == 9 and out["redraws"] == 0
+    assert (out["retention"] == 1.0).all()
+    assert set(out) >= {"mcar", "retention", "contaminated", "c", "rounds",
+                        "dropped", "redraws"}
+
+
+# --- overlap-weighted c ----------------------------------------------------
+def test_overlap_days_counts_days_not_a_flag():
+    book, wb = _two_issuer_book()
+    wb.set_real_voted(np.array([0]), np.array([100]), np.array([161]))
+    # the real window is 102..161, i.e. 60 days
+    assert int(wb.overlap_days(np.array([0]), np.array([102]),
+                               np.array([161]))[0]) == 60
+    assert int(wb.overlap_days(np.array([0]), np.array([102]),
+                               np.array([131]))[0]) == 30
+    assert int(wb.overlap_days(np.array([0]), np.array([300]),
+                               np.array([359]))[0]) == 0
+
+
+def test_c_is_the_overlap_weighted_mean_full_half_and_zero():
+    book, wb = _two_issuer_book()
+    wb.set_real_voted(np.array([0]), np.array([100]), np.array([161]))
+    g = np.array([0, 0, 0])
+    # pair 1: window 102..161, fully inside the real window  -> 60/60 = 1
+    # pair 2: window 132..191, half inside                   -> 30/60 = 0.5
+    # pair 3: window 302..361, outside                       -> 0/60  = 0
+    d = np.array([100, 130, 300])
+    ex = np.array([161, 191, 361])
+    nret = np.array([60, 60, 60])
+    assert c.overlap_weighted_c(wb, g, d, ex, nret) == pytest.approx(
+        (1.0 + 0.5 + 0.0) / 3.0)
+
+
+def test_N4_c_is_not_the_pair_share():
+    """Mutant 4: reporting the share of touching pairs as c.
+
+    Two of three pairs touch, so the pair share is 2/3; the overlap-weighted
+    mean is (1 + 0.5 + 0)/3 = 0.5. A correction built on the share would
+    inflate the distance by more than the overlap warrants.
+    """
+    book, wb = _two_issuer_book()
+    wb.set_real_voted(np.array([0]), np.array([100]), np.array([161]))
+    g = np.array([0, 0, 0])
+    d = np.array([100, 130, 300])
+    ex = np.array([161, 191, 361])
+    nret = np.array([60, 60, 60])
+    c_val = c.overlap_weighted_c(wb, g, d, ex, nret)
+    pair_share = float((wb.contaminated(g, d + c.VOTE_FROM, ex)).mean())
+    assert pair_share == pytest.approx(2.0 / 3.0)
+    assert c_val == pytest.approx(0.5)
+    assert c_val != pytest.approx(pair_share)
+    assert c.corrected_distance(0.004, c_val) != pytest.approx(
+        c.corrected_distance(0.004, pair_share))
+
+
+def test_c_is_zero_on_an_empty_kept_set():
+    book, wb = _two_issuer_book()
+    assert c.overlap_weighted_c(wb, np.array([], dtype=np.int64),
+                                np.array([], dtype=np.int64),
+                                np.array([], dtype=np.int64),
+                                np.array([], dtype=np.int64)) == 0.0
+
+
+def test_N7_the_correction_divides_it_does_not_multiply():
+    """Mutant 7: distance * (1 - c)."""
+    d, cc = 0.004, 0.25
+    assert c.corrected_distance(d, cc) == pytest.approx(d / (1 - cc))
+    assert c.corrected_distance(d, cc) > d
+    assert c.corrected_distance(d, cc) != pytest.approx(d * (1 - cc))
+
+
+def test_the_window_length_c_divides_by_is_the_scorers_own_return_count():
+    """nret is the denominator, so no second arithmetic can disagree."""
+    rate = 0.001
+    book = make_book({"AAA": frame("2010-01-04", 400, rate=rate)})
+    wb = c.WindowBook(book, ["AAA"], flat_index(book))
+    net, nret, ok, ex = c.score_pairs(wb, np.array([0]), np.array([100]))
+    assert int(nret[0]) == int(ex[0]) - 100 - 1 == c.VOTE_N
+
+
+# --- step 3a ---------------------------------------------------------------
+def test_the_sampler_check_reports_the_registered_figures():
+    book, wb = _two_issuer_book()
+    s = c.sampler_check(wb, np.array([0, 1]), np.array([100, 200]), 20261106)
+    assert s["passes"] is True
+    assert s["retention"] == pytest.approx(1.0)
+    assert s["floor"] == 0.98 and s["max_rounds"] == 20
+    assert set(s) >= {"retention", "rounds", "contaminated_pair_share", "c",
+                      "kept", "dropped", "n", "seed", "floor", "passes"}
+    assert "mcar" not in s, "step 3a must not carry a mean anywhere"
+
+
+def test_the_sampler_check_fails_below_the_floor():
+    f = frame("2010-01-04", 400, rate=0.001)
+    book = make_book({"AAA": f, "SHORT": f.iloc[:103]})
+    wb = c.WindowBook(book, ["AAA", "SHORT"], flat_index(book))
+    s = c.sampler_check(wb, np.array([0, 1]), np.array([100, 300]), 20261106)
+    assert s["retention"] == pytest.approx(0.5) and s["passes"] is False
+
+
+def test_step_3a_halts_and_precedes_the_null():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
+    body = ast.dump(fn)
+    assert body.index("STEP 3a") < body.index("STEP 3 - MDE")
+    assert body.index("sampler_check") < body.index("repairing_null")
+    assert "sampler_retention_below_0_98" in body
+    assert body.index("sampler_check") < body.index("plant_drift")
+
+
+def test_the_controls_and_the_plant_use_the_new_sampler():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fns = {n.name: n for n in ast.walk(ast.parse(src))
+           if isinstance(n, ast.FunctionDef)}
+    for name in ("stage_controls", "stage_observed"):
+        body = ast.dump(fns[name])
+        assert "repairing_null" in body, name
+        assert "permutation_null" not in body, name
+        assert "permuted_mcar" not in body, name
+    assert "repairing_mcar" in ast.dump(fns["stage_controls"])
+
+
+def test_the_observed_stage_reconfirms_the_sampler_before_it_reads():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_observed")
+    body = ast.dump(fn)
+    assert body.index("sampler_check") < body.index("STEP 6")
+
+
+def test_the_receipt_and_the_halt_both_carry_the_sampler_check():
+    src = (ROOT / "tools" / "run_t_r6.py").read_text()
+    fns = {n.name: n for n in ast.walk(ast.parse(src))
+           if isinstance(n, ast.FunctionDef)}
+    assert "value='sampler_check'" in ast.dump(fns["stage_controls"])
+    assert "value='sampler_check'" in ast.dump(fns["halt_out"])
+
+
+# --- the superseded v1 record ---------------------------------------------
+def test_the_v1_seal_still_parses_and_still_carries_its_sha():
+    """The halted v1 seal is the record of what the uniform sampler was."""
+    assert V1_SEAL.exists(), "the halted v1 seal must stay tracked"
+    assert c.sha256_file(V1_SEAL) == V1_SEAL_SHA
+    v1 = json.loads(V1_SEAL.read_text())
+    assert v1["voting_null"]["name"] == "issuer permutation at fixed dates"
+    assert "under 90 percent retention is redrawn" in \
+        v1["voting_null"]["mechanism"]
+    assert "half_year_cap" not in v1["event_definition"]
+
+
+def test_the_v1_halt_is_tracked_beside_its_seal_and_still_names_step_3():
+    assert V1_HALT.exists()
+    assert c.sha256_file(V1_HALT) == V1_HALT_SHA
+    h = json.loads(V1_HALT.read_text())
+    assert h["registration_sha"] == V1_SEAL_SHA
+    assert "STEP 3" in h["halt"]
+    assert h["mde"] is None and h["known_null_share"] is None
+    assert h["diagnostic"]["retention_profile"]["reachable"] is False
+
+
+def test_the_v2_seal_supersedes_the_v1_one_by_sha():
+    text, _ = _seal_text()
+    if text is None:
+        pytest.skip("the v2 seal is written in phase 2")
+    v2 = json.loads(text)
+    assert V1_SEAL_SHA in v2["supersedes"]
+    assert c.sha256_file(V1_SEAL) == V1_SEAL_SHA

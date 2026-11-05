@@ -10,8 +10,8 @@ Entry Point:  No — imported by tools/run_t_r6.py
 Dependencies: stdlib, numpy, pandas, pyarrow, tools/item408_event_study_r5.py.
               Imports nothing from any other repository; in particular it
               imports nothing from the factory tree.
-Last Sprint:  Sprint R6-1 — T-R6 insider open-market purchases: seal, controls,
-              half-A read (2026-11-05)
+Last Sprint:  Sprint R6-2 — T-R6 v2: re-pairing sampler, half-year cap,
+              re-seal, controls, half-A read (2026-11-05)
 ================================================================================
 
 Every parameter comes from the sealed registration JSON, whose sha256 must match
@@ -54,6 +54,27 @@ THE DISTANCE IS THE QUANTITY ADJUDICATED. mCAR alone carries the drift of this
 issuer set at these dates; the null's median carries exactly that drift, so the
 bar is measured on mCAR minus the null median and never from zero.
 
+THE SAMPLER IS THIS LOOK'S OWN. v1 drew a plain uniform bijection and dropped
+every pair the issuer could not cover; on half A that retains at most 0.882
+against the 0.90 the v1 seal demanded, because 1,231 of 3,857 issuers delist and
+899 list inside the ten-year half, and v1 halted at step 3. v2 RE-PAIRS instead:
+the uncoverable pairs have their issuers and their dates rejoined by a fresh
+uniform bijection among themselves, up to MAX_REPAIR_ROUNDS rounds. Re-pairing
+keeps every issuer in the null exactly as often as it has events, so a null that
+must drop something cannot drift in composition toward the long-lived names.
+R5's own draw_permutation and permutation_null are therefore NOT used here; its
+score_pairs still is, which is why assert_shared_constants still binds.
+
+THE HALF-YEAR CAP cuts the overlap between the null's windows and the issuers'
+real ones: a second buying episode inside the same calendar half-year is the
+same thesis, not a second event.
+
+CONTAMINATION IS MEASURED TWICE. The pair share says how many kept pairs touch
+their own issuer's real voted window at all; the overlap-weighted mean c says
+what fraction of a kept pair's window is touched on average. c is the one the
+correction divides by, because a pair sharing one day of 60 is not contaminated
+the way a pair sharing all 60 is.
+
 ONE DISCLOSED INTERNAL USE OF THE OBSERVED SET. The registered positive control
 plants a drift on the real events' own voted-window returns, so forming the
 planted mean necessarily forms the observed mean inside it. That figure is used
@@ -74,12 +95,13 @@ import pandas as pd
 
 import item408_event_study_r5 as r5
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # --- stated in the registration as prose; pinned by test_registration_prose_pins
 LAG_MIN = 0                     # "filing_lag_days between 0 and 90 inclusive"
 LAG_MAX = 90
 CLUSTER_WINDOW = 60             # "within the following 60 trading days"
+HALF_YEAR_SPLIT_MONTH = 6       # "(January to June, July to December)"
 HISTORY_MIN_ROWS = 250          # "at least 250 bulk_stocks rows"
 PRICE_FLOOR = 2.00              # "closeunadj on D+1 >= 2.00 USD"
 DOLLAR_VOL_FLOOR = 500000.0     # "... >= 500000 USD"
@@ -101,7 +123,8 @@ SHORT_N = 20
 PREPURCHASE_LAG = 21            # "the pre-purchase window T-21..T"
 PATH_POINTS = (5, 10, 20, 40, 60)   # "at 5, 10, 20, 40 and 60 days after D+1"
 COST_ROUND_TRIP_BPS = 20.0      # "20 bps round trip"
-RETENTION_MIN = 0.90            # "a replicate under 90 percent retention"
+MAX_REPAIR_ROUNDS = 20          # "among themselves, up to 20 rounds"
+SAMPLER_RETENTION_FLOOR = 0.98  # "retaining fewer than 0.98 of events"
 Z80 = 0.8416                    # "+ 0.8416 * sd(null mCAR)"
 MIN_EVENTS = 5000               # "fewer than 5000 half-A events"
 MATERIALITY = 0.010             # "distance >= 0.010 net"
@@ -115,13 +138,15 @@ COST_FRACTION = COST_ROUND_TRIP_BPS * 1e-4
 # The R5 constants r5.score_pairs and r5.permutation_null actually read. This
 # look reuses that code unchanged, so a divergence would silently score the
 # vote under another look's window. Checked at import, not hoped for.
+# R5's RETENTION_MIN is deliberately absent: v2's retention rule is 0.98 and is
+# this look's own, enforced by repairing_null below, because R5's
+# permutation_null is not used at all.
 SHARED_WITH_R5 = {
     "COMPLETE_FROM": COMPLETE_FROM,
     "VOTE_FROM": VOTE_FROM,
     "VOTE_TO": VOTE_TO,
     "MIN_DELIST_RETURNS": MIN_RETURNS,
     "COST_FRACTION": COST_FRACTION,
-    "RETENTION_MIN": RETENTION_MIN,
     "Z80": Z80,
     "CALENDAR_MIN_TICKERS": CALENDAR_MIN_TICKERS,
 }
@@ -156,9 +181,6 @@ trading_day_calendar = r5.trading_day_calendar
 abnormal_series = r5.abnormal_series
 score_pairs = r5.score_pairs
 voted_returns = r5.voted_returns
-draw_permutation = r5.draw_permutation
-permuted_mcar = r5.permuted_mcar
-permutation_null = r5.permutation_null
 null_p = r5.null_p
 mde_from_null = r5.mde_from_null
 band_ok = r5.band_ok
@@ -207,6 +229,17 @@ class WindowBook(r5.WindowBook):
                 self.last_idx[g] = int(book.dayidx[b - 1])
             self.cum_row[g, 1:] = np.cumsum(pres)
         self.real_vote_cum = np.zeros((G, L + 1), dtype=np.int16)
+
+    def overlap_days(self, groups, a, b):
+        """How many days of a..b fall in that issuer's own real voted windows.
+
+        r5.WindowBook.contaminated reduces the same difference to a flag; the
+        overlap-weighted correction needs the count, so it is read here. The
+        plane is a cumulative sum of a boolean mask, so the difference IS the
+        number of marked days.
+        """
+        return (self.real_vote_cum[groups, b + 1].astype(np.int64)
+                - self.real_vote_cum[groups, a].astype(np.int64))
 
 
 # ---------------------------------------------------------------------------
@@ -445,6 +478,39 @@ def cluster_events(kept, book, counts):
     return out
 
 
+def d_year_half(book, d_idx):
+    """The calendar year and half-year (1 = Jan-Jun, 2 = Jul-Dec) of each D."""
+    days = np.asarray(book.cal, dtype="int64")[np.asarray(d_idx, dtype=np.int64)]
+    ts = pd.to_datetime(days, unit="D")
+    return (ts.year.to_numpy(dtype=np.int64),
+            np.where(ts.month.to_numpy() <= HALF_YEAR_SPLIT_MONTH, 1, 2))
+
+
+def apply_half_year_cap(ev, book, counts):
+    """Per issuer, keep only the FIRST event whose D falls in each half-year.
+
+    A second buying episode inside the same calendar half-year is the same
+    thesis, not a second piece of news (RULE-HALF-YEAR-CAP). The cap also cuts
+    the overlap between a permuted pair's window and the issuer's own real
+    windows, which is what made v1's contamination share 0.42.
+    """
+    before = int(len(ev))
+    counts["D_events_before_half_year_cap"] = before
+    if before == 0:
+        counts["D2_half_year_cap"] = 0
+        counts["D2_removed_by_cap"] = 0
+        return ev
+    y, h = d_year_half(book, ev["D_idx"].to_numpy(dtype=np.int64))
+    out = ev.copy()
+    out["_y"], out["_h"] = y, h
+    out = out.sort_values(["issuer_cik", "D_idx"], kind="mergesort")
+    out = out.drop_duplicates(subset=["issuer_cik", "_y", "_h"], keep="first")
+    out = out.drop(columns=["_y", "_h"]).reset_index(drop=True)
+    counts["D2_half_year_cap"] = int(len(out))
+    counts["D2_removed_by_cap"] = int(before - len(out))
+    return out
+
+
 def extract_cik(secfilings):
     """The CIK out of a browse-edgar URL, as an int. None when there is none."""
     return r5.extract_cik(secfilings)
@@ -607,6 +673,7 @@ def resolve_events(pur, sep, book, edge=None):
     """The whole registered resolution, in clause order, counts at every step."""
     kept, counts = resolve_purchases(pur)
     ev = cluster_events(kept, book, counts)
+    ev = apply_half_year_cap(ev, book, counts)
     mp, counts = map_issuers(ev, sep, book, counts)
     res, counts = apply_price_filters(mp, book, counts, edge)
     return res, counts
@@ -640,6 +707,142 @@ def with_D_dates(res, book):
 
 
 # ---------------------------------------------------------------------------
+# The voting null: the RE-PAIRING issuer permutation at fixed dates
+# ---------------------------------------------------------------------------
+def draw_permutation(rng, n):
+    """One uniformly random bijection of range(n). Every date stays put.
+
+    This look's own, because its sampler is not R5's: R5's draw_permutation is
+    called once per replicate and never again, while this one is also called on
+    each re-pairing round over the uncoverable subset.
+    """
+    return rng.permutation(int(n))
+
+
+def repairing_sample(wb, groups, d_idx, rng, max_rounds=MAX_REPAIR_ROUNDS):
+    """One re-pairing draw. Returns (g, net, nret, ok, exit_idx, rounds).
+
+    A uniform bijection first; then, while any pair is uncoverable (its issuer
+    has no row on D+1, or fewer than MIN_RETURNS returns available), the
+    ISSUERS OF THOSE PAIRS ONLY are rejoined to THOSE PAIRS' DATES by a fresh
+    uniform bijection among themselves. Coverable pairs are never disturbed, so
+    the draw cannot be re-randomised toward anything by the repair.
+
+    Each round is one vectorised score_pairs call over the shrinking
+    uncoverable subset: the loop is over ROUNDS, bounded by max_rounds, never
+    over pairs. A lone surviving uncoverable pair is left alone, because a
+    bijection of one is the identity and would spin to the cap for nothing.
+    """
+    g = np.asarray(groups, dtype=np.int64)[draw_permutation(rng, len(d_idx))]
+    d = np.asarray(d_idx, dtype=np.int64)
+    net, nret, ok, ex = score_pairs(wb, g, d)
+    rounds = 0
+    while rounds < int(max_rounds):
+        idx = np.flatnonzero(~ok)
+        if len(idx) < 2:
+            break
+        g[idx] = g[idx][draw_permutation(rng, len(idx))]
+        n_i, r_i, o_i, e_i = score_pairs(wb, g[idx], d[idx])
+        net[idx], nret[idx], ok[idx], ex[idx] = n_i, r_i, o_i, e_i
+        rounds += 1
+    return g, net, nret, ok, ex, int(rounds)
+
+
+def overlap_weighted_c(wb, groups, d_idx, exit_idx, nret):
+    """Mean over kept pairs of overlapping days / the pair's window length.
+
+    The pair's window is D+VOTE_FROM..exit, whose length in days is exactly the
+    count of returns the scorer required, so nret is the denominator and no
+    second arithmetic can disagree with the scorer about it.
+    """
+    g = np.asarray(groups, dtype=np.int64)
+    d = np.asarray(d_idx, dtype=np.int64)
+    ex = np.asarray(exit_idx, dtype=np.int64)
+    L = np.asarray(nret, dtype=np.float64)
+    if len(g) == 0:
+        return 0.0
+    ov = wb.overlap_days(g, d + VOTE_FROM, ex).astype(np.float64)
+    return float(np.mean(np.where(L > 0, ov / np.maximum(L, 1.0), 0.0)))
+
+
+def repairing_mcar(wb, groups, d_idx, rng, max_rounds=MAX_REPAIR_ROUNDS):
+    """One replicate's mCAR under the re-pairing sampler, and its diagnostics.
+
+    Returns a dict. A pair still uncoverable after the rounds is DROPPED and
+    COUNTED; a kept pair overlapping that issuer's own real voted window is
+    KEPT and counted, twice over: as a share of pairs and as the
+    overlap-weighted mean c.
+    """
+    n = int(len(d_idx))
+    g, net, nret, ok, ex, rounds = repairing_sample(wb, groups, d_idx, rng,
+                                                    max_rounds)
+    kept = int(ok.sum())
+    if kept == 0:
+        return {"mcar": np.nan, "retention": 0.0, "kept": 0, "dropped": n,
+                "contaminated_pair_share": 0.0, "c": 0.0, "rounds": rounds,
+                "n": n}
+    d = np.asarray(d_idx, dtype=np.int64)
+    con = wb.contaminated(g[ok], d[ok] + VOTE_FROM, ex[ok])
+    c = overlap_weighted_c(wb, g[ok], d[ok], ex[ok], nret[ok])
+    return {"mcar": float(net[ok].mean()), "retention": kept / float(n),
+            "kept": kept, "dropped": int(n - kept),
+            "contaminated_pair_share": float(con.mean()), "c": c,
+            "rounds": rounds, "n": n}
+
+
+def repairing_null(wb, groups, d_idx, R, rng, max_redraw=200):
+    """R replicate mCARs under the re-pairing sampler, retention enforced.
+
+    A replicate retaining fewer than SAMPLER_RETENTION_FLOOR of events is
+    redrawn, as the seal says; the redraw budget is bounded so that a sampler
+    which cannot meet the floor says so instead of spinning, and the runner
+    turns that into a recorded halt rather than a traceback.
+    """
+    out = np.empty(int(R))
+    ret_v = np.empty(int(R))
+    con_v = np.empty(int(R))
+    c_v = np.empty(int(R))
+    rounds_v = np.empty(int(R), dtype=np.int64)
+    drop_v = np.empty(int(R), dtype=np.int64)
+    redraws = 0
+    for i in range(int(R)):
+        for _ in range(int(max_redraw)):
+            s = repairing_mcar(wb, groups, d_idx, rng)
+            if np.isfinite(s["mcar"]) and s["retention"] >= SAMPLER_RETENTION_FLOOR:
+                out[i] = s["mcar"]
+                ret_v[i] = s["retention"]
+                con_v[i] = s["contaminated_pair_share"]
+                c_v[i] = s["c"]
+                rounds_v[i] = s["rounds"]
+                drop_v[i] = s["dropped"]
+                break
+            redraws += 1
+        else:
+            raise AssertionError(
+                "a replicate could not retain %.2f of events in %d redraws"
+                % (SAMPLER_RETENTION_FLOOR, max_redraw))
+    return {"mcar": out, "retention": ret_v, "contaminated": con_v,
+            "c": c_v, "rounds": rounds_v, "dropped": drop_v,
+            "redraws": int(redraws)}
+
+
+def sampler_check(wb, groups, d_idx, seed):
+    """Step 3a: ONE re-pairing draw, reported, and the floor it must clear.
+
+    No redraw, because the point is what the sampler does on its own terms. It
+    forms a permuted mCAR and nothing observed, so it can be reported before
+    the controls have passed.
+    """
+    s = repairing_mcar(wb, groups, d_idx, np.random.default_rng(int(seed)))
+    s = {k: v for k, v in s.items() if k != "mcar"}
+    s["seed"] = int(seed)
+    s["floor"] = float(SAMPLER_RETENTION_FLOOR)
+    s["max_rounds"] = int(MAX_REPAIR_ROUNDS)
+    s["passes"] = bool(s["retention"] >= SAMPLER_RETENTION_FLOOR)
+    return s
+
+
+# ---------------------------------------------------------------------------
 # The statistic: the DISTANCE from the null's median
 # ---------------------------------------------------------------------------
 def null_median(null_mcar):
@@ -656,9 +859,14 @@ def distance_of(observed_mcar, null_mcar):
     return float(observed_mcar) - null_median(null_mcar)
 
 
-def corrected_distance(distance, contaminated_share):
-    """distance / (1 - the null's mean contaminated share). Reported, not voted."""
-    s = float(contaminated_share)
+def corrected_distance(distance, c):
+    """distance / (1 - c), with c the OVERLAP-WEIGHTED mean. Reported, not voted.
+
+    c, not the pair share: a pair sharing one day of sixty with its issuer's own
+    real window is not contaminated the way a pair sharing all sixty is, and
+    dividing by the pair share would inflate the correction accordingly.
+    """
+    s = float(c)
     if not (0.0 <= s < 1.0):
         return None
     return float(distance) / (1.0 - s)
@@ -680,30 +888,37 @@ def verdict_of(p, distance, bar, materiality=MATERIALITY,
 # ---------------------------------------------------------------------------
 # Halt diagnostics: why a registered null could not be formed
 # ---------------------------------------------------------------------------
-RETENTION_THRESHOLDS = (0.90, 0.80, 0.70, 0.60)
+RETENTION_THRESHOLDS = (0.99, 0.98, 0.95, 0.90)
 
 
 def retention_profile(wb, groups, d_idx, n_draws, rng,
                       thresholds=RETENTION_THRESHOLDS):
-    """The retention a uniform bijection actually achieves, and the identity's.
+    """What the RE-PAIRING sampler actually retains, and what the identity does.
 
-    Retention is a property of the PERMUTED pairings and of the issuers' own
+    Retention is a property of the permuted pairings and of the issuers' own
     trading histories: it says what share of (issuer, date) pairs an issuer can
-    cover at all. It forms no figure of any event's observed return, which is
-    why it can be measured when the registered null cannot be formed.
+    cover at all, once the repair rounds have run. It forms no figure of any
+    event's observed return, which is why it can be measured when the
+    registered null cannot be formed.
     """
     n = int(len(d_idx))
-    ident = permuted_mcar(wb, groups, d_idx, np.arange(n))
+    ok_ident = score_pairs(wb, np.asarray(groups, dtype=np.int64),
+                           np.asarray(d_idx, dtype=np.int64))[2]
     rets = np.empty(int(n_draws))
     cons = np.empty(int(n_draws))
+    cs = np.empty(int(n_draws))
+    rounds = np.empty(int(n_draws), dtype=np.int64)
     for i in range(int(n_draws)):
-        s = draw_permutation(rng, n)
-        _m, ret, _used, con = permuted_mcar(wb, groups, d_idx, s)
-        rets[i], cons[i] = ret, con
+        st = repairing_mcar(wb, groups, d_idx, rng)
+        rets[i] = st["retention"]
+        cons[i] = st["contaminated_pair_share"]
+        cs[i] = st["c"]
+        rounds[i] = st["rounds"]
     out = {
+        "sampler": "re-pairing issuer permutation at fixed dates",
         "n_events": n,
-        "identity_retention": float(ident[1]),
-        "identity_used": int(ident[2]),
+        "identity_retention": float(ok_ident.mean()),
+        "identity_used": int(ok_ident.sum()),
         "n_draws": int(n_draws),
         "mean": float(rets.mean()),
         "sd": float(rets.std(ddof=1)) if n_draws > 1 else 0.0,
@@ -711,11 +926,15 @@ def retention_profile(wb, groups, d_idx, n_draws, rng,
         "p05": float(np.percentile(rets, 5)),
         "median": float(np.median(rets)),
         "p95": float(np.percentile(rets, 95)),
-        "mean_contaminated_share": float(cons.mean()),
+        "mean_contaminated_pair_share": float(cons.mean()),
+        "mean_c": float(cs.mean()),
+        "mean_rounds": float(rounds.mean()),
+        "max_rounds_used": int(rounds.max()),
+        "max_rounds_allowed": int(MAX_REPAIR_ROUNDS),
     }
     out["share_at_or_above"] = {
         ("%.2f" % t): float((rets >= float(t)).mean()) for t in thresholds}
-    req = float(RETENTION_MIN)
+    req = float(SAMPLER_RETENTION_FLOOR)
     out["required"] = req
     out["sd_to_the_requirement"] = (
         float((req - out["mean"]) / out["sd"]) if out["sd"] > 0 else None)
