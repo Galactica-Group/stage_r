@@ -1,0 +1,90 @@
+{
+  "registration": "T-R6 insider open-market purchases after public disclosure, half A, v2",
+  "sealed": "Strategist draft 2026-11-05; operator approval by running Sprint R6-2 (RUN-IS-APPROVAL)",
+  "supersedes": "v1, sha256 faf1beeec58707af740a02aeddbd1774e031304293034efe1ee6734b1971ecee, which halted at order-of-operations step 3 on 2026-11-05: a uniform issuer permutation retains at most 0.882 of pairs against a 0.90 floor, because 1,231 of 3,857 half-A issuers delist and 899 list inside the ten-year half (coverage density 0.770; event-weighted ceiling 0.878). v2 replaces the sampler with a re-pairing permutation, caps events at one per issuer per calendar half-year to cut the 0.42 contaminated share, reports an overlap-weighted contamination correction, and names the sampler halt. The question, the purchase filter, the windows, the cost, the benchmark, the distance statistic, the bar and the halves are unchanged. No look was spent on v1.",
+  "look_budget": "one Stage R registered look, the third and last drawn forward from the Q1 2027 allowance; Stage R stands at five nils of six before this look; a sixth nil closes the track at the mid-March 2027 review",
+  "question": "after a Form 4 disclosing an officer's or director's open-market purchase becomes public, does the stock earn a positive abnormal return over the next 60 trading days, net of cost, beyond what the same issuers earn after other issuers' disclosure dates?",
+  "prior": "the literature finds positive abnormal returns after insider purchases, larger in smaller firms, for larger purchases, when several insiders buy together and for non-routine purchases, and weaker in recent years; whether a net 1 percent over 60 days survives the public filing date on a pooled, tradable set is the registered question",
+  "data": {
+    "events": "data/form4/20261105/purchases.parquet, sha256 as recorded in manifests/form4_20261105.json (sha256 3ab4035e9f0d84f4de4fbd85594ce9a6dd4d2268d3462aa5878d63d802ba622f)",
+    "prices": "Sharadar snapshot_20261004p bulk_stocks.parquet sha256 b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4; closeadj for returns; closeunadj and volume for tradability and the benchmark; dates 1997-12-31 to 2026-10-02; frozen",
+    "tickers": "bulk_tickers.parquet sha256 61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0; CIK from the secfilings URL",
+    "calendar": "trading days are the dates on which at least 1000 tickers have a bulk_stocks row"
+  },
+  "event_definition": {
+    "purchase_filter": "rows of purchases.parquet (already Form 4, non-derivative, code P, acquired, positive price, a Director or Officer among the reporting owners) with filing_lag_days between 0 and 90 inclusive and is_routine false",
+    "clustering": "per issuer CIK, an event opens on the trading day of the first qualifying filing (a non-trading filing date rolls to the next trading day) and absorbs every qualifying purchase of that issuer filed within the following 60 trading days; the next event opens only after that window; D is the opening day",
+    "half_year_cap": "per issuer, only the first event whose D falls in each calendar half-year (January to June, July to December) is kept; later events in the same half-year are removed and counted",
+    "event_columns": "distinct insiders in the cluster, total value, number of purchases, T = the transaction date of the first purchase",
+    "issuer_mapping": "CIK to bulk_tickers rows with table == SEP via secfilings; if several permatickers, the one whose ticker has a bulk_stocks row on D+1 and then the most rows before D; none, drop",
+    "history": "at least 250 bulk_stocks rows for the ticker dated before D",
+    "tradability": "closeunadj on D+1 >= 2.00 USD and the median of closeunadj times volume over the 20 trading days ending D >= 500000 USD",
+    "completeness": "closeadj present on every trading day D+1..D+61; an event whose ticker's last row falls inside D+2..D+61 and at least 5 trading days before the snapshot's last date is DELISTED-IN-WINDOW and is scored to its last close provided at least 5 returns exist; a last row within 5 trading days of the snapshot's end is TRUNCATED and drops; a missing day while the ticker continues is a HOLE and drops; all counted",
+    "halves": "half A: 2006-01-01 <= D <= 2015-12-31 (this look); half B: 2016-01-01 <= D <= 2022-12-31, UNOPENED, one confirmation look only on SOMETHING; holdout: D >= 2023-01-01 and every later filing, SEALED and growing",
+    "minimum_events": "fewer than 5000 half-A events after all filters HALTs at resolution; no look spent"
+  },
+  "returns": {
+    "stock": "daily log return of closeadj between consecutive trading-day rows; no return bridges a hole",
+    "benchmark": "the investable equal-weight index: the equal-weight mean daily log return across tickers that on the prior trading day have closeunadj >= 2.00 USD, at least 250 prior rows and a 20-day median closeunadj times volume >= 500000 USD; built once from the snapshot and cached with its sha256 reported",
+    "abnormal": "stock minus benchmark, daily",
+    "voted_window": "entry at the close of D+1, exit at the close of D+61 (or the last close for a DELISTED-IN-WINDOW event): the sum of the abnormal daily log returns from D+2 to the exit",
+    "cost": "20 bps round trip subtracted from every event's voted-window return",
+    "reported_windows": "D+2..D+21; the path at 5, 10, 20, 40 and 60 days after D+1; the pre-filing window from the close of T (or the next trading day) to the close of D+1; the pre-purchase window T-21..T"
+  },
+  "statistic": {
+    "mCAR": "the equal-weight mean across events of the net voted-window abnormal log return",
+    "distance": "mCAR minus the median of the null's mCAR; the quantity the bar is measured on",
+    "descriptives": "median, share positive, the reported windows, events by year with the pooled distance by year, the null's contaminated pair share and its overlap-weighted mean c, the corrected distance (distance divided by one minus c), and the pooled distance within these registered subgroups, reported not voted: two or more insiders; total value over 100000 USD; liquidity terciles by the 20-day median dollar volume at D"
+  },
+  "voting_null": {
+    "name": "re-pairing issuer permutation at fixed dates",
+    "mechanism": "each replicate draws a uniformly random bijection of the n half-A events and scores issuer sigma(i) at date D_i under the same window, cost and completeness rules; every date stays where it is; a pair whose issuer cannot cover its date (no row on D+1, or fewer than 5 returns) is re-paired: the issuers and dates of all uncoverable pairs are joined by a fresh uniform bijection among themselves, up to 20 rounds; pairs still uncoverable are dropped and counted; a replicate retaining fewer than 0.98 of events is redrawn; a kept pair whose window overlaps that issuer's own real voted windows is KEPT and counted as contaminated",
+    "why_re_pairing": "re-pairing keeps every issuer in the null exactly as often as it has events, so a null that must drop uncoverable pairs cannot drift in composition toward long-lived issuers",
+    "contamination": "contamination can only move the null toward a real effect; the pair share and the overlap-weighted mean c are reported; the raw distance is voted and the corrected distance is reported",
+    "R": 2000,
+    "seed": 20261106,
+    "p": "the share of replicates whose mCAR is >= the observed mCAR",
+    "what_it_asks": "whether the issuer-date pairing carries information beyond the drift of this issuer set at these dates"
+  },
+  "order_of_operations": [
+    "1. RESOLUTION: the event set is resolved and counted at every clause; no return of any event is computed",
+    "2. BENCHMARK: built and cached; not an event statistic",
+    "3a. SAMPLER CHECK: one re-pairing draw; its retention, rounds used, contaminated pair share and overlap-weighted c are reported; retention below 0.98 HALTs; no look spent",
+    "3. MDE: (null p95 - null median) + 0.8416 * sd(null mCAR), from the null without computing the observed mCAR",
+    "4. KNOWN-NULL CONTROL: 200 random re-pairing draws fed in as the observed set, each against a fresh 500-replicate null; the share at p <= 0.05 must lie in [0.01, 0.10] or HALT",
+    "5. POSITIVE CONTROL: on the real event set, add to each real pair's voted-window return a planted drift drawn per event from Uniform(0, 2X), X calibrated on ONE draw so the planted mean is about 0.01; permuted pairs carry no plant; then 50 fresh draws against fresh 500-replicate nulls; detection at p <= 0.05 must be >= 0.80 or HALT",
+    "6. OBSERVED: only then, and only on a pass receipt from steps 4 and 5"
+  ],
+  "controls": {
+    "known_null": {"N": 200, "R_each": 500, "seed": 777, "band": [0.01, 0.10]},
+    "positive_control": {"N_draws": 50, "R_each": 500, "seed": 4242, "target_mCAR": 0.01, "detection_floor": 0.80, "leak": "DELIBERATE and named by a test: the plant is added to the very window the vote reads, on the real pairs only"}
+  },
+  "halts": {
+    "fewer_than_5000_events": "HALT at resolution; no look spent",
+    "sampler_retention_below_0_98": "HALT at step 3a; no look spent; no ledger row",
+    "known_null_outside_band": "HALT before the observed read; no look spent; no ledger row",
+    "positive_control_below_floor": "HALT before the observed read; no look spent; no ledger row"
+  },
+  "verdict": {
+    "bar": 0.05,
+    "single_test": true,
+    "materiality": "distance >= 0.010 net (1.0 percent over the window, measured from the null's median)",
+    "SOMETHING": "p <= 0.05 AND distance >= 0.010 -> promoted to one registered half-B look",
+    "SIGNIFICANT_IMMATERIAL": "p <= 0.05 AND 0 < distance < 0.010 -> recorded, not promoted; a nil for discovery",
+    "SUGGESTIVE": "p in (0.05, 0.10] AND distance > 0 -> recorded, not promoted",
+    "NOTHING": "otherwise"
+  },
+  "interpretation_rulings": [
+    {"id": "RULE-BAR-FROM-NULL", "ruling": "the materiality bar is measured from the null's median, never from zero, because the null's centre carries the drift of this issuer set at these dates"},
+    {"id": "RULE-MDE-VS-BAR", "ruling": "with tens of thousands of events the MDE sits far below the bar; the verdict is the bar; significance alone promotes nothing"},
+    {"id": "RULE-ROUTINE", "ruling": "a purchase by an owner-issuer pair that bought in the same calendar month in each of the three prior years is routine and excluded"},
+    {"id": "RULE-LATE", "ruling": "a purchase filed more than 90 calendar days after its transaction, or before it, is excluded; the filing date is still the public date for every kept row"},
+    {"id": "RULE-HALF-YEAR-CAP", "ruling": "a second buying episode within the same half-year is the same thesis and is not a second event; the cap exists to keep the null's own windows from overlapping the issuer's real ones"},
+    {"id": "RULE-CALENDAR", "ruling": "a trading day is a date on which at least 1000 tickers have a row; when D or T is not a trading day the next trading day is used"},
+    {"id": "RULE-LOG", "ruling": "all returns are log returns of closeadj and the bar is on a mean net abnormal log return"},
+    {"id": "RULE-LONG-ONLY", "ruling": "the vote is long over every kept event; subgroups are reported, never voted"},
+    {"id": "RULE-DELISTED-NOT-TRUNCATED", "ruling": "a stock that stops trading inside the window ends at its last close; a last row at the snapshot's edge is truncation, not delisting, and drops"},
+    {"id": "RULE-NO-DROP-FOR-CONTAMINATION", "ruling": "no permuted pair is dropped for landing near the issuer's own real event; it is counted as contaminated and kept; only an uncoverable pair that survives 20 re-pairing rounds is dropped, and it is counted"}
+  ],
+  "ledger": {"batch_id": "T-R6", "signal": "INSIDER_BUY_POST_FILING_60D", "universe_string": "form4_purchases_halfyearcap_halfA", "vintage_string": "form4_20261105+sharadar_20261004p", "row_schema": "run_t_r3.py's, unchanged; ls_net_mean_bps carries the distance in bps; p_premium the permutation p; months n_events; registration_sha is v2's"}
+}

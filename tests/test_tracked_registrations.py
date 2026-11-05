@@ -18,14 +18,14 @@ the half-A report are tracked, and every receipt is bound to the seal tracked
 beside it by the seal's own sha256, so a receipt copied from the wrong look
 cannot sit silently next to the right seal.
 
-Sprint R6-1 seals T-R6 and HALTS it at its own step 3: the registered issuer
-permutation could not retain the 90 per cent the seal demands, so no observed
-figure was formed and no look was spent. The T-R6 seal and the halt it produced
-are tracked here beside R5's, and T-R6 deliberately does NOT appear in
-BATCH_TO_REGISTRATION, because that mapping is for seals that govern a ledger
-row and T-R6 governs none. The assertion that protects the no-look-spent claim
-is test_a_halted_seal_governs_no_ledger_row, which now covers both halted
-seals.
+Sprint R6-1 sealed T-R6 v1 and HALTED it at its own step 3: the registered
+uniform issuer permutation could not retain the 90 per cent that seal demanded,
+so no observed figure was formed and no look was spent on v1. Sprint R6-2
+re-sealed as v2 with a re-pairing sampler and READ half A, so v2 governs a
+ledger row and v1 still governs none. Both are tracked here: v2 in
+BATCH_TO_REGISTRATION with the row it governs, v1 in SEALED_BUT_NEVER_READ with
+the halt it produced, and a test insists the T-R6 row names v2 and not v1 --
+the mutation being a row silently attributed to the seal that halted.
 
 The mutation this battery is built to catch is a tracked copy that drifts from
 the sealed bytes the ledger row was written against -- a flipped byte, a
@@ -51,6 +51,7 @@ BATCH_TO_REGISTRATION = {
     "T-R3b": Path("registrations/r3b/registration_v5.json"),
     "T-R4": Path("registrations/r4/registration_v1.json"),
     "T-R5": Path("registrations/r5/registration_v2.json"),
+    "T-R6": Path("registrations/r6/registration_v2.json"),
 }
 
 # Every file that must be tracked and must parse as JSON.
@@ -67,6 +68,9 @@ TRACKED_REGISTRATIONS = [
     Path("registrations/r5/t_r5_halfA_report.json"),
     Path("registrations/r6/registration_v1.json"),
     Path("registrations/r6/controls_halt_v1.json"),
+    Path("registrations/r6/registration_v2.json"),
+    Path("registrations/r6/controls_pass_v2.json"),
+    Path("registrations/r6/t_r6_halfA_report.json"),
 ]
 
 # A look's receipts -> the seal they must name. The receipt carries the seal's
@@ -82,10 +86,17 @@ RECEIPT_TO_SEAL = {
         Path("registrations/r5/registration_v2.json"), "registration_sha"),
     Path("registrations/r5/t_r5_halfA_report.json"): (
         Path("registrations/r5/registration_v2.json"), "registration_sha256"),
+    Path("registrations/r6/controls_pass_v2.json"): (
+        Path("registrations/r6/registration_v2.json"), "registration_sha"),
+    Path("registrations/r6/t_r6_halfA_report.json"): (
+        Path("registrations/r6/registration_v2.json"), "registration_sha256"),
 }
 
 # A seal that governed no ledger row: v1 halted at its controls, before any
 # observed figure was formed.
+# Seals that govern no ledger row: each halted at its controls, before any
+# observed figure was formed. T-R6 v1 stays here after v2 was read, because the
+# look v1 never spent is still unspent on v1's terms.
 SEALED_BUT_NEVER_READ = [Path("registrations/r5/registration_v1.json"),
                          Path("registrations/r6/registration_v1.json")]
 
@@ -251,5 +262,60 @@ def test_the_t_r6_halt_was_produced_by_an_unmodified_r5_engine():
     assert h["r5_engine_sha256"][:16] == row["harness_sha"]
 
 
-def test_the_ledger_carries_no_t_r6_row():
-    assert all(r["batch_id"] != "T-R6" for r in ledger_rows())
+def test_the_t_r6_row_names_the_v2_seal_and_not_the_halted_v1():
+    """The read was taken under v2; v1 halted and must govern nothing."""
+    rows = [r for r in ledger_rows() if r["batch_id"] == "T-R6"]
+    assert len(rows) == 1, "T-R6 is a single registered look"
+    row = rows[0]
+    v1 = sha256_hex(REPO / "registrations/r6/registration_v1.json")[:16]
+    v2 = sha256_hex(REPO / "registrations/r6/registration_v2.json")[:16]
+    assert row["registration_sha"] == v2
+    assert row["registration_sha"] != v1
+    assert row["universe"] == "form4_purchases_halfyearcap_halfA"
+
+
+def test_the_t_r6_report_names_the_receipt_tracked_beside_it():
+    report = json.loads(
+        (REPO / "registrations/r6/t_r6_halfA_report.json").read_text())
+    assert report["controls_receipt_sha256"] == sha256_hex(
+        REPO / "registrations/r6/controls_pass_v2.json")
+
+
+def test_the_t_r6_receipt_and_report_agree_with_the_ledger_row():
+    """The banked row must be the report's own figures, not a retyping."""
+    report = json.loads(
+        (REPO / "registrations/r6/t_r6_halfA_report.json").read_text())
+    row = next(r for r in ledger_rows() if r["batch_id"] == "T-R6")
+    o = report["observed"]
+    assert int(row["months"]) == o["n_events"] == report["controls_receipt"][
+        "n_events"]
+    assert row["ls_net_mean_bps"] == "%.4f" % (1e4 * o["distance"])
+    assert row["p_premium"] == "%.4f" % o["p_permutation"]
+    assert row["verdict"] == report["verdict"]["verdict"]
+    assert row["harness_sha"] == report["engine_sha256"][:16]
+
+
+def test_the_t_r6_read_ran_under_the_re_pairing_sampler_that_cleared_its_floor():
+    """v2's own step 3a: the sampler had to clear 0.98 before anything was read."""
+    report = json.loads(
+        (REPO / "registrations/r6/t_r6_halfA_report.json").read_text())
+    samp = report["sampler_check"]
+    assert samp["passes"] is True
+    assert samp["floor"] == 0.98
+    assert samp["retention"] >= samp["floor"]
+    assert samp["kept"] + samp["dropped"] == samp["n"]
+    assert report["observed"]["null_family"] == (
+        "re-pairing issuer permutation at fixed dates")
+
+
+def test_the_t_r6_verdict_is_adjudicated_on_the_distance_not_the_mcar():
+    """SIGNIFICANT_IMMATERIAL is only legible if the bar was read off the distance."""
+    report = json.loads(
+        (REPO / "registrations/r6/t_r6_halfA_report.json").read_text())
+    o, v = report["observed"], report["verdict"]
+    assert o["distance"] == pytest.approx(o["mCAR_net"] - o["null_median"])
+    assert v["measured_from"] == "the null's median, never zero"
+    if v["verdict"] == "SIGNIFICANT_IMMATERIAL":
+        assert o["p_permutation"] <= v["bar"]
+        assert 0.0 < o["distance"] < v["materiality"]
+        assert v["promotion"] == "none"

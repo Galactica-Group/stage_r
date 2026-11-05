@@ -1,0 +1,317 @@
+{
+  "batch_id": "T-R6",
+  "look": "one Stage R registered look, the third and last drawn forward from the Q1 2027 allowance; Stage R stands at five nils of six before this look; a sixth nil closes the track at the mid-March 2027 review",
+  "run_date": "20261105",
+  "vintage": "form4_20261105+sharadar_20261004p",
+  "runner_version": "1.1.0",
+  "engine_version": "1.1.0",
+  "registration_sha256": "b6f547848b2d64cae11ffb03cab197f095319438a211400700d5b9f0cb5893a1",
+  "engine_sha256": "b3c97081eac09b9eabeaebc50ce009f0afb66ae193e240b1f323d9321c5b92f8",
+  "r5_engine_sha256": "9344069306b6c7982985ab993f20c91bbb4db067a9911a04cdc6e0a5ec3c7f86",
+  "data_sha256": {
+    "manifest": "3ab4035e9f0d84f4de4fbd85594ce9a6dd4d2268d3462aa5878d63d802ba622f",
+    "events": "089ea2bd31ae6e7499c1344047ea5864b0990a6f9794f2b984aaf9edc3351d22",
+    "stocks": "b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4",
+    "tickers": "61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0"
+  },
+  "benchmark_sha256": "c527a4fff2a8b84d23a5cc7ac0f6d8884dd3e082313ac5fbd053a759d8b47e72",
+  "controls_receipt_sha256": "6d2f9f61bd2b5f2db921149fe6abeef8aabb3cd786750783c69a994362409cbe",
+  "controls_receipt": {
+    "n_events": 16306,
+    "mde": 0.004680601925926141,
+    "known_null_share": 0.065,
+    "X_calibrated": 0.010063945691516368,
+    "detection": 1.0,
+    "utc": "2026-11-05T19:30:31.996495+00:00"
+  },
+  "resolution_counts": {
+    "rows_in_vintage": 579600,
+    "A_lag_0_to_90": 563115,
+    "A_removed_lag_negative": 206,
+    "A_removed_lag_over_90": 16279,
+    "A_removed_lag_missing": 0,
+    "B_not_routine": 528342,
+    "B_removed_routine": 34773,
+    "C_filing_day_on_the_calendar": 528342,
+    "C_dropped_off_calendar": 0,
+    "D_events": 88497,
+    "D_events_before_half_year_cap": 88497,
+    "D2_half_year_cap": 74811,
+    "D2_removed_by_cap": 13686,
+    "E_mapping": {
+      "matched": 61881,
+      "multi_permaticker": 9057,
+      "multi_resolved_by_row_count": 2670,
+      "dropped_no_usable_ticker": 12930
+    },
+    "E_duplicate_permaticker_D_pairs": 0,
+    "F_history_250_rows_before_D": 56124,
+    "G_price_floor_on_D_plus_1": 48718,
+    "G_dollar_volume_floor": 33121,
+    "H_window_status": {
+      "complete": 32623,
+      "delisted": 64,
+      "truncated": 426,
+      "hole": 0,
+      "no_entry": 0,
+      "too_short": 8,
+      "absent": 0
+    },
+    "H_complete_D1_to_D61": 32623,
+    "H_delisted_in_window": 64,
+    "H_truncated_at_snapshot_edge": 426,
+    "H_hole": 0,
+    "H_complete_or_delisted": 32687,
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "benchmark_members_on_probe_dates": {},
+    "r5_all_ticker_index_on_probe_dates": {
+      "2008-06-16": 5219,
+      "2012-06-15": 4605,
+      "2015-06-15": 4696
+    },
+    "I_half_A": 16306,
+    "I_half_B": 11124,
+    "I_holdout": 5257,
+    "I_outside_every_regime": 0
+  },
+  "issuers": 3813,
+  "real_events_masked": 26941,
+  "truncation_reachability": {
+    "latest_window_close_idx": 4589,
+    "truncation_edge_idx": 7227,
+    "margin_trading_days": 2638
+  },
+  "sampler_check": {
+    "retention": 0.9933153440451368,
+    "kept": 16197,
+    "dropped": 109,
+    "contaminated_pair_share": 0.36716675927640924,
+    "c": 0.20926087748124655,
+    "rounds": 20,
+    "n": 16306,
+    "seed": 20261106,
+    "floor": 0.98,
+    "max_rounds": 20,
+    "passes": true
+  },
+  "observed": {
+    "n_events": 16306,
+    "mCAR_net": 0.0013307521565925446,
+    "mCAR_gross": 0.0033307521565925455,
+    "cost_fraction": 0.002,
+    "null_family": "re-pairing issuer permutation at fixed dates",
+    "null_median": -0.005116366693025554,
+    "distance": 0.006447118849618099,
+    "distance_contamination_corrected": 0.008145278376086309,
+    "p_permutation": 0.0005,
+    "null_sd": 0.0018547688010441925,
+    "null_p95": -0.0019967381900582054,
+    "null_R": 2000,
+    "null_redraws": 0,
+    "null_mean_retention": 0.991905402919171,
+    "null_min_retention": 0.9885931558935361,
+    "null_mean_contaminated_pair_share": 0.36774091457388075,
+    "null_max_contaminated_pair_share": 0.37894541403639065,
+    "null_mean_c": 0.20848391522797188,
+    "null_max_c": 0.21804612384627936,
+    "null_mean_rounds": 20.0,
+    "null_max_rounds_used": 20,
+    "null_mean_dropped": 131.9905,
+    "null_max_dropped": 186,
+    "median_net": 0.0099550636752489,
+    "share_positive": 0.5310928492579419,
+    "window_status": {
+      "complete": 16271,
+      "delisted": 35
+    },
+    "returns_per_event": {
+      "min": 6,
+      "median": 60.0,
+      "max": 60
+    },
+    "window_20d_D2_D21": {
+      "mean": 0.005421191099583247,
+      "n": 16301
+    },
+    "pre_filing_T_to_D1": {
+      "mean": 0.013034739851684967,
+      "n": 16306,
+      "mean_days": 2.9613639151232674
+    },
+    "pre_purchase_Tm21_to_T": {
+      "mean": -0.044345129075782384,
+      "n": 16306
+    },
+    "path_after_D_plus_1": {
+      "d5": {
+        "mean": 0.0035971127449277935,
+        "n": 16306
+      },
+      "d10": {
+        "mean": 0.005158364661909178,
+        "n": 16304
+      },
+      "d20": {
+        "mean": 0.005421191099583247,
+        "n": 16301
+      },
+      "d40": {
+        "mean": 0.004854415548045468,
+        "n": 16288
+      },
+      "d60": {
+        "mean": 0.0031808032669898957,
+        "n": 16271
+      }
+    },
+    "subgroup_distances": {
+      "insiders_ge_2": {
+        "n": 7146,
+        "mCAR_net": -0.01127903248813586,
+        "distance": -0.006162665795110305
+      },
+      "insiders_lt_2": {
+        "n": 9160,
+        "mCAR_net": 0.011168036116333721,
+        "distance": 0.016284402809359277
+      },
+      "value_gt_100000": {
+        "n": 9073,
+        "mCAR_net": -0.003244694458349998,
+        "distance": 0.0018716722346755563
+      },
+      "value_le_100000": {
+        "n": 7233,
+        "mCAR_net": 0.0070701448204075175,
+        "distance": 0.012186511513433071
+      },
+      "liquidity_tercile_low": {
+        "n": 5435,
+        "mCAR_net": -0.0016104747858152087,
+        "distance": 0.0035058919072103456
+      },
+      "liquidity_tercile_mid": {
+        "n": 5436,
+        "mCAR_net": 0.0032417611111670475,
+        "distance": 0.008358127804192601
+      },
+      "liquidity_tercile_high": {
+        "n": 5435,
+        "mCAR_net": 0.002360618532842617,
+        "distance": 0.007476985225868172
+      }
+    },
+    "events_by_year": {
+      "2006": {
+        "n": 1661,
+        "mCAR_net": 0.003484435683888079,
+        "distance": 0.008600802376913633
+      },
+      "2007": {
+        "n": 1913,
+        "mCAR_net": -0.013863299984193994,
+        "distance": -0.00874693329116844
+      },
+      "2008": {
+        "n": 2274,
+        "mCAR_net": 0.007705726331875391,
+        "distance": 0.012822093024900946
+      },
+      "2009": {
+        "n": 1489,
+        "mCAR_net": 0.021815414520156746,
+        "distance": 0.0269317812131823
+      },
+      "2010": {
+        "n": 1440,
+        "mCAR_net": 0.004835960690038814,
+        "distance": 0.009952327383064369
+      },
+      "2011": {
+        "n": 1701,
+        "mCAR_net": -0.0014188102382445423,
+        "distance": 0.0036975564547810117
+      },
+      "2012": {
+        "n": 1395,
+        "mCAR_net": 0.003114661427898247,
+        "distance": 0.008231028120923802
+      },
+      "2013": {
+        "n": 1270,
+        "mCAR_net": 0.003410496236433291,
+        "distance": 0.008526862929458846
+      },
+      "2014": {
+        "n": 1468,
+        "mCAR_net": -0.0047589990156978,
+        "distance": 0.0003573676773277546
+      },
+      "2015": {
+        "n": 1695,
+        "mCAR_net": -0.008150055203847128,
+        "distance": -0.003033688510821574
+      }
+    }
+  },
+  "descriptives": {
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "insiders_total": 32471,
+    "insiders_mean": 1.9913528762418742,
+    "purchases_total": 95026,
+    "purchases_mean": 5.827670796026003,
+    "total_value_usd": {
+      "median": 122361.825,
+      "mean": 4055153.5384312524
+    },
+    "dv_median_at_D_usd": {
+      "median": 8136934.369449183,
+      "p25": 2117717.8674936295,
+      "p75": 33832963.24985027
+    },
+    "disclosure_lag_days": {
+      "median": 2.0,
+      "mean": 2.894517355574635,
+      "min": 0,
+      "max": 90
+    },
+    "distinct_issuers": 3813
+  },
+  "verdict": {
+    "verdict": "SIGNIFICANT_IMMATERIAL",
+    "bar": 0.05,
+    "materiality": 0.01,
+    "suggestive_hi": 0.1,
+    "single_test": true,
+    "measured_from": "the null's median, never zero",
+    "promotion": "none"
+  },
+  "ledger_months_column": "carries n_events; this look has no monthly book",
+  "ledger_bps_column": "carries the DISTANCE in bps, not mCAR",
+  "stage_times": {
+    "load_prices_s": 15.1,
+    "benchmark_s": 0.0,
+    "resolution_s": 3.1,
+    "window_book_s": 0.7,
+    "observed_null_s": 5.3,
+    "observed_total_s": 25.6
+  },
+  "wall_seconds": 25.6,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}
