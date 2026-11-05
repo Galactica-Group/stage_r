@@ -1,0 +1,119 @@
+{
+  "registration_sha": "d84ecbbc0a1dbd8d484343ffa928f5b23c0b140e6c8c57de88254980d2f44625",
+  "null_family": "issuer permutation at fixed dates",
+  "n_events": 369,
+  "mde": 0.030829190577190885,
+  "known_null_share": 0.055,
+  "X_calibrated": 0.02934746662165129,
+  "detection": 1.0,
+  "utc": "2026-11-05T06:10:54.660427+00:00",
+  "runner_version": "1.1.0",
+  "engine_version": "1.1.0",
+  "engine_sha256": "9344069306b6c7982985ab993f20c91bbb4db067a9911a04cdc6e0a5ec3c7f86",
+  "data_sha256": {
+    "events": "ca2f86aa878f5c34aa841a15c5057d24e2c143f6e372510914c5e26e7753d1bd",
+    "manifest": "ba4ac7ee57df6bad447b8918c3e11d30f6a196735ee9f706b8fd7f7625c5a996",
+    "stocks": "b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4",
+    "tickers": "61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0"
+  },
+  "market_ew_sha256": "aeb07129d177a491ee84766747645389075887c0d74a4ce698a3340a83a2964f",
+  "resolution_counts": {
+    "rows_in_vintage": 75473,
+    "A_termination_flag": 2281,
+    "B_no_adoption_flag": 1355,
+    "B_removed_modifications": 926,
+    "C_parseable_T": 1258,
+    "D_lag_ge_zero": 1242,
+    "E_form_10Q_or_10K": 1225,
+    "F_direction_split": {
+      "purchase_only": 6,
+      "sale_only": 495,
+      "both": 37,
+      "neither": 687
+    },
+    "F_after_purchase_exclusion": 1219,
+    "G_one_event_per_filing": 908,
+    "G_filing_date_on_the_calendar": 908,
+    "H_mapping": {
+      "matched": 904,
+      "multi_permaticker": 117,
+      "multi_resolved_by_row_count": 20,
+      "dropped_no_usable_ticker": 4
+    },
+    "I_unique_on_permaticker_D": 904,
+    "I_collapsed": 0,
+    "J_history_250_rows_before_T": 880,
+    "K_price_floor_on_D_plus_1": 830,
+    "K_dollar_volume_floor": 810,
+    "L_window_status": {
+      "complete": 722,
+      "delisted": 87,
+      "hole": 0,
+      "no_entry": 0,
+      "too_short": 1,
+      "absent": 0
+    },
+    "L_complete_or_delisted": 809,
+    "L_complete_D1_to_D61": 722,
+    "L_delisted_in_window": 87,
+    "L_hole": 0,
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "M_half_A": 369,
+    "M_half_B": 366,
+    "M_holdout": 74
+  },
+  "null_spread": {
+    "null_family": "issuer permutation at fixed dates",
+    "median": 0.03505894969920628,
+    "sd": 0.012776646536413935,
+    "p95": 0.0551353145513512,
+    "R": 2000,
+    "redraws": 0,
+    "mean_retention": 0.9862100271002713,
+    "min_retention": 0.9701897018970189,
+    "mean_contaminated_share": 0.38374286472020486,
+    "max_contaminated_share": 0.4562841530054645
+  },
+  "known_null_control": {
+    "null_family": "issuer permutation at fixed dates",
+    "N": 200,
+    "R_each": 500,
+    "seed": 777,
+    "share_p_le_bar": 0.055,
+    "band": [
+      0.01,
+      0.1
+    ],
+    "mean_p": 0.48865,
+    "median_p": 0.481,
+    "in_band": true
+  },
+  "positive_control": {
+    "null_family": "issuer permutation at fixed dates",
+    "X_calibrated": 0.02934746662165129,
+    "reference_mean_u": 1.0222347430107408,
+    "one_draw_planted_mean": 0.030000000000000002,
+    "planted_mean_if_X_were_the_target": 0.030667042290322223,
+    "target_mCAR": 0.03,
+    "N_draws": 50,
+    "R_each": 500,
+    "seed": 4242,
+    "detection_rate": 1.0,
+    "floor": 0.8,
+    "median_p": 0.014,
+    "passes": true,
+    "leak": "DELIBERATE and named by a test: the plant is added to the very window the vote reads, on the real pairs only"
+  },
+  "note": "steps 1-4 formed no figure of the observed event set; step 5 formed the observed mean inside the planted mean it tests, because the registered plant rides the real events' own voted windows, and neither printed nor recorded it",
+  "mean_retention": 0.9862100271002713,
+  "mean_contaminated_share": 0.38374286472020486,
+  "wall_seconds": 22.2
+}

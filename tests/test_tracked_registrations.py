@@ -13,6 +13,11 @@ produced are tracked beside it as the record of a null family that could not
 vote, and they are required to parse, but no ledger row was ever written
 against v1: no look was spent on it.
 
+Sprint R6-0 adds the T-R5 side of the R4 pattern: the v2 controls receipt and
+the half-A report are tracked, and every receipt is bound to the seal tracked
+beside it by the seal's own sha256, so a receipt copied from the wrong look
+cannot sit silently next to the right seal.
+
 The mutation this battery is built to catch is a tracked copy that drifts from
 the sealed bytes the ledger row was written against -- a flipped byte, a
 re-serialised JSON, or a copy taken from the wrong look.
@@ -49,7 +54,24 @@ TRACKED_REGISTRATIONS = [
     Path("registrations/r5/registration_v1.json"),
     Path("registrations/r5/controls_halt_v1.json"),
     Path("registrations/r5/registration_v2.json"),
+    Path("registrations/r5/controls_pass_v2.json"),
+    Path("registrations/r5/t_r5_halfA_report.json"),
 ]
+
+# A look's receipts -> the seal they must name. The receipt carries the seal's
+# full sha256 under the key given; a receipt that names a different seal than
+# the one tracked beside it is the drift this mapping catches. The R4 look
+# established the shape; T-R5 follows it.
+RECEIPT_TO_SEAL = {
+    Path("registrations/r4/controls_pass.json"): (
+        Path("registrations/r4/registration_v1.json"), "registration_sha"),
+    Path("registrations/r4/t_r4_halfA_report.json"): (
+        Path("registrations/r4/registration_v1.json"), "registration_sha256"),
+    Path("registrations/r5/controls_pass_v2.json"): (
+        Path("registrations/r5/registration_v2.json"), "registration_sha"),
+    Path("registrations/r5/t_r5_halfA_report.json"): (
+        Path("registrations/r5/registration_v2.json"), "registration_sha256"),
+}
 
 # A seal that governed no ledger row: v1 halted at its controls, before any
 # observed figure was formed.
@@ -117,3 +139,45 @@ def test_a_byte_flip_breaks_the_binding(tmp_path):
     mutated[0] = mutated[0] ^ 0x01
     flipped.write_bytes(bytes(mutated))
     assert sha256_hex(flipped)[:16] != row["registration_sha"]
+
+
+def test_r5_tracked_receipt_and_half_a_report_are_present():
+    """R6-0: the T-R5 controls receipt and half-A report are under git."""
+    for rel in (Path("registrations/r5/controls_pass_v2.json"),
+                Path("registrations/r5/t_r5_halfA_report.json")):
+        path = REPO / rel
+        assert path.is_file(), f"missing tracked T-R5 artefact: {rel}"
+        json.loads(path.read_text())
+
+
+def test_every_receipt_names_the_seal_tracked_beside_it():
+    checked = 0
+    for rel, (seal_rel, key) in RECEIPT_TO_SEAL.items():
+        receipt = json.loads((REPO / rel).read_text())
+        assert key in receipt, f"{rel} carries no {key}"
+        assert receipt[key] == sha256_hex(REPO / seal_rel), (
+            f"{rel}: {key} {receipt[key]} != sha256 of {seal_rel}")
+        checked += 1
+    assert checked == len(RECEIPT_TO_SEAL)
+
+
+def test_a_receipt_pointing_at_the_wrong_seal_is_caught(tmp_path):
+    """Non-vacuity: the binding above fails when the seal named is another look's."""
+    r5_receipt = json.loads(
+        (REPO / "registrations/r5/controls_pass_v2.json").read_text())
+    r4_seal = sha256_hex(REPO / "registrations/r4/registration_v1.json")
+    assert r5_receipt["registration_sha"] != r4_seal
+
+    swapped = tmp_path / "swapped.json"
+    r5_receipt["registration_sha"] = r4_seal
+    swapped.write_text(json.dumps(r5_receipt))
+    reloaded = json.loads(swapped.read_text())
+    assert reloaded["registration_sha"] != sha256_hex(
+        REPO / "registrations/r5/registration_v2.json")
+
+
+def test_the_half_a_report_names_the_controls_receipt_tracked_beside_it():
+    report = json.loads(
+        (REPO / "registrations/r5/t_r5_halfA_report.json").read_text())
+    assert report["controls_receipt_sha256"] == sha256_hex(
+        REPO / "registrations/r5/controls_pass_v2.json")

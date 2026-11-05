@@ -1,0 +1,226 @@
+{
+  "batch_id": "T-R5",
+  "look": "one Stage R registered look, the second drawn forward from the Q1 2027 allowance; one Q1 look remains after it; Stage R stands at four nils of six before this look",
+  "run_date": "20261105",
+  "vintage": "edgar_item408_20261104+sharadar_20261004p",
+  "runner_version": "1.1.0",
+  "engine_version": "1.1.0",
+  "registration_sha256": "d84ecbbc0a1dbd8d484343ffa928f5b23c0b140e6c8c57de88254980d2f44625",
+  "engine_sha256": "9344069306b6c7982985ab993f20c91bbb4db067a9911a04cdc6e0a5ec3c7f86",
+  "data_sha256": {
+    "events": "ca2f86aa878f5c34aa841a15c5057d24e2c143f6e372510914c5e26e7753d1bd",
+    "manifest": "ba4ac7ee57df6bad447b8918c3e11d30f6a196735ee9f706b8fd7f7625c5a996",
+    "stocks": "b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4",
+    "tickers": "61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0"
+  },
+  "market_ew_sha256": "aeb07129d177a491ee84766747645389075887c0d74a4ce698a3340a83a2964f",
+  "controls_receipt_sha256": "c74315688c5330ba68bb3dd3ee83d6a7bccd063d95da26662a9482635e7ae8b3",
+  "controls_receipt": {
+    "n_events": 369,
+    "mde": 0.030829190577190885,
+    "known_null_share": 0.055,
+    "X_calibrated": 0.02934746662165129,
+    "detection": 1.0,
+    "utc": "2026-11-05T06:10:54.660427+00:00"
+  },
+  "resolution_counts": {
+    "rows_in_vintage": 75473,
+    "A_termination_flag": 2281,
+    "B_no_adoption_flag": 1355,
+    "B_removed_modifications": 926,
+    "C_parseable_T": 1258,
+    "D_lag_ge_zero": 1242,
+    "E_form_10Q_or_10K": 1225,
+    "F_direction_split": {
+      "purchase_only": 6,
+      "sale_only": 495,
+      "both": 37,
+      "neither": 687
+    },
+    "F_after_purchase_exclusion": 1219,
+    "G_one_event_per_filing": 908,
+    "G_filing_date_on_the_calendar": 908,
+    "H_mapping": {
+      "matched": 904,
+      "multi_permaticker": 117,
+      "multi_resolved_by_row_count": 20,
+      "dropped_no_usable_ticker": 4
+    },
+    "I_unique_on_permaticker_D": 904,
+    "I_collapsed": 0,
+    "J_history_250_rows_before_T": 880,
+    "K_price_floor_on_D_plus_1": 830,
+    "K_dollar_volume_floor": 810,
+    "L_window_status": {
+      "complete": 722,
+      "delisted": 87,
+      "hole": 0,
+      "no_entry": 0,
+      "too_short": 1,
+      "absent": 0
+    },
+    "L_complete_or_delisted": 809,
+    "L_complete_D1_to_D61": 722,
+    "L_delisted_in_window": 87,
+    "L_hole": 0,
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "M_half_A": 369,
+    "M_half_B": 366,
+    "M_holdout": 74
+  },
+  "issuers": 273,
+  "real_events_masked": 539,
+  "observed": {
+    "n_events": 369,
+    "mCAR_net": 0.03355276373242624,
+    "mCAR_gross": 0.03555276373242624,
+    "cost_fraction": 0.002,
+    "null_family": "issuer permutation at fixed dates",
+    "p_permutation": 0.548,
+    "null_median": 0.03505894969920628,
+    "null_sd": 0.012776646536413935,
+    "null_p95": 0.0551353145513512,
+    "null_R": 2000,
+    "null_redraws": 0,
+    "null_mean_retention": 0.9862100271002713,
+    "null_min_retention": 0.9701897018970189,
+    "null_mean_contaminated_share": 0.38374286472020486,
+    "null_max_contaminated_share": 0.4562841530054645,
+    "median_net": 0.048048792052346134,
+    "share_positive": 0.5962059620596206,
+    "mCAR_first_event_per_issuer": {
+      "mean": 0.042897966341104155,
+      "n_issuers": 273
+    },
+    "window_status": {
+      "complete": 365,
+      "delisted": 4
+    },
+    "returns_per_event": {
+      "min": 22,
+      "median": 60.0,
+      "max": 60
+    },
+    "window_20d_D2_D21": {
+      "mean": 0.017282465768861322,
+      "n": 369
+    },
+    "pre_disclosure_T_to_D1": {
+      "mean": 0.04882336982865548,
+      "n": 369,
+      "mean_days": 59.292682926829265
+    },
+    "pre_termination_Tm21_to_T": {
+      "mean": 0.014202025325547126,
+      "n": 369
+    },
+    "path_after_D_plus_1": {
+      "d5": {
+        "mean": -0.0015514980040523653,
+        "n": 369
+      },
+      "d10": {
+        "mean": 0.0075409469467606904,
+        "n": 369
+      },
+      "d20": {
+        "mean": 0.017282465768861322,
+        "n": 369
+      },
+      "d40": {
+        "mean": 0.017147623054506917,
+        "n": 367
+      },
+      "d60": {
+        "mean": 0.03491230135364817,
+        "n": 365
+      }
+    }
+  },
+  "descriptives": {
+    "calendar": {
+      "min_tickers": 1000,
+      "dates_in_snapshot": 7233,
+      "trading_days": 7233,
+      "dates_excluded": 0,
+      "rows_on_excluded_dates": 0,
+      "tickers_on_the_thinnest_trading_day": 5189,
+      "tickers_on_the_fattest_excluded_date": 0
+    },
+    "events_by_filing_month": {
+      "2023-07": 5,
+      "2023-08": 37,
+      "2023-09": 3,
+      "2023-10": 7,
+      "2023-11": 29,
+      "2023-12": 3,
+      "2024-01": 1,
+      "2024-02": 50,
+      "2024-03": 10,
+      "2024-04": 7,
+      "2024-05": 48,
+      "2024-07": 17,
+      "2024-08": 40,
+      "2024-09": 3,
+      "2024-10": 14,
+      "2024-11": 40,
+      "2024-12": 3,
+      "2025-01": 3,
+      "2025-02": 37,
+      "2025-03": 12
+    },
+    "direction_mix": {
+      "both": 19,
+      "neither": 205,
+      "sale_only": 145
+    },
+    "direction_split_at_row_level": {
+      "purchase_only": 6,
+      "sale_only": 495,
+      "both": 37,
+      "neither": 687
+    },
+    "title_mix": {
+      "chief_executive": 108,
+      "chief_financial": 63,
+      "other_chief": 254,
+      "chair": 28,
+      "director": 74,
+      "president": 124,
+      "vice_president": 68,
+      "officer": 255,
+      "no_title_text": 0
+    },
+    "individuals_total": 473,
+    "individuals_mean": 1.2818428184281843,
+    "disclosure_lag_days": {
+      "median": 82.0,
+      "mean": 85.28726287262873,
+      "min": 6,
+      "max": 519
+    },
+    "forms": {
+      "10-Q": 253,
+      "10-K": 116
+    }
+  },
+  "verdict": {
+    "verdict": "NOTHING",
+    "bar": 0.05,
+    "materiality": 0.015,
+    "suggestive_hi": 0.1,
+    "single_test": true,
+    "promotion": "none"
+  },
+  "ledger_months_column": "carries n_events; this look has no monthly book",
+  "wall_seconds": 17.3,
+  "licence_note": "statistics only; no vendor price appears in this file"
+}
