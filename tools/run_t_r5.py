@@ -1,29 +1,30 @@
 """
 ================================================================================
 Script:       run_t_r5.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      The T-R5 runner in two stages: the registered controls, and then —
               only on their written pass receipt — the observed half-A read.
 Entry Point:  Yes — python tools/run_t_r5.py --stage controls|observed
-                     --registration logs/r5/registration_v1.json --sha <sha256>
+                     --registration logs/r5/registration_v2.json --sha <sha256>
 Dependencies: stdlib, numpy, pandas, tools/item408_event_study_r5.py,
               tools/ledger_chain.py. Imports nothing from any other repository.
-Last Sprint:  Sprint R5-2 — T-R5 10b5-1 plan terminations: seal, controls,
-              half-A read (2026-11-04)
+Last Sprint:  Sprint R5-3 — T-R5 v2: permutation null, re-seal, controls,
+              half-A read (2026-11-05)
 ================================================================================
 
 The two stages make the registered order of operations mechanical rather than a
 promise. --stage controls walks steps 1 to 5 — resolution, the market index, the
 MDE, the known-null control, the positive control — and writes
 logs/r5/controls_pass.json on a pass or logs/r5/controls_halt.json on a halt,
-exiting non-zero in the second case. --stage observed refuses to start unless
+exiting non-zero in the second case. Both files name the null_family they were
+written under, so a receipt from one null design cannot be read as another's. --stage observed refuses to start unless
 that receipt exists AND its registration_sha equals the live seal's, so a read
 cannot be taken against a registration the controls never saw.
 
 Steps 1 to 4 form no figure of the observed event set: the counts are counts,
 the market index knows nothing of any disclosure, and the MDE and the control p
-values live entirely on shifted dates. Step 5 must form the observed mean inside
+values live entirely on permuted issuer-date pairings. Step 5 must form the observed mean inside
 the planted mean it tests, because the registered plant is added to the real
 events' own voted windows; that figure is used and discarded, printed in no log
 line and written into no receipt.
@@ -46,7 +47,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import item408_event_study_r5 as e  # noqa: E402
 import ledger_chain as lc  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 BATCH_ID = "T-R5"
 LOGDIR = ROOT / "logs" / "r5"
 REPORTS = ROOT / "reports"
@@ -125,12 +126,21 @@ def prepare(reg_path, sha):
     pins = data_paths_and_pins(reg)
     shas = assert_data_pins(pins)
 
-    log("loading the frozen snapshot (five columns, cast at read)")
+    min_tk = e.calendar_min_tickers(reg)
+    log("loading the frozen snapshot (five columns, cast at read); the v2 "
+        "calendar keeps dates carrying >= %d tickers" % min_tk)
     t0 = time.time()
-    book = e.load_prices(pins["stocks"][0])
+    book = e.load_prices(pins["stocks"][0], min_tk)
     log("  %d ticker-days, %d tickers, %d trading days %s .. %s  (%.1fs)"
         % (len(book.code), len(book.vocab), book.L, book.date_str(0),
            book.date_str(book.L - 1), time.time() - t0))
+    cs = book.cal_stats
+    log("  calendar: %d dates in the snapshot, %d are trading days, %d excluded "
+        "(%d rows dropped); thinnest trading day %d tickers, fattest excluded "
+        "date %d" % (cs["dates_in_snapshot"], cs["trading_days"],
+                     cs["dates_excluded"], cs["rows_on_excluded_dates"],
+                     cs["tickers_on_the_thinnest_trading_day"],
+                     cs["tickers_on_the_fattest_excluded_date"]))
 
     ev = pd.read_parquet(pins["events"][0])
     sep = pd.read_parquet(pins["tickers"][0],
@@ -143,8 +153,11 @@ def prepare(reg_path, sha):
               "G_one_event_per_filing", "G_filing_date_on_the_calendar",
               "H_mapping", "I_unique_on_permaticker_D", "I_collapsed",
               "J_history_250_rows_before_T", "K_price_floor_on_D_plus_1",
-              "K_dollar_volume_floor", "L_complete_D1_to_D61"):
+              "K_dollar_volume_floor", "L_window_status",
+              "L_complete_D1_to_D61", "L_delisted_in_window", "L_hole",
+              "L_complete_or_delisted"):
         log("  %-32s %s" % (k, counts[k]))
+    counts["calendar"] = dict(book.cal_stats)
 
     halves = e.split_halves(res, reg)
     for k in ("half_A", "half_B", "holdout"):
@@ -152,7 +165,7 @@ def prepare(reg_path, sha):
         log("  %-32s %d" % ("M_%s" % k, len(halves[k])))
 
     log("STEP 2 - MARKET INDEX (equal weight, whole snapshot)")
-    cache = pins["events"][0].parent / "market_ew.parquet"
+    cache = pins["events"][0].parent / ("market_ew_cal%d.parquet" % min_tk)
     if cache.exists():
         mf = pd.read_parquet(cache)
         if len(mf) != book.L:
@@ -169,8 +182,9 @@ def prepare(reg_path, sha):
         log("  built in %.1fs and cached to %s" % (time.time() - t0, rel(cache)))
     msha = e.sha256_file(cache)
     nt = market["n_tickers"]
-    log("  market_ew.parquet sha %s; dates %s .. %s; days with any ticker %d"
-        % (msha, mf["date"].iloc[0], mf["date"].iloc[-1], int((nt > 0).sum())))
+    log("  %s sha %s; dates %s .. %s; trading days %d; days with any ticker %d"
+        % (cache.name, msha, mf["date"].iloc[0], mf["date"].iloc[-1], book.L,
+           int((nt > 0).sum())))
     for d in ("2005-06-15", "2015-06-15", "2025-06-16"):
         hit = mf.index[mf["date"] == d]
         if len(hit):
@@ -180,14 +194,18 @@ def prepare(reg_path, sha):
 
 
 def build_window_book(book, market, res_all, half):
-    """Cumulative abnormal returns for half A's issuers, with the real-event mask."""
+    """Cumulative abnormal returns for half A's issuers, plus the real-vote mask.
+
+    The mask covers every resolved real event of those issuers across all three
+    date regimes, not just half A's, so the contamination COUNT is an honest
+    superset. Nothing is dropped on its account (RULE-NO-DROP).
+    """
     wb = e.WindowBook(book, list(half["ticker"]), market)
     sub = res_all.loc[res_all["ticker"].isin(set(wb.tickers))]
     groups_all = np.array([wb.gidx[t] for t in sub["ticker"]], dtype=np.int64)
-    t_idx = np.array([book.roll_forward(t) if book.roll_forward(t) is not None
-                      else 0 for t in sub["T"]], dtype=np.int64)
     d_idx_all = sub["D_idx"].to_numpy(dtype=np.int64)
-    wb.set_blocked(groups_all, t_idx, d_idx_all)
+    exit_all = sub["exit_idx"].to_numpy(dtype=np.int64)
+    wb.set_real_voted(groups_all, d_idx_all, exit_all)
     groups = np.array([wb.gidx[t] for t in half["ticker"]], dtype=np.int64)
     d_idx = half["D_idx"].to_numpy(dtype=np.int64)
     return wb, groups, d_idx, int(len(sub))
@@ -210,6 +228,7 @@ def stage_controls(args):
     kn = reg["controls"]["known_null"]
     pc = reg["controls"]["positive_control"]
     band = tuple(kn["band"])
+    null_family = str(reg["voting_null"]["name"])
 
     if n_events < e.MIN_EVENTS:
         return halt_out(reg, "half A resolved %d events, the registration's "
@@ -218,43 +237,53 @@ def stage_controls(args):
 
     wb, groups, d_idx, n_real = build_window_book(book, market, _all_resolved(halves),
                                                   half)
-    log("window book: %d issuers, %d real events masked as T-60..D+61"
-        % (len(wb.tickers), n_real))
+    log("window book: %d issuers, %d real voted windows marked for the "
+        "contamination count" % (len(wb.tickers), n_real))
 
     # ---- step 3: MDE from the null's own spread ----
-    log("STEP 3 - MDE from the common-shift null (%d replicates, seed %d)"
-        % (R_vote, seed_vote))
-    nullo = e.common_shift_null(wb, groups, d_idx, R_vote,
+    log("STEP 3 - MDE from the %s null (%d replicates, seed %d)"
+        % (null_family, R_vote, seed_vote))
+    nullo = e.permutation_null(wb, groups, d_idx, R_vote,
                                np.random.default_rng(seed_vote))
     nm = nullo["mcar"]
     mde = e.mde_from_null(nm)
-    null_spread = {"median": float(np.median(nm)), "sd": float(nm.std(ddof=1)),
+    null_spread = {"null_family": null_family,
+                   "median": float(np.median(nm)), "sd": float(nm.std(ddof=1)),
                    "p95": float(np.percentile(nm, 95)), "R": int(len(nm)),
-                   "redraws": nullo["redraws"]}
+                   "redraws": nullo["redraws"],
+                   "mean_retention": float(nullo["retention"].mean()),
+                   "min_retention": float(nullo["retention"].min()),
+                   "mean_contaminated_share": float(nullo["contaminated"].mean()),
+                   "max_contaminated_share": float(nullo["contaminated"].max())}
     log("  null mCAR: median %+.6f  sd %.6f  p95 %+.6f  (R=%d, redraws %d)"
         % (null_spread["median"], null_spread["sd"], null_spread["p95"],
            null_spread["R"], null_spread["redraws"]))
+    log("  mean retention %.4f (min %.4f); mean contaminated share %.4f "
+        "(max %.4f)" % (null_spread["mean_retention"],
+                        null_spread["min_retention"],
+                        null_spread["mean_contaminated_share"],
+                        null_spread["max_contaminated_share"]))
     log("  MDE at 80%% power = %+.6f mCAR" % mde)
 
     # ---- step 4: known-null control ----
-    log("STEP 4 - known-null control: %d pseudo sets, fresh %d-replicate null each"
-        % (kn["N"], kn["R_each"]))
+    log("STEP 4 - known-null control: %d random permutations fed in as the "
+        "observed set, fresh %d-replicate null each" % (kn["N"], kn["R_each"]))
     rng_c = np.random.default_rng(int(kn["seed"]))
     ps = np.empty(int(kn["N"]))
     for i in range(int(kn["N"])):
         while True:
-            k_i = e.draw_shift(rng_c)
-            m_i, ret, _ = e.shift_mcar(wb, groups, d_idx, k_i, n_events)
+            sig_i = e.draw_permutation(rng_c, n_events)
+            m_i, ret, _, _ = e.permuted_mcar(wb, groups, d_idx, sig_i)
             if np.isfinite(m_i) and ret >= e.RETENTION_MIN:
                 break
-        nn = e.common_shift_null(wb, groups, d_idx, int(kn["R_each"]), rng_c,
-                                base_shift=k_i)
+        nn = e.permutation_null(wb, groups, d_idx, int(kn["R_each"]), rng_c)
         ps[i] = e.null_p(m_i, nn["mcar"])
         if (i + 1) % 50 == 0:
             log("  %d/%d  running share p<=%.2f = %.4f"
                 % (i + 1, kn["N"], bar, (ps[:i + 1] <= bar).mean()))
     share = float((ps <= bar).mean())
-    known_null = {"N": int(kn["N"]), "R_each": int(kn["R_each"]),
+    known_null = {"null_family": null_family,
+                  "N": int(kn["N"]), "R_each": int(kn["R_each"]),
                   "seed": int(kn["seed"]), "share_p_le_bar": share,
                   "band": list(band), "mean_p": float(ps.mean()),
                   "median_p": float(np.median(ps)),
@@ -289,14 +318,14 @@ def stage_controls(args):
     for i in range(int(pc["N_draws"])):
         drift = e.plant_drift(n_events, cal["X"], rng_p)
         planted = _internal_obs + float(drift.mean())
-        nn = e.common_shift_null(wb, groups, d_idx, int(pc["R_each"]), rng_p)
+        nn = e.permutation_null(wb, groups, d_idx, int(pc["R_each"]), rng_p)
         p = e.null_p(planted, nn["mcar"])
         pp.append(p)
         hits += p <= bar
         if (i + 1) % 25 == 0:
             log("  %d/%d  detection %.2f" % (i + 1, pc["N_draws"], hits / (i + 1)))
     det = hits / int(pc["N_draws"])
-    positive = {"X_calibrated": cal["X"],
+    positive = {"null_family": null_family, "X_calibrated": cal["X"],
                 "reference_mean_u": cal["reference_mean_u"],
                 "one_draw_planted_mean": cal["one_draw_planted_mean"],
                 "planted_mean_if_X_were_the_target": cal[
@@ -318,6 +347,7 @@ def stage_controls(args):
 
     receipt = {
         "registration_sha": reg["_sha256"],
+        "null_family": null_family,
         "n_events": n_events,
         "mde": mde,
         "known_null_share": known_null["share_p_le_bar"],
@@ -335,6 +365,8 @@ def stage_controls(args):
                 "formed the observed mean inside the planted mean it tests, "
                 "because the registered plant rides the real events' own voted "
                 "windows, and neither printed nor recorded it",
+        "mean_retention": null_spread["mean_retention"],
+        "mean_contaminated_share": null_spread["mean_contaminated_share"],
         "wall_seconds": round(time.time() - t0, 1),
     }
     if HALTFILE.exists():
@@ -355,7 +387,8 @@ def halt_out(reg, reason, mde, known_null, positive, counts, n_events, msha, t0,
     log("HALT: %s" % reason)
     log("No observed figure is computed. No look is spent. No ledger row.")
     payload = {
-        "halt": reason, "registration_sha": reg["_sha256"], "n_events": n_events,
+        "halt": reason, "registration_sha": reg["_sha256"],
+        "null_family": str(reg["voting_null"]["name"]), "n_events": n_events,
         "mde": mde, "known_null_share": (known_null or {}).get("share_p_le_bar"),
         "X_calibrated": (positive or {}).get("X_calibrated"),
         "detection": (positive or {}).get("detection_rate"),
@@ -400,20 +433,30 @@ def stage_observed(args):
     bar = float(reg["verdict"]["bar"])
     R_vote = int(reg["voting_null"]["R"])
     seed_vote = int(reg["voting_null"]["seed"])
+    null_family = str(reg["voting_null"]["name"])
+    if receipt.get("null_family") != null_family:
+        log("REFUSED: the receipt was written under null family %r but the live "
+            "seal names %r" % (receipt.get("null_family"), null_family))
+        return 2
 
     wb, groups, d_idx, n_real = build_window_book(book, market,
                                                   _all_resolved(halves), half)
     log("STEP 6 - OBSERVED")
 
-    gross = e.voted_returns(wb, groups, d_idx) + e.COST_FRACTION
-    net = gross - e.COST_FRACTION
+    net, n_ret, ok_obs, exit_obs = e.score_pairs(wb, groups, d_idx)
+    if not bool(ok_obs.all()):
+        raise AssertionError("%d half-A events are not covered by their own "
+                             "issuer after resolution" % int((~ok_obs).sum()))
+    gross = net + e.COST_FRACTION
     mcar_net = float(net.mean())
     mcar_gross = float(gross.mean())
-    nullo = e.common_shift_null(wb, groups, d_idx, R_vote,
+    nullo = e.permutation_null(wb, groups, d_idx, R_vote,
                                np.random.default_rng(seed_vote))
     p = e.null_p(mcar_net, nullo["mcar"])
-    log("  n %d   mCAR net %+.6f   gross %+.6f   p %.4f"
-        % (n_events, mcar_net, mcar_gross, p))
+    log("  n %d   mCAR net %+.6f   gross %+.6f   p %.4f  (%s)"
+        % (n_events, mcar_net, mcar_gross, p, null_family))
+    log("  null mean retention %.4f; mean contaminated share %.4f"
+        % (float(nullo["retention"].mean()), float(nullo["contaminated"].mean())))
 
     median = float(np.median(net))
     share_pos = float((net > 0).mean())
@@ -450,6 +493,10 @@ def stage_observed(args):
         okk = n == kk
         path["d%d" % kk] = {"mean": float(s[okk].mean()), "n": int(okk.sum())}
 
+    first_ev = e.first_event_mcar(net, list(half["ticker"]), d_idx)
+    wstat = {k: int(v) for k, v in
+             sorted(half["window_status"].value_counts().items())}
+    nret = half["n_returns"].to_numpy(dtype=np.int64)
     by_month = e.events_by_month(half["file_date"])
     dsplit = {k: int(v) for k, v in
               sorted(half["direction_mix"].value_counts().items())}
@@ -458,6 +505,11 @@ def stage_observed(args):
 
     verdict = e.verdict_of(p, mcar_net, bar)
     log("  median %+.6f  share positive %.4f" % (median, share_pos))
+    log("  first event per issuer: mCAR %s over %d issuers"
+        % ("%+.6f" % first_ev["mean"] if first_ev["mean"] is not None else "n/a",
+           first_ev["n_issuers"]))
+    log("  window status %s; returns per event min %d median %d"
+        % (wstat, int(nret.min()), int(np.median(nret))))
     log("  20-day window D+2..D+21 mean %+.6f (n %d)" % (w20["mean"], w20["n"]))
     log("  pre-disclosure T..D+1 mean %s (n %d)"
         % ("%+.6f" % pre["mean"] if pre["mean"] is not None else "n/a", pre["n"]))
@@ -492,18 +544,29 @@ def stage_observed(args):
             "n_events": n_events,
             "mCAR_net": mcar_net, "mCAR_gross": mcar_gross,
             "cost_fraction": e.COST_FRACTION,
-            "p_common_shift": p,
+            "null_family": null_family,
+            "p_permutation": p,
             "null_median": float(np.median(nullo["mcar"])),
             "null_sd": float(nullo["mcar"].std(ddof=1)),
             "null_p95": float(np.percentile(nullo["mcar"], 95)),
             "null_R": int(len(nullo["mcar"])), "null_redraws": nullo["redraws"],
+            "null_mean_retention": float(nullo["retention"].mean()),
+            "null_min_retention": float(nullo["retention"].min()),
+            "null_mean_contaminated_share": float(nullo["contaminated"].mean()),
+            "null_max_contaminated_share": float(nullo["contaminated"].max()),
             "median_net": median, "share_positive": share_pos,
+            "mCAR_first_event_per_issuer": first_ev,
+            "window_status": wstat,
+            "returns_per_event": {"min": int(nret.min()),
+                                  "median": float(np.median(nret)),
+                                  "max": int(nret.max())},
             "window_20d_D2_D21": w20,
             "pre_disclosure_T_to_D1": pre,
             "pre_termination_Tm21_to_T": preterm,
             "path_after_D_plus_1": path,
         },
         "descriptives": {
+            "calendar": counts.get("calendar", {}),
             "events_by_filing_month": by_month,
             "direction_mix": dsplit,
             "direction_split_at_row_level": counts["F_direction_split"],

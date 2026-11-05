@@ -1,0 +1,79 @@
+{
+  "registration": "T-R5 10b5-1 plan terminations, half A, v1",
+  "sealed": "Strategist draft 2026-11-04; operator approval by running Sprint R5-2 (RUN-IS-APPROVAL)",
+  "look_budget": "one Stage R registered look, the second drawn forward from the Q1 2027 allowance; one Q1 look remains after it; Stage R stands at four nils of six before this look",
+  "question": "after an officer's or director's termination of a Rule 10b5-1 trading arrangement becomes PUBLIC (the 10-Q or 10-K that discloses it), does the stock earn a positive abnormal return over the next 60 trading days that a reader of the filing could have captured? The private drift between termination and disclosure is reported, not voted.",
+  "prior": "the pre-2023 literature finds positive abnormal returns after terminations of selling plans (insiders stop selling before good news); most plans are selling plans; whether anything survives the public disclosure date is the open question",
+  "data": {
+    "events": "data/edgar_item408/20261104/events.parquet sha256 ca2f86aa878f5c34aa841a15c5057d24e2c143f6e372510914c5e26e7753d1bd; tracked manifest manifests/edgar_item408_20261104.json sha256 ba4ac7ee57df6bad447b8918c3e11d30f6a196735ee9f706b8fd7f7625c5a996",
+    "prices": "Sharadar snapshot_20261004p bulk_stocks.parquet sha256 b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4; closeadj for returns; closeunadj and volume for tradability; dates 1997-12-31 to 2026-10-02; frozen, no refresh inside this look",
+    "tickers": "bulk_tickers.parquet sha256 61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0; CIK from the secfilings URL; permaticker and ticker from the same row",
+    "calendar": "trading days are the distinct dates in bulk_stocks; D+k and T-k are counted in trading days"
+  },
+  "event_definition": {
+    "row_filter": "a row of events.parquet with rule10b51_terminated_flag true or nonrule10b51_terminated_flag true, AND neither adoption flag true in the same row, AND a parseable tagged termination date T, AND file_date minus T >= 0 calendar days, AND form in {10-Q, 10-K}",
+    "direction_filter": "PURCHASE-PLAN rows are excluded: the row's text block, lower-cased, contains 'purchase' or 'buy' and contains none of 'sale', 'sell', 'sold'; rows with neither family or both are kept; the three-way split is reported",
+    "disclosure_date": "D = file_date; if D is not a trading day, the next trading day",
+    "one_event_per_filing": "events are unique on (permaticker, D); several individuals in one filing are one event; the individual count is kept as a column",
+    "issuer_mapping": "CIK to bulk_tickers rows with table == SEP via secfilings; if several permatickers, keep the one whose ticker has a bulk_stocks row on D+1 and, if still several, the most rows before D; if none, drop",
+    "history": "at least 250 bulk_stocks rows for the ticker dated before T",
+    "tradability": "closeunadj on D+1 >= 2.00 USD and the median of closeunadj times volume over the 20 trading days ending D >= 500000 USD",
+    "completeness": "closeadj present on every trading day from D+1 to D+61 inclusive; events failing this are dropped and counted",
+    "halves": "half A: 2023-07-01 <= D <= 2025-03-31 (this look); half B: 2025-04-01 <= D <= 2026-06-30, UNOPENED, one confirmation look only on SOMETHING; holdout: D >= 2026-07-01 and every later filing, SEALED and growing",
+    "minimum_events": "if half A holds fewer than 200 events after all filters, HALT at resolution; no look spent"
+  },
+  "returns": {
+    "stock": "daily log return of closeadj",
+    "market": "the equal-weight mean daily log return across all bulk_stocks tickers with closeunadj >= 1.00 USD on the prior day and at least 250 prior rows; built once from the snapshot and cached with its sha256 reported",
+    "abnormal": "stock minus market, daily",
+    "voted_window": "entry at the close of D+1, exit at the close of D+61: the sum of the 60 abnormal daily log returns from D+2 to D+61",
+    "cost": "20 bps round trip (10 a side) subtracted from every event's voted-window return",
+    "reported_windows": "the 20-day window D+2 to D+21; the pre-disclosure window from the close of T (or the next trading day) to the close of D+1; the pre-termination window from the close of T-21 to the close of T; the mean abnormal path at 5, 10, 20, 40 and 60 days after D+1"
+  },
+  "statistic": {
+    "mCAR": "the equal-weight mean across events of the net voted-window abnormal log return; the quantity the null votes on",
+    "descriptives": "median, share positive, the reported windows, events by filing month, the direction split, title substring mix; reported, not adjudicated"
+  },
+  "voting_null": {
+    "name": "common-shift pseudo-events",
+    "mechanism": "each replicate shifts EVERY event's D by the same integer k trading days, k drawn uniformly from the union of [-378, -126] and [126, 378]; the same stocks, windows and cost at dates where no disclosure happened; a shifted window lying inside T-60 to D+61 of any real event of the same issuer is dropped from that replicate; a replicate retaining fewer than 90 percent of events is redrawn",
+    "R": 2000,
+    "seed": 20261105,
+    "p": "the share of replicates whose mCAR is >= the observed mCAR",
+    "what_it_asks": "whether these stocks earn more in the 60 days after their disclosure dates than in the same windows at other times, with the clustering of events in filing months preserved",
+    "why_common_shift": "independent per-event shifts would destroy the correlation between events that share filing months and make the null too narrow"
+  },
+  "order_of_operations": [
+    "1. RESOLUTION: the event set is resolved and counted at every clause; no return of any event is computed",
+    "2. MARKET INDEX: built and cached; not an event statistic",
+    "3. MDE: (null p95 - null median) + 0.8416 * sd(null mCAR), the null generated around the real D's without computing the observed mCAR",
+    "4. KNOWN-NULL CONTROL: 200 pseudo-event sets (each a common-shift draw) fed in as the observed set, each against a fresh 500-replicate null; the share at p <= 0.05 must lie in [0.01, 0.10] or HALT",
+    "5. POSITIVE CONTROL: on the real event set, add to each event's voted-window return a planted drift drawn per event from Uniform(0, 2X), X calibrated on ONE draw so the planted mean is about 0.03; then 50 fresh draws against fresh 500-replicate nulls; detection at p <= 0.05 must be >= 0.80 or HALT",
+    "6. OBSERVED: only then, and only on a pass receipt from steps 4 and 5"
+  ],
+  "controls": {
+    "known_null": {"N": 200, "R_each": 500, "seed": 777, "band": [0.01, 0.10]},
+    "positive_control": {"N_draws": 50, "R_each": 500, "seed": 4242, "target_mCAR": 0.03, "detection_floor": 0.80, "leak": "DELIBERATE and named by a test: the plant is added to the very window the vote reads"}
+  },
+  "halts": {
+    "fewer_than_200_events": "HALT at resolution; no look spent",
+    "known_null_outside_band": "HALT before the observed read; no look spent; no ledger row",
+    "positive_control_below_floor": "HALT before the observed read; no look spent; no ledger row; the design returns to the Strategist"
+  },
+  "verdict": {
+    "bar": 0.05,
+    "single_test": true,
+    "materiality": "mCAR >= 0.015 net (1.5 percent over 60 trading days)",
+    "SOMETHING": "p <= 0.05 AND mCAR >= 0.015 -> promoted to one registered half-B look",
+    "SIGNIFICANT_IMMATERIAL": "p <= 0.05 AND 0 < mCAR < 0.015 -> recorded, not promoted; a nil for discovery",
+    "SUGGESTIVE": "p in (0.05, 0.10] AND mCAR > 0 -> recorded, not promoted",
+    "NOTHING": "otherwise"
+  },
+  "interpretation_rulings": [
+    {"id": "RULE-SCHEDULED-END", "ruling": "a row whose termination date lies after its filing date is a scheduled end, not a termination, excluded by the lag clause; a row carrying both an adoption and a termination flag is a modification, excluded by the no-adoption clause"},
+    {"id": "RULE-CALENDAR", "ruling": "when D or T is not a trading day the next trading day is used; windows are counted in trading days"},
+    {"id": "RULE-LOG", "ruling": "all returns are log returns of closeadj and the bar is on the mean net abnormal log return, so no arithmetic overstatement enters"},
+    {"id": "RULE-LONG-ONLY", "ruling": "the vote is long over every kept row; purchase-plan rows are excluded by the text rule and nothing else is classified"}
+  ],
+  "ledger": {"batch_id": "T-R5", "signal": "TRMNT_POST_DISCLOSURE_60D", "universe_string": "item408_terminations_halfA", "vintage_string": "edgar_item408_20261104+sharadar_20261004p", "row_schema": "run_t_r3.py's, unchanged; ls_net_mean_bps carries mCAR in bps; p_premium carries the common-shift p"}
+}

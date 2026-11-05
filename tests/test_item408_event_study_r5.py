@@ -6,8 +6,9 @@ event, or touches the tracked ledger. Every registered resolution clause is made
 to bind ALONE: the fixture differs from a passing fixture in exactly the one
 field that clause reads, so a dropped clause cannot hide behind its neighbours.
 Where a rule is arithmetic it is checked against a hand-computable answer; where
-it is structural (one common shift per replicate, the overlap drop, the 90 per
-cent redraw) the test constructs the violation and insists the engine refuses it.
+it is structural (one permutation per replicate, the uncovered-pair drop, the
+90 per cent redraw) the test constructs the violation and insists the engine
+refuses it.
 
 The mutations this battery is built to catch: a termination clause that also
 admits modifications; a lag clause with the inequality reversed; a form filter
@@ -15,9 +16,13 @@ widened to the /A amendments; a direction rule that drops the "both" and
 "neither" rows it is registered to keep; a mapping tie-break that ignores which
 ticker actually trades; a completeness filter that tolerates one missing day; a
 cost that is never charged; a market index that averages sub-dollar or newly
-listed tickers; a null that shifts each event independently; a retention rule
-read with the wrong inequality; and an observed stage that runs without its
-receipt.
+listed tickers; a null that SHIFTS DATES instead of permuting issuers; a null
+that DROPS a contaminated pair instead of keeping and counting it; a CALENDAR
+THRESHOLD lowered so a phantom date becomes a trading day; a delisted event
+scored to D+61 instead of its last close; the five-return floor removed; a
+permutation drawn per event rather than per replicate; a hole tolerated as
+though it were a delisting; a retention rule read with the wrong inequality;
+and an observed stage that runs without its receipt.
 """
 
 from __future__ import annotations
@@ -467,82 +472,301 @@ def test_the_pre_termination_window_is_twenty_one_returns_ending_at_T():
 
 
 # ---------------------------------------------------------------------------
-# 6. the common-shift null
+# 6. the v2 calendar: a trading day is a date the market actually traded
 # ---------------------------------------------------------------------------
-def _null_setup(n_events=2, n=1200, rate=0.001):
-    frames = {"AAA": frame("2019-01-02", n, rate=rate, unadj=50.0),
+def _day_array(counts_by_date):
+    """A day column: {day_int: how many ticker rows carry it}."""
+    out = []
+    for d, k in sorted(counts_by_date.items()):
+        out.extend([d] * k)
+    return np.asarray(out, dtype=np.int32)
+
+
+def test_the_calendar_threshold_is_the_registered_one_thousand():
+    assert c.CALENDAR_MIN_TICKERS == 1000
+
+
+def test_a_phantom_date_carried_by_three_tickers_is_not_a_trading_day():
+    day = _day_array({100: 1000, 101: 3, 102: 1000})
+    cal, keep, st = c.trading_day_calendar(day)
+    assert list(cal) == [100, 102]                 # the 3-ticker date is gone
+    assert st["trading_days"] == 2 and st["dates_excluded"] == 1
+    assert st["rows_on_excluded_dates"] == 3
+    assert st["tickers_on_the_fattest_excluded_date"] == 3
+    assert keep.sum() == 2000 and not keep[1000:1003].any()
+
+
+def test_a_date_carried_by_exactly_the_threshold_is_a_trading_day():
+    day = _day_array({200: c.CALENDAR_MIN_TICKERS,
+                      201: c.CALENDAR_MIN_TICKERS - 1})
+    cal, keep, st = c.trading_day_calendar(day)
+    assert list(cal) == [200]                      # >= is inclusive at 1000
+    assert st["tickers_on_the_thinnest_trading_day"] == c.CALENDAR_MIN_TICKERS
+
+
+def test_the_calendar_threshold_binds_a_lower_one_would_admit_the_phantom():
+    """The guard that catches a threshold quietly lowered to 1."""
+    day = _day_array({100: 1000, 101: 3, 102: 1000})
+    assert list(c.trading_day_calendar(day, 1)[0]) == [100, 101, 102]
+    assert list(c.trading_day_calendar(day)[0]) == [100, 102]
+
+
+def test_the_calendar_threshold_is_read_out_of_the_seal():
+    reg = {"data": {"calendar": "trading days are the dates on which at least "
+                                "1000 tickers have a bulk_stocks row; D+k and "
+                                "T-k are counted in those days"}}
+    assert c.calendar_min_tickers(reg) == 1000
+    assert c.calendar_min_tickers(
+        {"data": {"calendar": "at least 7 tickers have a bulk_stocks row"}}) == 7
+    with pytest.raises(AssertionError, match="at least <n> tickers"):
+        c.calendar_min_tickers({"data": {"calendar": "every date in the file"}})
+
+
+def test_no_date_clearing_the_threshold_is_refused_loudly():
+    with pytest.raises(AssertionError, match="carries 1000 tickers"):
+        c.trading_day_calendar(_day_array({100: 4, 101: 4}))
+
+
+def test_load_prices_drops_the_rows_on_an_excluded_date(tmp_path):
+    """End to end: a phantom date leaves the book, and the calendar with it."""
+    rows = []
+    for t in ("AAA", "BBB", "CCC"):
+        for d in ("2024-01-02", "2024-01-03", "2024-01-04"):
+            rows.append({"ticker": t, "date": d, "closeadj": 10.0,
+                         "closeunadj": 10.0, "volume": 1e6})
+    rows.append({"ticker": "AAA", "date": "2024-01-05", "closeadj": 10.0,
+                 "closeunadj": 10.0, "volume": 1.0})   # lone phantom date
+    df = pd.DataFrame(rows)
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
+    p = tmp_path / "bulk_stocks.parquet"
+    df.to_parquet(p, index=False)
+
+    book = c.load_prices(p, min_tickers=3)
+    assert book.L == 3                                  # not 4
+    assert [book.date_str(j) for j in range(book.L)] == [
+        "2024-01-02", "2024-01-03", "2024-01-04"]
+    assert book.cal_stats["dates_excluded"] == 1
+    assert book.cal_stats["rows_on_excluded_dates"] == 1
+    assert book.last_row_idx("AAA") == 2                # the phantom row is gone
+    assert len(book.code) == 9                          # 10 rows in, 1 dropped
+
+
+# ---------------------------------------------------------------------------
+# 7. delisting inside the window is an exit, not a hole
+# ---------------------------------------------------------------------------
+def _delist_setup(short_bars, n=400, rate=0.001, hole_at=None):
+    """AAA stops after `short_bars`; BBB runs the whole calendar."""
+    aaa = frame("2019-01-02", short_bars, rate=rate, unadj=50.0)
+    if hole_at is not None:
+        aaa = aaa.drop(index=aaa.index[hole_at])
+    frames = {"AAA": aaa, "BBB": frame("2019-01-02", n, rate=rate, unadj=50.0)}
+    book = make_book(frames)
+    wb = c.WindowBook(book, ["AAA", "BBB"], flat_market(book, 0.0))
+    return book, wb
+
+
+def test_a_delisted_event_is_scored_to_its_last_close():
+    rate = 0.001
+    book, wb = _delist_setup(121, rate=rate)            # AAA's last row is 120
+    assert book.last_row_idx("AAA") == 120
+    status, exit_idx = c.classify_window(book, "AAA", 80)
+    assert status == "delisted" and exit_idx == 120      # min(80+61, 120)
+    net, n, ok, ex = c.score_pairs(wb, np.array([0]), np.array([80]))
+    assert bool(ok[0]) and int(ex[0]) == 120
+    assert int(n[0]) == 120 - 81 == 39                   # entry at D+1 = 81
+    assert float(net[0]) == pytest.approx(39 * rate - c.COST_FRACTION, abs=1e-12)
+
+
+def test_a_window_that_fits_entirely_is_complete_and_exits_at_D61():
+    book, wb = _delist_setup(400)
+    status, exit_idx = c.classify_window(book, "AAA", 80)
+    assert status == "complete" and exit_idx == 80 + c.COMPLETE_TO
+    net, n, ok, ex = c.score_pairs(wb, np.array([0]), np.array([80]))
+    assert int(n[0]) == c.VOTE_N == 60 and int(ex[0]) == 141
+
+
+def test_the_five_return_floor_drops_a_too_short_delisting():
+    book, wb = _delist_setup(85)                         # AAA's last row is 84
+    assert book.last_row_idx("AAA") == 84
+    # entry at D+1 = 81, exit 84, so only three returns exist: below the floor
+    assert c.classify_window(book, "AAA", 80) == ("too_short", -1)
+    net, n, ok, ex = c.score_pairs(wb, np.array([0]), np.array([80]))
+    assert not bool(ok[0]) and not np.isfinite(net[0])
+    # one more bar and the floor is exactly met
+    book2, wb2 = _delist_setup(87)                       # last row 86, five returns
+    assert c.classify_window(book2, "AAA", 80) == ("delisted", 86)
+    assert 86 - 81 == c.MIN_DELIST_RETURNS == 5
+
+
+def test_a_hole_while_the_ticker_continues_drops_the_event():
+    book, wb = _delist_setup(400, hole_at=110)           # inside D+1..D+61
+    assert book.last_row_idx("AAA") == 399               # the ticker goes on
+    assert c.classify_window(book, "AAA", 80) == ("hole", -1)
+    net, n, ok, ex = c.score_pairs(wb, np.array([0]), np.array([80]))
+    assert not bool(ok[0])
+
+
+def test_a_hole_before_an_in_window_delisting_is_still_a_hole():
+    book, wb = _delist_setup(121, hole_at=100)
+    assert c.classify_window(book, "AAA", 80)[0] == "hole"
+
+
+def test_no_row_on_the_entry_day_cannot_open_the_position():
+    book, wb = _delist_setup(80)                         # AAA's last row is 79
+    assert c.classify_window(book, "AAA", 80) == ("no_entry", -1)
+
+
+def test_classify_window_and_score_pairs_agree_on_the_exit():
+    """One authority for the exit: the classifier counts, score_pairs scores."""
+    for bars in (87, 100, 121, 141, 142, 400):
+        book, wb = _delist_setup(bars)
+        status, exit_idx = c.classify_window(book, "AAA", 80)
+        net, n, ok, ex = c.score_pairs(wb, np.array([0]), np.array([80]))
+        if status in ("complete", "delisted"):
+            assert bool(ok[0]) and int(ex[0]) == exit_idx
+            assert int(n[0]) == exit_idx - 81
+        else:
+            assert not bool(ok[0])
+
+
+def test_the_complete_and_delisted_counts_are_separate_and_holes_are_counted():
+    book = _deep_book()
+    fil = _one_filing(book, "AAA", "2024-02-05")
+    res, counts = c.apply_price_filters(fil, book, {})
+    assert counts["L_window_status"]["complete"] == 1
+    assert counts["L_window_status"]["delisted"] == 0
+    assert counts["L_complete_or_delisted"] == 1
+    assert list(res["window_status"]) == ["complete"]
+    assert int(res["n_returns"].iloc[0]) == c.VOTE_N
+
+    d = int(fil["D_idx"].iloc[0])
+    gap = _deep_book(hole_at=d + 30)
+    fil2 = _one_filing(gap, "AAA", "2024-02-05")
+    res2, counts2 = c.apply_price_filters(fil2, gap, {})
+    assert counts2["L_hole"] == 1 and counts2["L_complete_or_delisted"] == 0
+    assert len(res2) == 0
+
+
+# ---------------------------------------------------------------------------
+# 8. the voting null: issuer permutation at fixed dates
+# ---------------------------------------------------------------------------
+def _perm_setup(n_events=2, n=700, rate=0.001, short=None):
+    """Two issuers, two fixed dates. `short` truncates AAA's history."""
+    aaa_bars = n if short is None else short
+    frames = {"AAA": frame("2019-01-02", aaa_bars, rate=rate, unadj=50.0),
               "BBB": frame("2019-01-02", n, rate=rate / 2, unadj=50.0)}
     book = make_book(frames)
     wb = c.WindowBook(book, ["AAA", "BBB"], flat_market(book, 0.0))
     groups = np.array([0, 1])[:n_events]
-    d_idx = np.array([600, 620])[:n_events]
-    wb.set_blocked(groups, d_idx - 20, d_idx)
+    d_idx = np.array([200, 260])[:n_events]
+    _, _, _, ex = c.score_pairs(wb, groups, d_idx)
+    wb.set_real_voted(groups, d_idx, ex)
     return book, wb, groups, d_idx
 
 
-def test_draw_shift_covers_both_directions_and_never_the_excluded_middle():
+def test_the_permutation_is_a_bijection():
     rng = np.random.default_rng(0)
-    ks = np.array([c.draw_shift(rng) for _ in range(4000)])
-    assert (np.abs(ks) >= c.SHIFT_LO).all()
-    assert (np.abs(ks) <= c.SHIFT_HI).all()
-    assert (ks < 0).any() and (ks > 0).any()
-    assert abs((ks < 0).mean() - 0.5) < 0.05
+    for n in (2, 7, 365):
+        sig = c.draw_permutation(rng, n)
+        assert sorted(sig.tolist()) == list(range(n))
 
 
-def test_one_common_shift_per_replicate_not_one_per_event(monkeypatch):
-    book, wb, g, d = _null_setup()
-    seq = [200, -300, 250]
+def test_the_permutation_leaves_every_date_unchanged(monkeypatch):
+    """The null re-pairs issuers; it never moves a disclosure date."""
+    book, wb, g, d = _perm_setup()
+    seen = {}
+    real = c.score_pairs
+
+    def spy(wb_, groups_, d_idx_):
+        seen["g"] = np.asarray(groups_).copy()
+        seen["d"] = np.asarray(d_idx_).copy()
+        return real(wb_, groups_, d_idx_)
+
+    monkeypatch.setattr(c, "score_pairs", spy)
+    c.permuted_mcar(wb, g, d, np.array([1, 0]))
+    assert np.array_equal(seen["d"], d)                  # dates untouched
+    assert sorted(seen["g"].tolist()) == sorted(g.tolist())
+    assert not np.array_equal(seen["g"], g)              # issuers re-paired
+
+
+def test_one_permutation_per_replicate_not_one_per_event(monkeypatch):
+    book, wb, g, d = _perm_setup()
+    seq = [np.array([0, 1]), np.array([1, 0]), np.array([0, 1])]
     calls = []
 
-    def fake(rng):
-        k = seq[len(calls) % len(seq)]
-        calls.append(k)
-        return k
+    def fake(rng, n):
+        assert int(n) == len(d)                          # the WHOLE set at once
+        s = seq[len(calls) % len(seq)]
+        calls.append(s)
+        return s
 
-    monkeypatch.setattr(c, "draw_shift", fake)
-    out = c.common_shift_null(wb, g, d, 3, np.random.default_rng(1))
-    assert calls == seq                       # exactly one draw per replicate
-    for i, k in enumerate(seq):
-        m, ret, used = c.shift_mcar(wb, g, d, k, len(d))
+    monkeypatch.setattr(c, "draw_permutation", fake)
+    out = c.permutation_null(wb, g, d, 3, np.random.default_rng(1))
+    assert len(calls) == 3                               # exactly one per replicate
+    for i, sig in enumerate(seq):
+        m, ret, used, con = c.permuted_mcar(wb, g, d, sig)
         assert out["mcar"][i] == pytest.approx(m)
-        assert used == len(d)                 # the SAME k moved every event
+        assert used == len(d)
 
 
-def test_an_overlapping_window_is_dropped_from_the_replicate():
-    book, wb, g, d = _null_setup()
-    m_far, ret_far, used_far = c.shift_mcar(wb, g, d, 300, len(d))
-    assert used_far == 2 and ret_far == 1.0
-    # a small shift leaves the window inside the real events' T-60..D+61 region
-    wb.set_blocked(g, d - 20, d)
-    m_near, ret_near, used_near = c.shift_mcar(wb, g, d, 1, len(d))
-    assert used_near == 0 and ret_near == 0.0
+def test_contamination_is_counted_and_never_dropped():
+    """RULE-NO-DROP: a pair on the issuer's own real window stays in."""
+    book, wb, g, d = _perm_setup()
+    m_id, ret_id, used_id, con_id = c.permuted_mcar(wb, g, d, np.array([0, 1]))
+    assert used_id == 2 and ret_id == 1.0                # KEPT, not dropped
+    assert con_id == pytest.approx(1.0)                  # and counted
+    m_sw, ret_sw, used_sw, con_sw = c.permuted_mcar(wb, g, d, np.array([1, 0]))
+    assert used_sw == 2 and ret_sw == 1.0
+    assert con_sw == pytest.approx(0.0)                  # the swap is clean
+    assert np.isfinite(m_id) and np.isfinite(m_sw)
+
+
+def test_the_null_reports_the_mean_contaminated_share(monkeypatch):
+    book, wb, g, d = _perm_setup()
+    monkeypatch.setattr(c, "draw_permutation", lambda rng, n: np.array([0, 1]))
+    out = c.permutation_null(wb, g, d, 4, np.random.default_rng(2))
+    assert out["contaminated"].shape == (4,)
+    assert out["contaminated"].mean() == pytest.approx(1.0)
+    assert out["retention"].mean() == pytest.approx(1.0)
+
+
+def test_a_pair_the_issuer_cannot_cover_is_dropped_and_counted():
+    book, wb, g, d = _perm_setup(short=250)              # AAA's last row is 249
+    assert book.last_row_idx("AAA") == 249
+    # AAA can cover the early date (as an in-window delisting) but not the late one
+    assert c.classify_window(book, "AAA", 200) == ("delisted", 249)
+    assert c.classify_window(book, "AAA", 260) == ("no_entry", -1)
+    m, ret, used, con = c.permuted_mcar(wb, g, d, np.array([1, 0]))
+    assert used == 1 and ret == pytest.approx(0.5)
+    assert np.isfinite(m)
 
 
 def test_a_replicate_retaining_under_ninety_percent_is_redrawn(monkeypatch):
-    book, wb, g, d = _null_setup()
-    # block ONE issuer's whole calendar, so any shift drops half the events
-    wb.blocked_cum[0, 1:] = np.cumsum(np.ones(wb.L, dtype=np.int32))
-    bad = c.shift_mcar(wb, g, d, 200, len(d))
+    book, wb, g, d = _perm_setup(short=250)
+    monkeypatch.setattr(c, "draw_permutation", lambda rng, n: np.array([1, 0]))
+    bad = c.permuted_mcar(wb, g, d, np.array([1, 0]))
     assert bad[1] == pytest.approx(0.5) and bad[1] < c.RETENTION_MIN
     with pytest.raises(AssertionError, match="could not retain"):
-        c.common_shift_null(wb, g, d, 1, np.random.default_rng(2), max_redraw=5)
+        c.permutation_null(wb, g, d, 1, np.random.default_rng(3), max_redraw=5)
 
 
 def test_retention_is_read_as_at_or_above_ninety_percent(monkeypatch):
-    book, wb, g, d = _null_setup()
-    seq = [200]
-    monkeypatch.setattr(c, "draw_shift", lambda rng: seq[0])
-    out = c.common_shift_null(wb, g, d, 2, np.random.default_rng(3))
+    book, wb, g, d = _perm_setup()
+    monkeypatch.setattr(c, "draw_permutation", lambda rng, n: np.array([1, 0]))
+    out = c.permutation_null(wb, g, d, 2, np.random.default_rng(4))
     assert out["redraws"] == 0
-    m, ret, used = c.shift_mcar(wb, g, d, 200, len(d))
+    m, ret, used, con = c.permuted_mcar(wb, g, d, np.array([1, 0]))
     assert ret == 1.0 >= c.RETENTION_MIN
     assert np.allclose(out["mcar"], m)
 
 
-def test_a_shift_running_off_the_calendar_drops_the_event():
-    book, wb, g, d = _null_setup()
-    m, ret, used = c.shift_mcar(wb, g, np.array([wb.L - 10, 620]), 300, 2)
-    assert used == 0 or ret < 1.0
+def test_the_null_carries_no_plant_parameter():
+    """The plant rides the real pairs only; the null cannot be handed one."""
+    import inspect
+    names = set(inspect.signature(c.permutation_null).parameters)
+    assert not (names & {"plant", "drift", "X", "planted"})
+    assert not (set(inspect.signature(c.permuted_mcar).parameters)
+                & {"plant", "drift", "X", "planted"})
 
 
 def test_null_p_is_the_share_reaching_the_observed_value():
@@ -566,7 +790,7 @@ def test_mde_is_invariant_to_a_constant_offset():
 
 
 # ---------------------------------------------------------------------------
-# 7. the control predicates and the plant
+# 9. the control predicates and the plant
 # ---------------------------------------------------------------------------
 def test_band_ok_is_a_closed_band():
     assert c.band_ok(0.01, (0.01, 0.10)) and c.band_ok(0.10, (0.01, 0.10))
@@ -594,8 +818,8 @@ def test_X_is_calibrated_on_one_draw_to_the_registered_planted_mean():
 
 def test_the_plant_is_a_leak_it_lands_in_the_very_window_the_vote_reads():
     """Named deliberately: the plant rides the voted window, so it must be seen."""
-    book, wb, g, d = _null_setup(n_events=2, n=1400)
-    null = c.common_shift_null(wb, g, d, 200, np.random.default_rng(8))["mcar"]
+    book, wb, g, d = _perm_setup()
+    null = c.permutation_null(wb, g, d, 200, np.random.default_rng(8))["mcar"]
     obs = float(c.voted_returns(wb, g, d).mean())
     p_plain = c.null_p(obs, null)
     p_planted = c.null_p(obs + 0.30, null)
@@ -605,17 +829,51 @@ def test_the_plant_is_a_leak_it_lands_in_the_very_window_the_vote_reads():
     assert "_internal_obs + float(drift.mean())" in src
 
 
+def test_the_plant_rides_the_real_pairs_and_never_the_permuted_ones():
+    """The runner adds the drift to the observed mean, then draws a clean null."""
+    src = (ROOT / "tools" / "run_t_r5.py").read_text()
+    tree = ast.parse(src)
+    fn = next(n for n in ast.walk(tree)
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
+    body = ast.dump(fn)
+    assert "_internal_obs" in body
+    i_plant = body.index("plant_drift")
+    i_null = body.index("permutation_null", body.index("STEP 5")
+                        if "STEP 5" in body else 0)
+    assert i_plant < i_null, "the plant is formed before the clean null is drawn"
+    # the null call in step 5 is handed the window book and nothing planted
+    assert "e.permutation_null(wb, groups, d_idx, int(pc[\"R_each\"]), rng_p)" in src
+    assert "drift" not in src.split("permutation_null(wb, groups, d_idx, int(pc")[1][:80]
+
+
 def test_the_registration_names_the_leak_and_the_engine_repeats_it():
     doc = ast.get_docstring(ast.parse(
         (ROOT / "tools" / "item408_event_study_r5.py").read_text()))
     fn = c.plant_drift.__doc__
     assert "DELIBERATE LEAK" in fn
     assert "voted window" in fn
+    assert "REAL pairs only" in fn
     assert "observed" in doc
 
 
+def test_first_event_mcar_takes_one_event_per_issuer_the_earliest():
+    """Reported, never adjudicated: one busy filer cannot tilt it."""
+    net = np.array([0.10, 0.50, -0.20, 0.40])
+    tick = ["AAA", "AAA", "BBB", "CCC"]
+    d = np.array([100, 90, 200, 300])          # AAA's EARLIEST is index 1
+    out = c.first_event_mcar(net, tick, d)
+    assert out["n_issuers"] == 3
+    assert out["mean"] == pytest.approx((0.50 - 0.20 + 0.40) / 3)
+    # an uncovered first event drops out of the mean, not the issuer count
+    out2 = c.first_event_mcar(np.array([np.nan, 0.5]), ["AAA", "BBB"],
+                              np.array([10, 20]))
+    assert out2["n_issuers"] == 1 and out2["mean"] == pytest.approx(0.5)
+    assert c.first_event_mcar(np.array([np.nan]), ["AAA"],
+                              np.array([1]))["mean"] is None
+
+
 # ---------------------------------------------------------------------------
-# 8. the verdict ladder
+# 10. the verdict ladder
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize("p,m,want", [
     (0.01, 0.020, "SOMETHING"),
@@ -633,7 +891,7 @@ def test_the_verdict_ladder_is_the_registered_one(p, m, want):
 
 
 # ---------------------------------------------------------------------------
-# 9. registration loading, prose pins, halves
+# 11. registration loading, prose pins, halves
 # ---------------------------------------------------------------------------
 def test_load_registration_refuses_a_sha_mismatch(tmp_path):
     p = tmp_path / "reg.json"
@@ -656,6 +914,11 @@ def test_half_bounds_are_read_out_of_the_seal_not_hardcoded():
 
 
 REG_PROSE_FALLBACK = {
+    "data": {
+        "calendar": "trading days are the dates on which at least 1000 tickers "
+                    "have a bulk_stocks row; D+k and T-k are counted in those "
+                    "days",
+    },
     "event_definition": {
         "row_filter": "AND form in {10-Q, 10-K}",
         "direction_filter": "contains 'purchase' or 'buy' and contains none of "
@@ -665,35 +928,55 @@ REG_PROSE_FALLBACK = {
                        "closeunadj times volume over the 20 trading days ending "
                        "D >= 500000 USD",
         "completeness": "closeadj present on every trading day from D+1 to D+61 "
-                        "inclusive",
+                        "inclusive, EXCEPT that an event whose ticker's last row "
+                        "falls inside D+2..D+61 is DELISTED-IN-WINDOW and is "
+                        "scored from the close of D+1 to its last close provided "
+                        "at least 5 daily returns exist; a missing trading day "
+                        "while the ticker continues is a HOLE and drops the "
+                        "event; both counts reported",
         "minimum_events": "if half A holds fewer than 200 events after all "
                           "filters, HALT at resolution",
     },
     "returns": {
         "market": "closeunadj >= 1.00 USD on the prior day and at least 250 "
                   "prior rows",
-        "voted_window": "the sum of the 60 abnormal daily log returns from D+2 "
-                        "to D+61",
+        "voted_window": "entry at the close of D+1, exit at the close of D+61 "
+                        "(or the last close for a DELISTED-IN-WINDOW event): the "
+                        "sum of the abnormal daily log returns from D+2 to the "
+                        "exit",
         "cost": "20 bps round trip (10 a side) subtracted from every event's "
                 "voted-window return",
         "reported_windows": "the 20-day window D+2 to D+21; the pre-termination "
                             "window from the close of T-21 to the close of T; "
-                            "the mean abnormal path at 5, 10, 20, 40 and 60 days",
+                            "the mean abnormal path at 5, 10, 20, 40 and 60 "
+                            "days after D+1; mCAR over the first event of each "
+                            "issuer",
     },
-    "voting_null": {"mechanism": "k drawn uniformly from the union of [-378, "
-                                 "-126] and [126, 378]; a shifted window lying "
-                                 "inside T-60 to D+61 of any real event of the "
-                                 "same issuer is dropped from that replicate; a "
-                                 "replicate retaining fewer than 90 percent of "
-                                 "events is redrawn"},
+    "voting_null": {
+        "name": "issuer permutation at fixed dates",
+        "mechanism": "each replicate draws a uniformly random bijection sigma "
+                     "of the n half-A events and scores issuer sigma(i) at date "
+                     "D_i under the same window, cost and completeness rules; "
+                     "a pair the issuer cannot cover (no row on D_i+1, or fewer "
+                     "than 5 returns) is dropped from the replicate and counted, "
+                     "and a replicate retaining fewer than 90 percent of events "
+                     "is redrawn; a pair whose window overlaps that issuer's own "
+                     "real voted window is KEPT and counted as contaminated",
+    },
     "order_of_operations": ["+ 0.8416 * sd(null mCAR)"],
     "verdict": {"materiality": "mCAR >= 0.015 net", "SUGGESTIVE": "p in (0.05, 0.10]"},
 }
 
 
+V1_SEAL = ROOT / "registrations" / "r5" / "registration_v1.json"
+V1_SEAL_SHA = ("524d6e65fe2142180d796d560088cb0174465952"
+               "e555d973caf118ab06e29bd2")
+V2_SEAL = ROOT / "registrations" / "r5" / "registration_v2.json"
+
+
 def _registration_text():
-    for p in (ROOT / "registrations" / "r5" / "registration_v1.json",
-              ROOT / "logs" / "r5" / "registration_v1.json"):
+    """The v2 seal once it exists, else its prose verbatim as a fallback."""
+    for p in (V2_SEAL, ROOT / "logs" / "r5" / "registration_v2.json"):
         if p.exists():
             return p.read_text(), str(p)
     return json.dumps(REG_PROSE_FALLBACK), "fallback"
@@ -710,20 +993,23 @@ def test_registration_prose_pins_the_constants():
     assert "over the %d trading days ending D >= %d USD" % (
         c.DOLLAR_VOL_WINDOW, int(c.DOLLAR_VOL_FLOOR)) in text
     assert "from D+%d to D+%d inclusive" % (c.COMPLETE_FROM, c.COMPLETE_TO) in text
+    assert "at least %d tickers have a bulk_stocks row" % (
+        c.CALENDAR_MIN_TICKERS) in text
+    assert "at least %d daily returns exist" % c.MIN_DELIST_RETURNS in text
     assert "closeunadj >= %.2f USD on the prior day" % c.MARKET_PRICE_FLOOR in text
     assert "at least %d prior rows" % c.MARKET_MIN_PRIOR_ROWS in text
-    assert "the sum of the %d abnormal daily log returns from D+%d to D+%d" % (
-        c.VOTE_N, c.VOTE_FROM, c.VOTE_TO) in text
+    assert "exit at the close of D+%d" % c.VOTE_TO in text
+    assert "the sum of the abnormal daily log returns from D+%d to the exit" % (
+        c.VOTE_FROM) in text
     assert "the %d-day window D+%d to D+%d" % (
         c.SHORT_N, c.VOTE_FROM, c.SHORT_TO) in text
     assert "close of T-%d to the close of T" % c.PRETERM_LAG in text
     assert "at %d, %d, %d, %d and %d days" % c.PATH_POINTS in text
     assert "%d bps round trip" % int(c.COST_ROUND_TRIP_BPS) in text
-    assert "union of [-%d, -%d] and [%d, %d]" % (
-        c.SHIFT_HI, c.SHIFT_LO, c.SHIFT_LO, c.SHIFT_HI) in text
-    assert "inside T-%d to D+%d" % (c.CONTAM_BACK, c.CONTAM_FWD) in text
+    assert "fewer than %d returns" % c.MIN_DELIST_RETURNS in text
     assert "fewer than %d percent of events is redrawn" % int(
         100 * c.RETENTION_MIN) in text
+    assert "KEPT and counted as contaminated" in text
     assert "%s * sd(null mCAR)" % c.Z80 in text
     assert "fewer than %d events" % c.MIN_EVENTS in text
     assert "mCAR >= %s net" % c.MATERIALITY in text
@@ -731,16 +1017,44 @@ def test_registration_prose_pins_the_constants():
 
 
 def test_the_prose_pin_binds_to_the_tracked_seal_once_it_exists():
-    tracked = ROOT / "registrations" / "r5" / "registration_v1.json"
     _, src = _registration_text()
-    if tracked.exists():
-        assert src == str(tracked)
+    if V2_SEAL.exists():
+        assert src == str(V2_SEAL)
     else:
-        assert src in ("fallback", str(ROOT / "logs" / "r5" / "registration_v1.json"))
+        assert src in ("fallback",
+                       str(ROOT / "logs" / "r5" / "registration_v2.json"))
+
+
+def test_the_v1_seal_still_parses_and_still_carries_its_sha():
+    """The halted v1 seal is the record of what the common-shift null was."""
+    assert V1_SEAL.exists(), "the halted v1 seal must stay tracked"
+    assert c.sha256_file(V1_SEAL) == V1_SEAL_SHA
+    v1 = json.loads(V1_SEAL.read_text())
+    assert v1["voting_null"]["name"] == "common-shift pseudo-events"
+    assert "union of [-378, -126] and [126, 378]" in v1["voting_null"]["mechanism"]
+    assert "2023-07-01" in v1["event_definition"]["halves"]
+
+
+def test_the_v1_halt_is_tracked_beside_its_seal():
+    halt = ROOT / "registrations" / "r5" / "controls_halt_v1.json"
+    assert halt.exists()
+    h = json.loads(halt.read_text())
+    assert h["registration_sha"] == V1_SEAL_SHA
+    assert h["mde"] is None and h["known_null_share"] is None
+    assert "STEP 3" in h["halt"]
+
+
+def test_the_v2_seal_supersedes_the_v1_one_by_sha():
+    if not V2_SEAL.exists():
+        pytest.skip("the v2 seal is written in phase 2")
+    v2 = json.loads(V2_SEAL.read_text())
+    assert V1_SEAL_SHA in v2["supersedes"]
+    assert v2["voting_null"]["name"] == "issuer permutation at fixed dates"
+    assert c.calendar_min_tickers(v2) == c.CALENDAR_MIN_TICKERS
 
 
 # ---------------------------------------------------------------------------
-# 10. the seal's data pins, read from the seal
+# 12. the seal's data pins, read from the seal
 # ---------------------------------------------------------------------------
 def test_data_paths_and_pins_are_read_out_of_the_seal():
     reg = {"data": {
@@ -766,7 +1080,7 @@ def test_a_data_pin_mismatch_is_refused(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# 11. stage gating
+# 13. stage gating
 # ---------------------------------------------------------------------------
 def test_observed_stage_refuses_without_a_receipt(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(r, "LOGDIR", tmp_path)
@@ -795,8 +1109,8 @@ def test_observed_stage_refuses_on_a_registration_sha_mismatch(tmp_path, monkeyp
 
 def test_receipt_carries_the_registered_fields():
     src = (ROOT / "tools" / "run_t_r5.py").read_text()
-    for field in ("registration_sha", "n_events", "mde", "known_null_share",
-                  "X_calibrated", "detection", "utc"):
+    for field in ("registration_sha", "null_family", "n_events", "mde",
+                  "known_null_share", "X_calibrated", "detection", "utc"):
         assert '"%s"' % field in src
 
 
@@ -806,6 +1120,9 @@ def test_halt_writes_the_same_figures_and_exits_non_zero():
     assert "return 15" in src
     assert "RECEIPT.unlink()" in src
     assert "MIN_EVENTS" in src
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "halt_out")
+    assert "null_family" in ast.dump(fn), "a halt must name its null family"
 
 
 def test_the_runner_halts_below_the_registered_minimum_event_count():
@@ -816,12 +1133,14 @@ def test_the_runner_halts_below_the_registered_minimum_event_count():
               if isinstance(n, ast.FunctionDef) and n.name == "stage_controls")
     body = ast.dump(fn)
     i_min = body.index("MIN_EVENTS")
-    i_null = body.index("common_shift_null")
+    i_null = body.index("permutation_null")
     assert i_min < i_null, "the minimum-event halt must precede the null"
+    assert "common_shift_null" not in src, "the v1 null family is gone"
+    assert "draw_shift" not in src
 
 
 # ---------------------------------------------------------------------------
-# 12. housekeeping
+# 14. housekeeping
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize("tool", ["item408_event_study_r5.py", "run_t_r5.py"])
 def test_no_credential_is_read_by_the_new_tools(tool):

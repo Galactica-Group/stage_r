@@ -1,31 +1,50 @@
 """
 ================================================================================
 Script:       item408_event_study_r5.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — External Data Evaluation
 Purpose:      The T-R5 engine: Item 408 Rule 10b5-1 plan TERMINATIONS as an
-              event study on the public disclosure date, with the common-shift
-              null and both registered controls.
+              event study on the public disclosure date, with the ISSUER
+              PERMUTATION null at fixed dates and both registered controls.
 Entry Point:  No — imported by tools/run_t_r5.py
 Dependencies: stdlib, numpy, pandas, pyarrow. Imports nothing from any other
               repository; in particular it imports nothing from the factory tree.
-Last Sprint:  Sprint R5-2 — T-R5 10b5-1 plan terminations: seal, controls,
-              half-A read (2026-11-04)
+Last Sprint:  Sprint R5-3 — T-R5 v2: permutation null, re-seal, controls,
+              half-A read (2026-11-05)
 ================================================================================
 
 Every parameter comes from the sealed registration JSON, whose sha256 must match
 the one passed in; load_registration refuses otherwise. The integers the
 registration states in prose rather than in a numeric field (the 60-day voted
 window, the 20 bps round trip, the two price floors, the 250-row history bar,
-the shift range, the 90 per cent retention rule, the materiality bar, the
-200-event minimum, the MDE z) are declared here and pinned against that prose by
-a test, so the code and the seal cannot drift apart silently.
+the 1000-ticker calendar floor, the 5-return delisting floor, the 90 per cent
+retention rule, the materiality bar, the 200-event minimum, the MDE z) are
+declared here and pinned against that prose by a test, so the code and the seal
+cannot drift apart silently.
 
 A DISCLOSURE is the unit, not an individual and not a plan. Several officers
 terminating in one 10-Q are one event, because one filing is one piece of public
 news. D is the filing date rolled forward to a trading day; the trade the vote
 prices is an entry at the close of D+1 and an exit at the close of D+61, so it
 reads nothing a reader of the filing could not have read.
+
+THE CALENDAR is not every date in the snapshot. Sharadar carries sparse dates
+that only a handful of tickers trade on; treating one as a trading day shifts
+every window that straddles it. A trading day is a date on which at least
+CALENDAR_MIN_TICKERS tickers have a row, and rows on any other date are dropped.
+
+A STOCK THAT STOPS TRADING inside the window is not a hole. Its position ends at
+its last close, which is the return a holder realised; the event is scored to
+that close provided at least MIN_DELIST_RETURNS daily returns exist. A missing
+trading day while the ticker goes on trading IS a hole, and drops the event.
+
+THE NULL permutes issuers across fixed dates. Each replicate draws a uniformly
+random bijection of the n events and scores issuer sigma(i) at date D_i, so
+every disclosure date stays exactly where it is and the calendar clustering of
+filings is preserved exactly. A pair the issuer cannot cover is dropped and
+counted; a pair landing on the issuer's own real voted window is KEPT and
+counted as contaminated, because contamination can only pull the null toward a
+real effect — it costs power and cannot manufacture a finding.
 
 The clause counts are the honest part of resolution: every filter reports how
 many rows it removed, in the registered order, before any return is formed.
@@ -51,7 +70,7 @@ import pandas as pd
 import pyarrow.compute as pac
 import pyarrow.parquet as pq
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # --- stated in the registration as prose; pinned by test_registration_prose_pins
 FORMS = ("10-Q", "10-K")              # "form in {10-Q, 10-K}"
@@ -63,20 +82,19 @@ DOLLAR_VOL_FLOOR = 500000.0           # "... >= 500000 USD"
 DOLLAR_VOL_WINDOW = 20                # "over the 20 trading days ending D"
 COMPLETE_FROM = 1                     # "from D+1 to D+61 inclusive"
 COMPLETE_TO = 61
+CALENDAR_MIN_TICKERS = 1000           # "at least 1000 tickers have a
+                                      #  bulk_stocks row"
+MIN_DELIST_RETURNS = 5                # "provided at least 5 daily returns exist"
 MARKET_PRICE_FLOOR = 1.00             # "closeunadj >= 1.00 USD on the prior day"
 MARKET_MIN_PRIOR_ROWS = 250           # "at least 250 prior rows"
-VOTE_FROM = 2                         # "the 60 abnormal daily log returns from
-VOTE_TO = 61                          #  D+2 to D+61"
-VOTE_N = 60
+VOTE_FROM = 2                         # "the abnormal daily log returns from D+2
+VOTE_TO = 61                          #  to the exit", capped at D+61
+VOTE_N = 60                           # a complete window's return count
 SHORT_TO = 21                         # "the 20-day window D+2 to D+21"
 SHORT_N = 20
 PRETERM_LAG = 21                      # "from the close of T-21 to the close of T"
 PATH_POINTS = (5, 10, 20, 40, 60)     # "at 5, 10, 20, 40 and 60 days after D+1"
 COST_ROUND_TRIP_BPS = 20.0            # "20 bps round trip (10 a side)"
-SHIFT_LO = 126                        # "the union of [-378, -126] and [126, 378]"
-SHIFT_HI = 378
-CONTAM_BACK = 60                      # "inside T-60 to D+61 of any real event"
-CONTAM_FWD = 61
 RETENTION_MIN = 0.90                  # "fewer than 90 percent of events is redrawn"
 Z80 = 0.8416                          # "+ 0.8416 * sd(null mCAR)"
 MIN_EVENTS = 200                      # "fewer than 200 events after all filters"
@@ -137,6 +155,22 @@ def half_bounds(reg):
     }
 
 
+def calendar_min_tickers(reg):
+    """The calendar's ticker floor, read out of the seal's own calendar prose.
+
+    The seal states it in prose rather than a numeric field, so it is parsed
+    here and the parsed value is what load_prices is driven with; the module
+    constant is pinned against the same prose by a test.
+    """
+    s = reg["data"]["calendar"]
+    m = re.search(r"at least (\d+) tickers have a bulk_stocks row", s)
+    if not m:
+        raise AssertionError(
+            "the calendar prose must state 'at least <n> tickers have a "
+            "bulk_stocks row', found: %r" % s)
+    return int(m.group(1))
+
+
 # ---------------------------------------------------------------------------
 # Prices: one compact column-store over the frozen Sharadar snapshot
 # ---------------------------------------------------------------------------
@@ -145,14 +179,46 @@ def _col_f8(path, name):
     return pac.cast(t, "float64").to_numpy(zero_copy_only=False)
 
 
+def trading_day_calendar(day, min_tickers=CALENDAR_MIN_TICKERS):
+    """The calendar is the dates carrying at least `min_tickers` rows.
+
+    Sharadar's snapshot holds sparse dates that only a handful of tickers trade
+    on. A date like that is not a trading day, and a row on it is dropped: if it
+    were kept, every window straddling it would be shifted by a day that the
+    market never had. Returns (cal, keep, stats).
+    """
+    day = np.asarray(day)
+    uniq, cnt = np.unique(day, return_counts=True)
+    cal = uniq[cnt >= int(min_tickers)]
+    if len(cal) == 0:
+        raise AssertionError(
+            "no date in the snapshot carries %d tickers" % int(min_tickers))
+    j = np.searchsorted(cal, day, "left")
+    keep = (j < len(cal)) & (cal[np.minimum(j, len(cal) - 1)] == day)
+    stats = {
+        "min_tickers": int(min_tickers),
+        "dates_in_snapshot": int(len(uniq)),
+        "trading_days": int(len(cal)),
+        "dates_excluded": int(len(uniq) - len(cal)),
+        "rows_on_excluded_dates": int((~keep).sum()),
+        "tickers_on_the_thinnest_trading_day": int(cnt[cnt >= int(min_tickers)].min()),
+        "tickers_on_the_fattest_excluded_date": (
+            int(cnt[cnt < int(min_tickers)].max())
+            if (cnt < int(min_tickers)).any() else 0),
+    }
+    return cal, keep, stats
+
+
 class PriceBook:
     """Sharadar SEP, sorted by (ticker, date), plus the trading-day calendar.
 
-    The calendar IS the set of distinct dates in bulk_stocks, as the seal says,
-    so D+k and T-k are positions in this array and nothing else.
+    The calendar is the set of dates on which at least CALENDAR_MIN_TICKERS
+    tickers have a row, as the v2 seal says, so D+k and T-k are positions in
+    that array and nothing else. Rows on excluded dates are not in the book.
     """
 
-    def __init__(self, vocab, code, dayidx, closeadj, closeunadj, volume, cal):
+    def __init__(self, vocab, code, dayidx, closeadj, closeunadj, volume, cal,
+                 cal_stats=None):
         self.vocab = vocab
         self.code = code
         self.dayidx = dayidx
@@ -161,6 +227,7 @@ class PriceBook:
         self.volume = volume
         self.cal = cal                      # int32 days since epoch, sorted
         self.L = len(cal)
+        self.cal_stats = cal_stats or {}
         self.index_of = {t: i for i, t in enumerate(vocab)}
         n = len(vocab)
         self.start = np.searchsorted(code, np.arange(n, dtype=np.int32), "left")
@@ -210,6 +277,14 @@ class PriceBook:
         k = int(np.searchsorted(self.dayidx[a:b], j, "left"))
         return bool(k < (b - a) and self.dayidx[a + k] == j)
 
+    def last_row_idx(self, ticker):
+        """Trading-day index of the ticker's LAST row, or -1 if it has none."""
+        sl = self.slice_of(ticker)
+        if sl is None:
+            return -1
+        a, b = sl
+        return int(self.dayidx[b - 1])
+
     def value_on(self, ticker, j, field):
         sl = self.slice_of(ticker)
         if sl is None:
@@ -257,8 +332,13 @@ class PriceBook:
                     and (self.closeadj[a + i0:a + i1] > 0).all())
 
 
-def load_prices(path):
-    """Build the PriceBook from bulk_stocks.parquet. Five columns, cast at read."""
+def load_prices(path, min_tickers=CALENDAR_MIN_TICKERS):
+    """Build the PriceBook from bulk_stocks.parquet under the v2 calendar.
+
+    Five columns, cast at read. Rows on dates carrying fewer than `min_tickers`
+    tickers are dropped before anything else is computed, so they can never
+    become a window position.
+    """
     tk = pq.read_table(path, columns=["ticker"], read_dictionary=["ticker"])
     ca = tk.column("ticker").combine_chunks()
     code = ca.indices.to_numpy(zero_copy_only=False).astype(np.int32)
@@ -269,19 +349,22 @@ def load_prices(path):
     day = pac.cast(pac.cast(dt, "date32"), "int32").to_numpy(
         zero_copy_only=False).astype(np.int32)
     del dt
-    cal = np.unique(day)
-    dayidx = np.searchsorted(cal, day).astype(np.int32)
+
+    cal, keep, cal_stats = trading_day_calendar(day, min_tickers)
+    dayidx = np.searchsorted(cal, day[keep]).astype(np.int32)
+    code = code[keep]
     del day
 
-    closeadj = _col_f8(path, "closeadj")
-    closeunadj = _col_f8(path, "closeunadj").astype(np.float32)
-    volume = _col_f8(path, "volume").astype(np.float32)
+    closeadj = _col_f8(path, "closeadj")[keep]
+    closeunadj = _col_f8(path, "closeunadj")[keep].astype(np.float32)
+    volume = _col_f8(path, "volume")[keep].astype(np.float32)
+    del keep
 
     key = code.astype(np.int64) * np.int64(len(cal)) + dayidx
     order = np.argsort(key, kind="stable")
     del key
     return PriceBook(vocab, code[order], dayidx[order], closeadj[order],
-                     closeunadj[order], volume[order], cal)
+                     closeunadj[order], volume[order], cal, cal_stats)
 
 
 # ---------------------------------------------------------------------------
@@ -293,8 +376,8 @@ def build_market_index(book):
     A ticker's return on trading day j enters only if its previous ROW is the
     previous trading day, its closeunadj on that previous day clears the floor,
     and it already has at least MARKET_MIN_PRIOR_ROWS rows behind it. Not an
-    event statistic: it is built from the whole snapshot and knows nothing of
-    any disclosure.
+    event statistic: it is built from the whole snapshot under the v2 calendar
+    and knows nothing of any disclosure.
     """
     L = book.L
     s = np.zeros(L)
@@ -478,12 +561,53 @@ def map_issuers(fil, sep, book, counts):
         counts["I_unique_on_permaticker_D"] = 0
         counts["I_collapsed"] = 0
     return mp.reset_index(drop=True), counts
+def classify_window(book, ticker, d_idx):
+    """COMPLETE, DELISTED-IN-WINDOW, or a drop reason, plus the exit index.
+
+    The registered completeness rule in three outcomes:
+      complete  — closeadj on every trading day D+1..D+61; exit at D+61.
+      delisted  — the ticker's LAST row falls inside D+2..D+61, every day from
+                  D+1 to it is present, and at least MIN_DELIST_RETURNS daily
+                  returns exist; exit at that last close, which is the return a
+                  holder realised.
+      hole      — a trading day is missing while the ticker goes on trading, or
+                  a day is missing before an in-window delisting.
+      no_entry  — no row on D+1, so the position cannot be opened.
+      too_short — the ticker stops too soon to yield MIN_DELIST_RETURNS returns.
+      absent    — the ticker has no rows at all.
+    Returns (status, exit_idx); exit_idx is -1 on every drop.
+    """
+    entry = d_idx + COMPLETE_FROM
+    cap = d_idx + COMPLETE_TO
+    if book.slice_of(ticker) is None:
+        return "absent", -1
+    last = book.last_row_idx(ticker)
+    if last < 0:
+        return "absent", -1
+    if entry < 0 or entry >= book.L:
+        return "no_entry", -1
+    if not book.has_row_on(ticker, entry):
+        return "no_entry", -1
+    exit_ = min(cap, last)
+    if exit_ >= book.L:
+        return "too_short", -1
+    if (exit_ - entry) < MIN_DELIST_RETURNS:
+        return "too_short", -1
+    if not book.complete_between(ticker, entry, exit_):
+        return "hole", -1
+    return ("complete" if last >= cap else "delisted"), int(exit_)
 
 
 def apply_price_filters(mp, book, counts):
-    """History, tradability and completeness, each counted separately."""
+    """History, tradability and completeness, each counted separately.
+
+    Completeness is now three-way: a complete window, an in-window delisting
+    scored to its last close, or a drop (hole, no entry, too short, absent).
+    """
     keep = []
-    n_hist = n_price = n_dv = n_comp = 0
+    n_hist = n_price = n_dv = 0
+    comp = {"complete": 0, "delisted": 0, "hole": 0, "no_entry": 0,
+            "too_short": 0, "absent": 0}
     for r in mp.to_dict("records"):
         if book.rows_before(r["ticker"], r["T"]) < HISTORY_MIN_ROWS:
             continue
@@ -497,15 +621,23 @@ def apply_price_filters(mp, book, counts):
         if not (np.isfinite(dv) and dv >= DOLLAR_VOL_FLOOR):
             continue
         n_dv += 1
-        if not book.complete_between(r["ticker"], r["D_idx"] + COMPLETE_FROM,
-                                     r["D_idx"] + COMPLETE_TO):
+        status, exit_idx = classify_window(book, r["ticker"], r["D_idx"])
+        comp[status] += 1
+        if status not in ("complete", "delisted"):
             continue
-        n_comp += 1
-        keep.append(r)
+        rr = dict(r)
+        rr["window_status"] = status
+        rr["exit_idx"] = int(exit_idx)
+        rr["n_returns"] = int(exit_idx - (r["D_idx"] + COMPLETE_FROM))
+        keep.append(rr)
     counts["J_history_250_rows_before_T"] = int(n_hist)
     counts["K_price_floor_on_D_plus_1"] = int(n_price)
     counts["K_dollar_volume_floor"] = int(n_dv)
-    counts["L_complete_D1_to_D61"] = int(n_comp)
+    counts["L_window_status"] = {k: int(v) for k, v in comp.items()}
+    counts["L_complete_or_delisted"] = int(comp["complete"] + comp["delisted"])
+    counts["L_complete_D1_to_D61"] = int(comp["complete"])
+    counts["L_delisted_in_window"] = int(comp["delisted"])
+    counts["L_hole"] = int(comp["hole"])
     return pd.DataFrame(keep).reset_index(drop=True), counts
 
 
@@ -565,7 +697,12 @@ def abnormal_series(book, ticker, market):
 
 
 class WindowBook:
-    """Cumulative abnormal returns per event ticker, so any window is O(1)."""
+    """Cumulative abnormal returns per event ticker, so any window is O(1).
+
+    Also carries each issuer's row presence and its last row, because the v2
+    exit is min(D+61, that last row) and a permuted pair can only be scored on
+    an issuer whose history actually covers the date it is handed.
+    """
 
     def __init__(self, book, tickers, market):
         self.tickers = list(dict.fromkeys(tickers))
@@ -575,23 +712,21 @@ class WindowBook:
         G = len(self.tickers)
         self.cum_ab = np.zeros((G, L + 1))
         self.cum_ok = np.zeros((G, L + 1), dtype=np.int32)
+        self.cum_row = np.zeros((G, L + 1), dtype=np.int32)
+        self.last_idx = np.full(G, -1, dtype=np.int64)
         for t in self.tickers:
-            ab, ok = abnormal_series(book, t, market)
             g = self.gidx[t]
+            ab, ok = abnormal_series(book, t, market)
             self.cum_ab[g, 1:] = np.cumsum(ab)
             self.cum_ok[g, 1:] = np.cumsum(ok.astype(np.int32))
-        self.blocked_cum = np.zeros((G, L + 1), dtype=np.int32)
-
-    def set_blocked(self, groups, t_idx, d_idx):
-        """Mark T-60 .. D+61 for every real event, per issuer group."""
-        G, L = len(self.tickers), self.L
-        blk = np.zeros((G, L), dtype=bool)
-        for g, ti, di in zip(groups, t_idx, d_idx):
-            lo = max(0, ti - CONTAM_BACK)
-            hi = min(L - 1, di + CONTAM_FWD)
-            if hi >= lo:
-                blk[g, lo:hi + 1] = True
-        self.blocked_cum[:, 1:] = np.cumsum(blk.astype(np.int32), axis=1)
+            pres = np.zeros(L, dtype=np.int32)
+            sl = book.slice_of(t)
+            if sl is not None:
+                a, b = sl
+                pres[book.dayidx[a:b]] = 1
+                self.last_idx[g] = int(book.dayidx[b - 1])
+            self.cum_row[g, 1:] = np.cumsum(pres)
+        self.real_vote_cum = np.zeros((G, L + 1), dtype=np.int32)
 
     def window(self, groups, a, b):
         """Sum and availability of the abnormal returns over a..b inclusive."""
@@ -599,72 +734,114 @@ class WindowBook:
         n = self.cum_ok[groups, b + 1] - self.cum_ok[groups, a]
         return s, n
 
-    def blocked(self, groups, a, b):
-        return (self.blocked_cum[groups, b + 1] - self.blocked_cum[groups, a]) > 0
+    def row_on(self, groups, j):
+        """Row presence, elementwise, for (group, trading-day) pairs."""
+        return (self.cum_row[groups, j + 1] - self.cum_row[groups, j]) == 1
+
+    def set_real_voted(self, groups, d_idx, exit_idx):
+        """Mark each real event's own voted window D+2..exit, per issuer group.
+
+        Used only to COUNT contamination in the permutation null. Nothing is
+        dropped on its account: see RULE-NO-DROP.
+        """
+        G, L = len(self.tickers), self.L
+        blk = np.zeros((G, L), dtype=bool)
+        for g, di, ei in zip(groups, d_idx, exit_idx):
+            lo = max(0, int(di) + VOTE_FROM)
+            hi = min(L - 1, int(ei))
+            if hi >= lo:
+                blk[g, lo:hi + 1] = True
+        self.real_vote_cum[:, 1:] = np.cumsum(blk.astype(np.int32), axis=1)
+
+    def contaminated(self, groups, a, b):
+        """True where a..b touches that issuer's own real voted window."""
+        return (self.real_vote_cum[groups, b + 1]
+                - self.real_vote_cum[groups, a]) > 0
+
+
+def score_pairs(wb, groups, d_idx):
+    """Score (issuer, date) pairs under the registered window, cost and rules.
+
+    The one scoring path, used by the observed read and by every null replicate,
+    so the null cannot be scored under rules the observation was not. Entry at
+    the close of d+1, exit at the close of min(d+61, the issuer's last row). A
+    pair is not covered when the issuer has no row on d+1, when fewer than
+    MIN_DELIST_RETURNS returns are available, or when a return inside the window
+    is missing. Returns (net, n_returns, ok, exit_idx).
+    """
+    g = np.asarray(groups, dtype=np.int64)
+    d = np.asarray(d_idx, dtype=np.int64)
+    L = wb.L
+    entry = d + COMPLETE_FROM
+    cap = d + VOTE_TO
+    last = wb.last_idx[g]
+    exit_ = np.minimum(cap, last)
+    n_exp = exit_ - entry
+    ok = ((last >= 0) & (entry >= 0) & (entry < L) & (exit_ >= 0) & (exit_ < L)
+          & (n_exp >= MIN_DELIST_RETURNS))
+    e_safe = np.clip(entry, 0, L - 1)
+    ok &= wb.row_on(g, e_safe)
+    a = np.clip(entry + 1, 0, L - 1)
+    b = np.clip(exit_, 0, L - 1)
+    s, n = wb.window(g, a, b)
+    ok &= (n == n_exp)
+    net = np.where(ok, s - COST_FRACTION, np.nan)
+    return net, n.astype(np.int64), ok, exit_
 
 
 def voted_returns(wb, groups, d_idx):
-    """Net voted-window abnormal return per event, NaN where not fully available."""
-    a = d_idx + VOTE_FROM
-    b = d_idx + VOTE_TO
-    s, n = wb.window(groups, a, b)
-    out = np.where(n == VOTE_N, s - COST_FRACTION, np.nan)
-    return out
+    """Net voted-window abnormal return per event, NaN where not covered."""
+    return score_pairs(wb, groups, d_idx)[0]
 
 
-def shift_mcar(wb, groups, d_idx, k, n_events):
-    """mCAR of the event set shifted by k trading days, with the registered drops.
+# ---------------------------------------------------------------------------
+# The voting null: issuer permutation at fixed dates
+# ---------------------------------------------------------------------------
+def draw_permutation(rng, n):
+    """One uniformly random bijection of range(n). Every date stays put."""
+    return rng.permutation(int(n))
 
-    Returns (mcar, retained_fraction, n_used). An event is dropped when its
-    shifted window runs off the calendar, when a return inside it is missing, or
-    when the window touches the T-60..D+61 region of a real event of the same
-    issuer.
+
+def permuted_mcar(wb, groups, d_idx, sigma):
+    """mCAR of one replicate: issuer sigma(i) scored at date D_i.
+
+    Returns (mcar, retained_fraction, n_used, contaminated_share). A pair the
+    issuer cannot cover is dropped and counted; a pair landing on that issuer's
+    own real voted window is KEPT and counted as contaminated.
     """
-    d = d_idx + k
-    a, b = d + VOTE_FROM, d + VOTE_TO
-    span_lo, span_hi = d + COMPLETE_FROM, d + COMPLETE_TO
-    inside = (span_lo >= 0) & (span_hi < wb.L) & (a >= 0) & (b < wb.L)
-    if not inside.any():
-        return np.nan, 0.0, 0
-    g = groups[inside]
-    aa, bb = a[inside], b[inside]
-    s, n = wb.window(g, aa, bb)
-    blk = wb.blocked(g, span_lo[inside], span_hi[inside])
-    good = (n == VOTE_N) & ~blk & np.isfinite(s)
-    used = int(good.sum())
+    g = np.asarray(groups, dtype=np.int64)[np.asarray(sigma, dtype=np.int64)]
+    d = np.asarray(d_idx, dtype=np.int64)
+    n_events = len(d)
+    net, _, ok, exit_ = score_pairs(wb, g, d)
+    used = int(ok.sum())
     if used == 0:
-        return np.nan, 0.0, 0
-    m = float((s[good] - COST_FRACTION).mean())
-    return m, used / float(n_events), used
+        return np.nan, 0.0, 0, 0.0
+    con = wb.contaminated(g[ok], d[ok] + VOTE_FROM, exit_[ok])
+    return (float(net[ok].mean()), used / float(n_events), used,
+            float(con.mean()))
 
 
-def draw_shift(rng):
-    """One integer from the union of [-SHIFT_HI, -SHIFT_LO] and [SHIFT_LO, SHIFT_HI]."""
-    mag = int(rng.integers(SHIFT_LO, SHIFT_HI + 1))
-    sign = 1 if rng.integers(0, 2) == 1 else -1
-    return sign * mag
-
-
-def common_shift_null(wb, groups, d_idx, R, rng, base_shift=0, max_redraw=200):
-    """R replicate mCARs, one common shift per replicate, retention enforced."""
+def permutation_null(wb, groups, d_idx, R, rng, max_redraw=200):
+    """R replicate mCARs, one permutation per replicate, retention enforced."""
     n_events = len(d_idx)
     out = np.empty(R)
-    draws = np.empty(R, dtype=np.int64)
+    ret_v = np.empty(R)
+    con_v = np.empty(R)
     redraws = 0
     for i in range(R):
         for _ in range(max_redraw):
-            k = draw_shift(rng)
-            m, ret, _ = shift_mcar(wb, groups, d_idx, base_shift + k, n_events)
+            sigma = draw_permutation(rng, n_events)
+            m, ret, _, con = permuted_mcar(wb, groups, d_idx, sigma)
             if np.isfinite(m) and ret >= RETENTION_MIN:
-                out[i] = m
-                draws[i] = k
+                out[i], ret_v[i], con_v[i] = m, ret, con
                 break
             redraws += 1
         else:
             raise AssertionError(
                 "a replicate could not retain %.0f%% of events in %d redraws"
                 % (100 * RETENTION_MIN, max_redraw))
-    return {"mcar": out, "draws": draws, "redraws": int(redraws)}
+    return {"mcar": out, "retention": ret_v, "contaminated": con_v,
+            "redraws": int(redraws)}
 
 
 def null_p(observed_mcar, null_mcar):
@@ -699,8 +876,8 @@ def plant_drift(n, X, rng):
     """One drift per event from Uniform(0, 2X).
 
     DELIBERATE LEAK. The plant is added to the very voted window the vote reads,
-    which is the point: it proves the instrument can see an effect of the
-    registered size. It is never a result.
+    on the REAL pairs only, which is the point: it proves the instrument can see
+    an effect of the registered size. It is never a result.
     """
     return rng.uniform(0.0, 2.0 * float(X), size=int(n))
 
@@ -720,6 +897,27 @@ def calibrate_X(n, target, seed):
 # ---------------------------------------------------------------------------
 # Descriptives
 # ---------------------------------------------------------------------------
+def first_event_mcar(net, tickers, d_idx):
+    """mCAR over the first event of each issuer. Reported, never adjudicated.
+
+    An issuer with several terminations in half A contributes once, at its
+    earliest disclosure, so the statistic cannot be tilted by one busy filer.
+    """
+    net = np.asarray(net, dtype=float)
+    order = np.argsort(np.asarray(d_idx, dtype=np.int64), kind="stable")
+    seen, pick = set(), []
+    for i in order:
+        t = tickers[i]
+        if t in seen:
+            continue
+        seen.add(t)
+        if np.isfinite(net[i]):
+            pick.append(net[i])
+    if not pick:
+        return {"mean": None, "n_issuers": 0}
+    return {"mean": float(np.mean(pick)), "n_issuers": int(len(pick))}
+
+
 def title_mix(titles):
     out = {}
     low = [str(t).lower() for t in titles]
