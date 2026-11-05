@@ -1,0 +1,82 @@
+{
+  "registration": "T-R5 10b5-1 plan terminations, half A, v2",
+  "sealed": "Strategist draft 2026-11-04; operator approval by running Sprint R5-3 (RUN-IS-APPROVAL)",
+  "supersedes": "v1, sha256 524d6e65fe2142180d796d560088cb0174465952e555d973caf118ab06e29bd2, which halted at order-of-operations step 3 on 2026-11-04: its common-shift null admitted 12 of 506 shifts, all in one earlier era, because its drop rule blocked the calendars of issuers with repeated terminations. v2 replaces the null family, the calendar definition and the treatment of a stock delisted inside the window; the question, the event definition, the windows, the cost, the statistic, the bar and the halves are unchanged. No look was spent on v1.",
+  "look_budget": "one Stage R registered look, the second drawn forward from the Q1 2027 allowance; one Q1 look remains after it; Stage R stands at four nils of six before this look",
+  "question": "after an officer's or director's termination of a Rule 10b5-1 trading arrangement becomes PUBLIC (the 10-Q or 10-K that discloses it), does the stock earn a positive abnormal return over the next 60 trading days that a reader of the filing could have captured? The private drift between termination and disclosure is reported, not voted.",
+  "prior": "the pre-2023 literature finds positive abnormal returns after terminations of selling plans (insiders stop selling before good news); most plans are selling plans; whether anything survives the public disclosure date is the open question",
+  "data": {
+    "events": "data/edgar_item408/20261104/events.parquet sha256 ca2f86aa878f5c34aa841a15c5057d24e2c143f6e372510914c5e26e7753d1bd; tracked manifest manifests/edgar_item408_20261104.json sha256 ba4ac7ee57df6bad447b8918c3e11d30f6a196735ee9f706b8fd7f7625c5a996",
+    "prices": "Sharadar snapshot_20261004p bulk_stocks.parquet sha256 b5ed7140b6c08a1fcb2d03e81bde22db0ef2d0a551c61e0816ebc05f4c602ad4; closeadj for returns; closeunadj and volume for tradability; dates 1997-12-31 to 2026-10-02; frozen, no refresh inside this look",
+    "tickers": "bulk_tickers.parquet sha256 61d14f069da12fa950bc83970f7d52b0f617b87c737e79a7657f37344a10e8a0; CIK from the secfilings URL; permaticker and ticker from the same row",
+    "calendar": "trading days are the dates on which at least 1000 tickers have a bulk_stocks row; D+k and T-k are counted in those days"
+  },
+  "event_definition": {
+    "row_filter": "a row of events.parquet with rule10b51_terminated_flag true or nonrule10b51_terminated_flag true, AND neither adoption flag true in the same row, AND a parseable tagged termination date T, AND file_date minus T >= 0 calendar days, AND form in {10-Q, 10-K}",
+    "direction_filter": "PURCHASE-PLAN rows are excluded: the row's text block, lower-cased, contains 'purchase' or 'buy' and contains none of 'sale', 'sell', 'sold'; rows with neither family or both are kept; the three-way split is reported",
+    "disclosure_date": "D = file_date; if D is not a trading day, the next trading day",
+    "one_event_per_filing": "events are unique on (permaticker, D); several individuals in one filing are one event; the individual count is kept as a column",
+    "issuer_mapping": "CIK to bulk_tickers rows with table == SEP via secfilings; if several permatickers, keep the one whose ticker has a bulk_stocks row on D+1 and, if still several, the most rows before D; if none, drop",
+    "history": "at least 250 bulk_stocks rows for the ticker dated before T",
+    "tradability": "closeunadj on D+1 >= 2.00 USD and the median of closeunadj times volume over the 20 trading days ending D >= 500000 USD",
+    "completeness": "closeadj present on every trading day from D+1 to D+61 inclusive, EXCEPT that an event whose ticker's last row falls inside D+2..D+61 is DELISTED-IN-WINDOW and is scored from the close of D+1 to its last close provided at least 5 daily returns exist; a missing trading day while the ticker continues is a HOLE and drops the event; both counts reported",
+    "halves": "half A: 2023-07-01 <= D <= 2025-03-31 (this look); half B: 2025-04-01 <= D <= 2026-06-30, UNOPENED, one confirmation look only on SOMETHING; holdout: D >= 2026-07-01 and every later filing, SEALED and growing",
+    "minimum_events": "if half A holds fewer than 200 events after all filters, HALT at resolution; no look spent"
+  },
+  "returns": {
+    "stock": "daily log return of closeadj between a row and the row on the previous trading day; no return bridges a hole",
+    "market": "the equal-weight mean daily log return across all bulk_stocks tickers with closeunadj >= 1.00 USD on the prior day and at least 250 prior rows; built once from the snapshot under the v2 calendar and cached with its sha256 reported",
+    "abnormal": "stock minus market, daily",
+    "voted_window": "entry at the close of D+1, exit at the close of D+61 (or the last close for a DELISTED-IN-WINDOW event): the sum of the abnormal daily log returns from D+2 to the exit",
+    "cost": "20 bps round trip (10 a side) subtracted from every event's voted-window return",
+    "reported_windows": "the 20-day window D+2 to D+21; the pre-disclosure window from the close of T (or the next trading day) to the close of D+1; the pre-termination window from the close of T-21 to the close of T; the mean abnormal path at 5, 10, 20, 40 and 60 days after D+1; mCAR over the first event of each issuer"
+  },
+  "statistic": {
+    "mCAR": "the equal-weight mean across events of the net voted-window abnormal log return; the quantity the null votes on",
+    "descriptives": "median, share positive, the reported windows, events by filing month, the direction split, title substring mix, issuer multiplicity, delisted-in-window and hole counts; reported, not adjudicated"
+  },
+  "voting_null": {
+    "name": "issuer permutation at fixed dates",
+    "mechanism": "each replicate draws a uniformly random bijection sigma of the n half-A events and scores issuer sigma(i) at date D_i under the same window, cost and completeness rules; every disclosure date stays exactly where it is, so the calendar clustering of events is preserved; a pair the issuer cannot cover (no row on D_i+1, or fewer than 5 returns) is dropped from the replicate and counted, and a replicate retaining fewer than 90 percent of events is redrawn; a pair whose window overlaps that issuer's own real voted window is KEPT and counted as contaminated",
+    "contamination": "contamination can only move the null toward a real effect, so it costs power and cannot manufacture a finding; the mean contaminated share across replicates is reported",
+    "R": 2000,
+    "seed": 20261105,
+    "p": "the share of replicates whose mCAR is >= the observed mCAR",
+    "what_it_asks": "whether these issuers earn more after their OWN disclosure dates than other issuers in the same sample earn after the same dates: whether the issuer-date pairing carries information"
+  },
+  "order_of_operations": [
+    "1. RESOLUTION: the event set is resolved and counted at every clause; no return of any event is computed",
+    "2. MARKET INDEX: built and cached under the v2 calendar; not an event statistic",
+    "3. MDE: (null p95 - null median) + 0.8416 * sd(null mCAR), from the permutation null without computing the observed mCAR",
+    "4. KNOWN-NULL CONTROL: 200 random permutations fed in as the observed set, each against a fresh 500-replicate permutation null; the share at p <= 0.05 must lie in [0.01, 0.10] or HALT",
+    "5. POSITIVE CONTROL: on the real event set, add to each real pair's voted-window return a planted drift drawn per event from Uniform(0, 2X), X calibrated on ONE draw so the planted mean is about 0.03; permuted pairs carry no plant; then 50 fresh draws against fresh 500-replicate nulls; detection at p <= 0.05 must be >= 0.80 or HALT",
+    "6. OBSERVED: only then, and only on a pass receipt from steps 4 and 5"
+  ],
+  "controls": {
+    "known_null": {"N": 200, "R_each": 500, "seed": 777, "band": [0.01, 0.10]},
+    "positive_control": {"N_draws": 50, "R_each": 500, "seed": 4242, "target_mCAR": 0.03, "detection_floor": 0.80, "leak": "DELIBERATE and named by a test: the plant is added to the very window the vote reads, on the real pairs only"}
+  },
+  "halts": {
+    "fewer_than_200_events": "HALT at resolution; no look spent",
+    "known_null_outside_band": "HALT before the observed read; no look spent; no ledger row",
+    "positive_control_below_floor": "HALT before the observed read; no look spent; no ledger row; the design returns to the Strategist"
+  },
+  "verdict": {
+    "bar": 0.05,
+    "single_test": true,
+    "materiality": "mCAR >= 0.015 net (1.5 percent over the window)",
+    "SOMETHING": "p <= 0.05 AND mCAR >= 0.015 -> promoted to one registered half-B look",
+    "SIGNIFICANT_IMMATERIAL": "p <= 0.05 AND 0 < mCAR < 0.015 -> recorded, not promoted; a nil for discovery",
+    "SUGGESTIVE": "p in (0.05, 0.10] AND mCAR > 0 -> recorded, not promoted",
+    "NOTHING": "otherwise"
+  },
+  "interpretation_rulings": [
+    {"id": "RULE-SCHEDULED-END", "ruling": "a row whose termination date lies after its filing date is a scheduled end, not a termination, excluded by the lag clause; a row carrying both an adoption and a termination flag is a modification, excluded by the no-adoption clause"},
+    {"id": "RULE-CALENDAR", "ruling": "a trading day is a date on which at least 1000 tickers have a row; when D or T is not a trading day the next trading day is used; windows are counted in trading days"},
+    {"id": "RULE-LOG", "ruling": "all returns are log returns of closeadj and the bar is on the mean net abnormal log return, so no arithmetic overstatement enters"},
+    {"id": "RULE-LONG-ONLY", "ruling": "the vote is long over every kept row; purchase-plan rows are excluded by the text rule and nothing else is classified"},
+    {"id": "RULE-DELISTED", "ruling": "a position in a stock that stops trading inside the window ends at its last close; that is the return a holder realised, not a hole"},
+    {"id": "RULE-NO-DROP", "ruling": "no permuted pair is dropped for landing near the issuer's own real event; it is counted as contaminated and kept"}
+  ],
+  "ledger": {"batch_id": "T-R5", "signal": "TRMNT_POST_DISCLOSURE_60D", "universe_string": "item408_terminations_halfA", "vintage_string": "edgar_item408_20261104+sharadar_20261004p", "row_schema": "run_t_r3.py's, unchanged; ls_net_mean_bps carries mCAR in bps; p_premium carries the permutation p; registration_sha is v2's"}
+}

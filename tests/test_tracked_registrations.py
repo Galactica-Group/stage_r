@@ -1,11 +1,17 @@
-"""Tests that the R3, R3b and R4 registration seals are under version control.
+"""Tests that the R3, R3b, R4 and R5 registration seals are under version control.
 
 The seals were written to logs/, which is gitignored, so the hashes the triage
 ledger commits to were not themselves recoverable from the repository. Sprint
-R5-0 copies them to registrations/ as the tracked record. These tests bind the
-tracked copies to the ledger: for every ledger row whose batch_id names one of
-those three looks, the row's registration_sha must equal the first sixteen hex
-characters of the sha256 of the tracked file for that batch.
+R5-0 copies them to registrations/ as the tracked record, and R5-2 onward seal
+to registrations/ directly. These tests bind the tracked copies to the ledger:
+for every ledger row whose batch_id names one of those looks, the row's
+registration_sha must equal the first sixteen hex characters of the sha256 of
+the tracked file for that batch.
+
+T-R5 is sealed with registration_v2.json. The v1 seal and the controls halt it
+produced are tracked beside it as the record of a null family that could not
+vote, and they are required to parse, but no ledger row was ever written
+against v1: no look was spent on it.
 
 The mutation this battery is built to catch is a tracked copy that drifts from
 the sealed bytes the ledger row was written against -- a flipped byte, a
@@ -30,6 +36,7 @@ BATCH_TO_REGISTRATION = {
     "T-R3": Path("registrations/r3/registration_v4.json"),
     "T-R3b": Path("registrations/r3b/registration_v5.json"),
     "T-R4": Path("registrations/r4/registration_v1.json"),
+    "T-R5": Path("registrations/r5/registration_v2.json"),
 }
 
 # Every file that must be tracked and must parse as JSON.
@@ -39,7 +46,14 @@ TRACKED_REGISTRATIONS = [
     Path("registrations/r4/registration_v1.json"),
     Path("registrations/r4/controls_pass.json"),
     Path("registrations/r4/t_r4_halfA_report.json"),
+    Path("registrations/r5/registration_v1.json"),
+    Path("registrations/r5/controls_halt_v1.json"),
+    Path("registrations/r5/registration_v2.json"),
 ]
+
+# A seal that governed no ledger row: v1 halted at its controls, before any
+# observed figure was formed.
+SEALED_BUT_NEVER_READ = [Path("registrations/r5/registration_v1.json")]
 
 
 def sha256_hex(path: Path) -> str:
@@ -79,6 +93,16 @@ def test_ledger_registration_sha_matches_the_tracked_copy():
         )
         checked += 1
     assert checked == len(BATCH_TO_REGISTRATION)
+
+
+def test_a_halted_seal_governs_no_ledger_row():
+    """v1 halted at step 3; nothing may ever have been banked against it."""
+    for rel in SEALED_BUT_NEVER_READ:
+        sha16 = sha256_hex(REPO / rel)[:16]
+        for row in ledger_rows():
+            assert row["registration_sha"] != sha16, (
+                f"{rel} halted at its controls but ledger row "
+                f"{row['batch_id']} was written against it")
 
 
 def test_a_byte_flip_breaks_the_binding(tmp_path):
