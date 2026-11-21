@@ -222,6 +222,29 @@ def _per_name_table_rows(md: str) -> list[str]:
     return bad
 
 
+def _string_values(obj):
+    """Every string value anywhere in a parsed JSON tree."""
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _string_values(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _string_values(v)
+
+
+def test_the_string_value_check_bites_on_a_table_hidden_in_json_prose():
+    """Positive control: a per-name table smuggled into a JSON string value."""
+    blob = {"text": "intro\n| permaticker | closeunadj |\n|---|---|\n| 635685 | 41.4 |\n"}
+    rows = [r for v in _string_values(blob) for r in _per_name_table_rows(v)]
+    assert rows, "a per-name table in a string value must be caught"
+    ok = {"text": "the scramble is keyed on the sorted permaticker list;\n"
+                  "returns come from closeadj.\n| series | mean |\n|---|---|\n"
+                  "| gross | +1.0 |\n"}
+    assert [r for v in _string_values(ok) for r in _per_name_table_rows(v)] == []
+
+
 def test_the_vendor_value_check_rejects_a_constructed_artifact():
     """Positive control: the helpers must bite on a planted per-name price row."""
     planted = {"rows": [{"permaticker": 635685, "closeunadj": 41.37}]}
@@ -251,10 +274,18 @@ def test_tracked_canon_artifacts_carry_no_vendor_value():
     for f in files:
         text = f.read_text()
         if f.suffix == ".json":
-            bad = _vendor_keys(json.loads(text))
+            blob = json.loads(text)
+            bad = _vendor_keys(blob)
             assert not bad, "%s uses vendor columns as keys: %s" % (f.name, sorted(bad))
-            assert IDENTITY_TOKEN not in text.lower(), \
-                "%s carries a per-name identifier" % f.name
+            # A JSON artifact may carry PROSE in a string value — the sealed
+            # registration embeds its own markdown text byte for byte, and that
+            # text has to be able to say the scramble is keyed on the sorted
+            # permaticker list. What prose may not do is tabulate per-name data,
+            # so every string value is checked by the markdown rule.
+            for v in _string_values(blob):
+                rows = _per_name_table_rows(v)
+                assert not rows, "%s tabulates per-name data in a string value: %s" \
+                    % (f.name, rows[:2])
         else:
             rows = _per_name_table_rows(text)
             assert not rows, "%s tabulates per-name data: %s" % (f.name, rows[:2])
@@ -288,37 +319,77 @@ def test_the_tracked_pool_reports_only_whitelisted_statistics():
         assert "wall_seconds" not in json.dumps(w)
 
 
-def test_at_most_one_file_is_named_sealed_and_it_is_the_registration():
-    """
-    2.5: holds before AND after the seal. At most one file may carry "sealed" in
-    its name, it must be registrations/canon_r3/registration_sealed.md, and a
-    receipt, when present, must name that file's sha256.
-    """
-    hits = sorted(p for p in REPO.rglob("*")
+SEAL_JSON = "registration_sealed.json"
+SEAL_MD = "registration_sealed.md"
+
+
+def _sealed_named_files(root):
+    return sorted(p for p in root.rglob("*")
                   if "sealed" in p.name.lower()
                   and ".git" not in p.parts and "venv" not in p.parts
                   and "__pycache__" not in p.parts)
-    assert len(hits) <= 1, [str(h.relative_to(REPO)) for h in hits]
-    want = REPO / "registrations" / "canon_r3" / "registration_sealed.md"
-    if hits:
-        assert hits[0] == want, str(hits[0].relative_to(REPO))
-
-    receipt = REPO / "registrations" / "canon_r3" / "controls_receipt.json"
-    if receipt.exists():
-        assert want.exists(), "a receipt exists but the seal it names does not"
-        rec = json.loads(receipt.read_text())
-        got = rec.get("registration_sha")
-        live = hashlib.sha256(want.read_bytes()).hexdigest()
-        assert got == live, ("the receipt names %s but the seal hashes to %s"
-                             % (got, live))
 
 
-def test_the_sealed_name_rule_rejects_a_constructed_second_file(tmp_path):
-    """Positive control for the rule above, on a constructed tree."""
-    (tmp_path / "a_sealed_thing.md").write_text("x")
-    (tmp_path / "another_sealed.md").write_text("y")
-    hits = [p for p in tmp_path.rglob("*") if "sealed" in p.name.lower()]
-    assert len(hits) == 2            # the rule's predicate would fail on this
+def test_the_only_files_named_sealed_are_the_seal_and_the_halted_seal():
+    """
+    2.4. Two files may carry "sealed" in their names and no others:
+    registration_sealed.json, the seal the read is taken against, and
+    registration_sealed.md, the halted seal, which must have halt_1.json beside
+    it. The JSON's text field must hash to the markdown's sha256, and the
+    receipt must name the JSON seal.
+    """
+    canon = REPO / "registrations" / "canon_r3"
+    hits = _sealed_named_files(REPO)
+    names = [h.name for h in hits]
+    assert set(names) <= {SEAL_JSON, SEAL_MD}, names
+    for h in hits:
+        assert h.parent == canon, str(h.relative_to(REPO))
+
+    md = canon / SEAL_MD
+    js = canon / SEAL_JSON
+    if md.exists():
+        assert (canon / "halt_1.json").exists(), \
+            "the markdown seal is halted and must have halt_1.json beside it"
+    if js.exists():
+        blob = json.loads(js.read_text())
+        assert md.exists(), "the JSON seal names a text file that must be tracked"
+        assert blob["text"] == md.read_text(), \
+            "the JSON seal's text is not the markdown seal byte for byte"
+        live_md = hashlib.sha256(md.read_bytes()).hexdigest()
+        assert blob["text_sha256"] == live_md, \
+            "text_sha256 %s is not the markdown seal's sha256 %s" % (
+                blob["text_sha256"], live_md)
+        receipt = canon / "controls_receipt.json"
+        if receipt.exists():
+            rec = json.loads(receipt.read_text())
+            live_js = hashlib.sha256(js.read_bytes()).hexdigest()
+            assert rec.get("registration_sha") == live_js, \
+                "the receipt names %s but the JSON seal hashes to %s" % (
+                    rec.get("registration_sha"), live_js)
+
+
+def test_the_sealed_name_rule_rejects_a_constructed_third_file(tmp_path):
+    """Positive control: a third "sealed"-named file must break the predicate."""
+    (tmp_path / "registration_sealed.json").write_text("{}")
+    (tmp_path / "registration_sealed.md").write_text("x")
+    (tmp_path / "registration_sealed_v2.json").write_text("{}")
+    names = {p.name for p in _sealed_named_files(tmp_path)}
+    assert not names <= {SEAL_JSON, SEAL_MD}, names
+    assert "registration_sealed_v2.json" in names
+
+
+def test_the_text_equality_check_bites_on_a_constructed_divergence(tmp_path):
+    """Positive control for the byte-for-byte text rule."""
+    md = tmp_path / "registration_sealed.md"
+    md.write_text("the sealed text\n")
+    good = {"text": md.read_text(),
+            "text_sha256": hashlib.sha256(md.read_bytes()).hexdigest()}
+    assert good["text"] == md.read_text()
+    assert good["text_sha256"] == hashlib.sha256(md.read_bytes()).hexdigest()
+    bad = {"text": "the sealed text with a word added\n",
+           "text_sha256": good["text_sha256"]}
+    assert bad["text"] != md.read_text()
+    assert hashlib.sha256(bad["text"].encode()).hexdigest() != bad["text_sha256"]
 
 
 def test_the_spent_marker_is_not_pinned_and_the_pool_is(tmp_path):

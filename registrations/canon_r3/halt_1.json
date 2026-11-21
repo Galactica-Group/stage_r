@@ -1,0 +1,38 @@
+{
+  "look": "CANON-R3",
+  "read": "3 of 3",
+  "record": "halted seal",
+  "what_was_sealed": {
+    "file": "registrations/canon_r3/registration_sealed.md",
+    "sha256": "5fee9f7133e64fb13f43d771f8281207bfb0ca5dbe335ac00ec3a4bb8477ccda",
+    "commit": "716e2bd",
+    "bytes": 15262,
+    "receipt": {
+      "file": "registrations/canon_r3/controls_receipt.json",
+      "sha256_at_the_halt": "c1771d9b5a7d4f4da0ad260aab4be413ccf0da052122b44ee43abc3fd56279a2",
+      "commit": "b2578ab"
+    }
+  },
+  "why_no_read_could_be_taken": "The gate reads a registration as JSON: canon_r3_gate.load_registration calls json.loads on the file (line 105) and verify_data_pins reads a data_pins dict out of it (line 114), refusing a seal that pins no data. The STOCK-2 brief named a markdown file. A markdown file can be neither parsed as JSON nor carry a data_pins dict, so the observed stage raised json.decoder.JSONDecodeError at load_registration and could not reach the pins, the receipt, the lock, the spent marker or world 0. Every other Stage R seal (r3, r3b, r4, r5, r6) is a .json whose pins are data; the markdown form was the brief's error, not the gate's.",
+  "state_at_the_halt": {
+    "spent_marker": "registrations/canon_r3/read3_spent.json did not exist",
+    "world_0_number": "none: no world-0 figure exists in any file or log",
+    "result_and_report": "reports/canon_r3/ did not exist",
+    "single_run_lock": "not taken",
+    "ledger": {
+      "rows": 15,
+      "chain": "OK",
+      "head": "db4b9c1728c595763562c10f57a66820f514e1c868bceaaf5beed0b111e5f863"
+    },
+    "working_tree": "clean; HEAD == origin/main at b2578ab"
+  },
+  "ruling": {
+    "date": "2026-11-21",
+    "sprint": "STOCK-3",
+    "text": "The halt was the brief's error. The registration is sealed as JSON, the form the gate reads and every Stage R seal has. The JSON seal carries the markdown seal's text byte for byte and the pins as data. No design clause, ruling, number, bar or pin changes. The markdown seal stays tracked as a halted seal against which no read was or can be taken. Also ratified: the pool's statistics reproducing exactly is what G3 meant, the scratch manifest is evidence only and pool_v1.json is the pin; the ledger row's harness sha is that of tools/canon_r3_machine.py.",
+    "successor": "registrations/canon_r3/registration_sealed.json"
+  },
+  "governs_no_ledger_row": true,
+  "utc": "2026-11-21T22:46:26Z",
+  "note": "Statistics only. This record carries no figure from any read."
+}
