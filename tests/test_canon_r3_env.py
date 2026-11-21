@@ -203,12 +203,41 @@ def _vendor_keys(obj, found=None):
     return found
 
 
+def _per_name_table_rows(md: str) -> list[str]:
+    """
+    Markdown rows that would carry a per-security value: a table row naming the
+    identity column or a vendor price column. A registration has to be able to
+    SAY in prose which column returns come from and what the scramble is keyed
+    on; what it may not do is tabulate per-name data.
+    """
+    bad = []
+    for line in md.splitlines():
+        t = line.strip().lower()
+        if not t.startswith("|"):
+            continue
+        cells = [c.strip() for c in t.strip("|").split("|")]
+        if any(c in VENDOR_VALUE_KEYS or c.strip("`") in VENDOR_VALUE_KEYS
+               for c in cells):
+            bad.append(line.strip())
+    return bad
+
+
 def test_the_vendor_value_check_rejects_a_constructed_artifact():
     """Positive control: the helpers must bite on a planted per-name price row."""
     planted = {"rows": [{"permaticker": 635685, "closeunadj": 41.37}]}
     assert _vendor_keys(planted) == {"permaticker", "closeunadj"}
     assert _vendor_keys({"pool": {"worlds": [{"gross_sharpe": 0.07}]}}) == set()
     assert IDENTITY_TOKEN in json.dumps(planted)
+
+
+def test_the_per_name_table_check_bites_on_a_table_and_not_on_prose():
+    """Positive control for the markdown rule."""
+    table = ("| permaticker | closeunadj |\n|---|---|\n| 635685 | 41.37 |\n")
+    assert _per_name_table_rows(table)
+    prose = ("World k shifts each month's targets along the sorted permaticker\n"
+             "list; returns come from closeadj and the filter from closeunadj.\n"
+             "| series | mean |\n|---|---|\n| gross | +1.0 |\n")
+    assert _per_name_table_rows(prose) == []
 
 
 def test_tracked_canon_artifacts_carry_no_vendor_value():
@@ -220,11 +249,15 @@ def test_tracked_canon_artifacts_carry_no_vendor_value():
                    for f in list(d.glob("*.json")) + list(d.glob("*.md")))
     assert files, "the guard would be vacuous"
     for f in files:
-        assert IDENTITY_TOKEN not in f.read_text().lower(), \
-            "%s carries a per-name identifier" % f.name
+        text = f.read_text()
         if f.suffix == ".json":
-            bad = _vendor_keys(json.loads(f.read_text()))
+            bad = _vendor_keys(json.loads(text))
             assert not bad, "%s uses vendor columns as keys: %s" % (f.name, sorted(bad))
+            assert IDENTITY_TOKEN not in text.lower(), \
+                "%s carries a per-name identifier" % f.name
+        else:
+            rows = _per_name_table_rows(text)
+            assert not rows, "%s tabulates per-name data: %s" % (f.name, rows[:2])
 
 
 def test_the_controls_artifacts_report_only_whitelisted_world_statistics():
