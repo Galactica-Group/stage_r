@@ -21,6 +21,7 @@ property it names, and each is shown to fail against a mutant of its guard.
 from __future__ import annotations
 
 import ast
+import json
 import pathlib
 import subprocess
 import sys
@@ -165,3 +166,78 @@ def test_canon_tools_record_the_environment_versions():
     env = mod.env_versions()
     assert set(env) == {"python", "numpy", "pandas", "pyarrow", "scikit-learn"}
     assert all(env[k] for k in env), env
+
+
+# --------------------------------------------------- R5: statistics only
+# The repo's own test_tracked_reports_carry_no_vendor_value is scoped to the
+# snapshot-diff report pair, so the canon_r3 artifacts get their own guard.
+#
+# The rule forbids a vendor VALUE, not the NAME of a vendor column: the draft
+# registration has to be able to say in prose which column the returns come
+# from. So the JSON artifacts are scanned for a vendor column used AS A KEY
+# (which is how a value would arrive), and every artifact is scanned for the
+# per-name identifier, which is how a per-security row would arrive.
+VENDOR_VALUE_KEYS = {"open", "high", "low", "close", "closeadj", "closeunadj",
+                     "volume", "price", "prices", "dividend", "permaticker"}
+IDENTITY_TOKEN = "permaticker"
+
+WORLD_STAT_KEYS = {
+    "k", "gross_t", "gross_mean", "gross_sharpe", "net_base_t", "net_base_mean",
+    "net_base_sharpe", "net_stress_sharpe", "turnover_mean", "months",
+    "label_rows", "wall_seconds",
+}
+
+
+def _vendor_keys(obj, found=None):
+    """Every vendor column name used as a key anywhere in a parsed JSON tree."""
+    found = set() if found is None else found
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if str(k).lower() in VENDOR_VALUE_KEYS:
+                found.add(str(k).lower())
+            _vendor_keys(v, found)
+    elif isinstance(obj, list):
+        for v in obj:
+            _vendor_keys(v, found)
+    return found
+
+
+def test_the_vendor_value_check_rejects_a_constructed_artifact():
+    """Positive control: the helpers must bite on a planted per-name price row."""
+    planted = {"rows": [{"permaticker": 635685, "closeunadj": 41.37}]}
+    assert _vendor_keys(planted) == {"permaticker", "closeunadj"}
+    assert _vendor_keys({"pool": {"worlds": [{"gross_sharpe": 0.07}]}}) == set()
+    assert IDENTITY_TOKEN in json.dumps(planted)
+
+
+def test_tracked_canon_artifacts_carry_no_vendor_value():
+    d = REPO / "registrations" / "canon_r3"
+    if not d.exists():
+        pytest.skip("no canon_r3 artifacts yet")
+    files = sorted(list(d.glob("*.json")) + list(d.glob("*.md")))
+    assert files, "the guard would be vacuous"
+    for f in files:
+        assert IDENTITY_TOKEN not in f.read_text().lower(), \
+            "%s carries a per-name identifier" % f.name
+        if f.suffix == ".json":
+            bad = _vendor_keys(json.loads(f.read_text()))
+            assert not bad, "%s uses vendor columns as keys: %s" % (f.name, sorted(bad))
+
+
+def test_the_controls_artifact_reports_only_whitelisted_world_statistics():
+    c = REPO / "registrations" / "canon_r3" / "controls_v1.json"
+    if not c.exists():
+        pytest.skip("no controls artifact yet")
+    blob = json.loads(c.read_text())
+    worlds = blob["pool"]["worlds"]
+    assert len(worlds) == 60
+    for w in worlds:
+        assert set(w) <= WORLD_STAT_KEYS, set(w) - WORLD_STAT_KEYS
+
+
+def test_no_tracked_file_name_contains_sealed():
+    """R4: nothing in this sprint is a seal."""
+    hits = [p for p in REPO.rglob("*")
+            if "sealed" in p.name.lower()
+            and ".git" not in p.parts and "venv" not in p.parts]
+    assert not hits, hits
