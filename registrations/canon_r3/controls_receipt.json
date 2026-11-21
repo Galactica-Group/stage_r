@@ -1,0 +1,68 @@
+{
+  "look": "CANON-R3",
+  "stage": "controls",
+  "registration": "registration_sealed.md",
+  "registration_sha": "5fee9f7133e64fb13f43d771f8281207bfb0ca5dbe335ac00ec3a4bb8477ccda",
+  "controls_v2_sha256": "57eff555b496cd5a487ee8de19e18a8f7b9ec04f0de8c9e88bfde8d3c32b2f6f",
+  "pool_v1_sha256": "ab503bfb6a723d7508b3538297831717fff859331a72c6941368111a18859b4d",
+  "utc": "2026-11-21T16:06:09Z",
+  "controls_utc": "2026-11-21T16:01:16Z",
+  "env": {
+    "python": "3.13.3",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "pyarrow": "25.0.1",
+    "scikit-learn": "1.9.1"
+  },
+  "known_null": {
+    "share_significant": 0.05,
+    "accept_band": [
+      0.01,
+      0.1
+    ],
+    "pass": true,
+    "worlds_called_survivor": 0
+  },
+  "floors": {
+    "key1_floor": {
+      "label": "key 1 floor",
+      "rule": "smallest rho with key 1 passing in >= 10 of 12",
+      "detected": true,
+      "rho": 0.025,
+      "n_pass_key1": 11,
+      "n_survivor": 4,
+      "median_gross_sharpe": 1.071179831118371,
+      "median_net_base_sharpe": 0.30384074099676056
+    },
+    "whole_verdict_floor": {
+      "label": "whole-verdict floor",
+      "rule": "smallest rho with SURVIVOR in >= 10 of 12",
+      "detected": true,
+      "rho": 0.03,
+      "n_pass_key1": 12,
+      "n_survivor": 11,
+      "median_gross_sharpe": 1.5809129818577548,
+      "median_net_base_sharpe": 0.755553759443156
+    }
+  },
+  "bars": {
+    "key1a_centre_pool_median_gross_mean": 0.0001692370319200608,
+    "key1a_centre_bps": 1.692370319200608,
+    "key1b_third_largest_pool_gross_t": 1.770609591052865,
+    "key1b_rule": "the read's gross t must exceed the third-largest pool gross t, so at most 2 of 60 equal or exceed it",
+    "n_worlds": 60
+  },
+  "plants_key1_pass_counts": {
+    "0.005": 0,
+    "0.010": 0,
+    "0.020": 7,
+    "0.025": 11,
+    "0.030": 12,
+    "0.035": 12,
+    "0.040": 12,
+    "0.080": 12
+  },
+  "determinism_bit_identical": true,
+  "both_controls_pass": true,
+  "note": "Statistics only. Written against the seal above; the observed stage refuses unless registration_sha equals the live seal's sha256."
+}
