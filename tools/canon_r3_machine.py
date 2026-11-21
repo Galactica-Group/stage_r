@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       canon_r3_machine.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Canon Read 3
 Purpose:      The machine of Canon read 3: the within-month neutralised label,
               the eleven-fit purged walk, the harness-v2 slope book, the three
               monthly series and the two keys of the verdict.
 Entry Point:  No
 Dependencies: numpy, pandas, sklearn; tools/xs_triage.py, tools/canon_r3_*.py
-Last Sprint:  Sprint STOCK-1 — Canon read 3 built and controlled (2026-11-21)
+Last Sprint:  Sprint STOCK-2 — Canon read 3: seal and read (2026-11-21)
 ================================================================================
 
 The label is a training target only. It never enters the feature matrix: the
@@ -39,7 +39,7 @@ import xs_triage as xt  # noqa: E402
 
 from sklearn.ensemble import HistGradientBoostingRegressor  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 MODEL_KW = dict(
     loss="squared_error", max_iter=300, learning_rate=0.05, max_leaf_nodes=15,
@@ -224,6 +224,58 @@ def verdict(k1a: dict, k1b: dict, k2: dict) -> str:
     if not k1:
         return "NOTHING"
     return "SURVIVOR" if k2["pass"] else "SIGNIFICANT_IMMATERIAL"
+
+
+def break_even_bps_per_side(gross_mean: float, mean_turnover: float) -> float:
+    """
+    The per-side cost in bps at which this book's gross mean is exactly eaten.
+    cost = (bps/1e4) * turnover, so bps = gross_mean * 1e4 / turnover.
+    Borrow is ignored, as registered.
+    """
+    if not np.isfinite(gross_mean) or not np.isfinite(mean_turnover) \
+            or mean_turnover <= 0:
+        return float("nan")
+    return float(gross_mean * 1e4 / mean_turnover)
+
+
+def net_vs_zero_p(net: np.ndarray, R: int = R_VOTING, seed: int = SEED_VOTING,
+                  mean_block: float = MEAN_BLOCK) -> dict:
+    """Reported, never voted: the same bootstrap on the net series against zero."""
+    res = xt.block_bootstrap_p(np.asarray(net, dtype=np.float64),
+                               mean_block=mean_block, R=R, seed=seed)
+    res.pop("boots", None)
+    return res
+
+
+def yearly_means(months: np.ndarray, gross: np.ndarray,
+                 net_base: np.ndarray) -> list[dict]:
+    """Reported, never voted: the mean gross and net BASE of each scored year."""
+    yr = np.array([pd.Period(ordinal=int(m), freq="M").year for m in months])
+    out = []
+    for y in sorted(set(int(x) for x in yr)):
+        k = yr == y
+        out.append({"year": int(y), "months": int(k.sum()),
+                    "gross_mean_bps": float(np.mean(gross[k])) * 1e4,
+                    "net_base_mean_bps": float(np.mean(net_base[k])) * 1e4})
+    return out
+
+
+def full_report(series: dict, st: dict, book_diag: dict) -> dict:
+    """Everything clause 2.4 reports beside the verdict. None of it votes."""
+    return {
+        "series_statistics": {k: st[k] for k in ("gross", "net_base", "net_stress")},
+        "turnover_mean": st["turnover_mean"],
+        "break_even_bps_per_side": break_even_bps_per_side(
+            st["gross"]["mean"], st["turnover_mean"]),
+        "net_base_vs_zero": net_vs_zero_p(series["net_base"]),
+        "by_year": yearly_means(series["months"], series["gross"],
+                                series["net_base"]),
+        "months_scored": int(series["months"].size),
+        "months_skipped_rank_deficient": book_diag["months_skipped_rank_deficient"],
+        "months_skipped_too_small": book_diag["months_skipped_too_small"],
+        "cross_section_mean": book_diag["cross_section_mean"],
+        "cross_section_min": book_diag["cross_section_min"],
+    }
 
 
 def analytic_sharpe_for_power(n_months: int = N_SCORED_MONTHS) -> float:

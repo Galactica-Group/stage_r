@@ -1,13 +1,13 @@
 """
 ================================================================================
 Script:       canon_r3_mutants.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Canon Read 3
 Purpose:      The mutant harness: for each guard, break it in a throwaway copy
               of the repo and show the test that names it goes red.
 Entry Point:  Yes — python tools/canon_r3_mutants.py [scratch_root]
 Dependencies: stdlib only
-Last Sprint:  Sprint STOCK-1 — Canon read 3 built and controlled (2026-11-21)
+Last Sprint:  Sprint STOCK-2 — Canon read 3: seal and read (2026-11-21)
 ================================================================================
 
 Mutants never run in the working tree. The harness builds a template copy under
@@ -26,19 +26,21 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 REPO = Path(__file__).resolve().parent.parent
 DEFAULT_ROOT = Path("/tmp/stock1_mut")
 PY = REPO / "venv" / "bin" / "python"
 
 CANON_TESTS = ["tests/test_canon_r3_features.py", "tests/test_canon_r3_world.py",
-               "tests/test_canon_r3_machine.py", "tests/test_canon_r3_gate.py"]
+               "tests/test_canon_r3_machine.py", "tests/test_canon_r3_gate.py",
+               "tests/test_canon_r3_read.py"]
 
 T_FEAT = "tests/test_canon_r3_features.py"
 T_WORLD = "tests/test_canon_r3_world.py"
 T_MACH = "tests/test_canon_r3_machine.py"
 T_GATE = "tests/test_canon_r3_gate.py"
+T_READ = "tests/test_canon_r3_read.py"
 
 # name -> (file, [(old, new), ...], [node ids that must now FAIL])
 MUTANTS: dict[str, tuple[str, list[tuple[str, str]], list[str]]] = {
@@ -132,6 +134,49 @@ MUTANTS: dict[str, tuple[str, list[tuple[str, str]], list[str]]] = {
         [("    if got != reg.sha256:", "    if False:")],
         [T_GATE + "::test_the_observed_stage_refuses_a_receipt_for_another_seal"],
     ),
+    # --- STOCK-2 additions ---
+    "spent_check_removed": (
+        "tools/canon_r3_gate.py",
+        [("    if p.exists():\n        raise AlreadySpent(",
+          "    if False:\n        raise AlreadySpent(")],
+        [T_GATE + "::test_the_spent_marker_refuses_a_second_read"],
+    ),
+    "read_takes_the_pool_from_scratch": (
+        "tools/run_canon_r3.py",
+        [("        pool = json.loads(P.pool_v1().read_text())",
+          "        pool = json.loads(P.pool_manifest().read_text())")],
+        [T_READ + "::test_the_read_takes_the_pool_from_the_tracked_file_and_nowhere_else"],
+    ),
+    "tracked_pool_carries_timing": (
+        "tools/run_canon_r3.py",
+        [('            "label_rows": int(r["label_rows"]),',
+          '            "label_rows": int(r["label_rows"]),\n'
+          '            "wall_seconds": r["wall_seconds"],')],
+        [T_READ + "::test_the_tracked_pool_writer_records_every_registered_statistic"],
+    ),
+    "spent_marker_written_before_the_gate": (
+        "tools/run_canon_r3.py",
+        [("""    G.refuse_if_spent()
+    opened = G.open_the_gate(registration, sha)""",
+          """    G.refuse_if_spent()
+    G.write_spent_marker("x" * 64, "x")
+    opened = G.open_the_gate(registration, sha)""")],
+        [T_GATE + "::test_the_runner_writes_the_spent_marker_after_the_gate_and_before_world_zero"],
+    ),
+    "key1b_bar_is_not_the_third_largest": (
+        "tools/run_canon_r3.py",
+        [("        \"key1b_third_largest_pool_gross_t\": float(gt[2]),",
+          "        \"key1b_third_largest_pool_gross_t\": float(gt[1]),")],
+        [T_READ + "::test_the_bars_are_the_pool_median_and_the_third_largest_t",
+         T_READ + "::test_the_third_largest_t_is_exactly_the_key1b_boundary"],
+    ),
+    "a_banked_rho_loses_its_seed_index": (
+        "tools/run_canon_r3.py",
+        [("PLANT_GRID = ((0.005, 0), (0.010, 1), (0.020, 2), (0.040, 3), (0.080, 4),",
+          "PLANT_GRID = ((0.005, 0), (0.010, 1), (0.020, 2), (0.040, 7), (0.080, 4),")],
+        [T_READ + "::test_the_five_banked_rhos_keep_their_seed_indices",
+         T_READ + "::test_every_seed_index_is_used_once"],
+    ),
     "single_run_lock_not_exclusive": (
         "tools/canon_r3_gate.py",
         [("os.O_CREAT | os.O_EXCL | os.O_WRONLY", "os.O_CREAT | os.O_WRONLY")],
@@ -150,6 +195,10 @@ def build_template(root: Path) -> Path:
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     for f in ("requirements.lock", "README.md"):
         shutil.copy2(REPO / f, tpl / f)
+    # the ledger is a tracked, statistics-only artifact the read tests parse
+    (tpl / "reports").mkdir(exist_ok=True)
+    shutil.copy2(REPO / "reports" / "triage_ledger.csv",
+                 tpl / "reports" / "triage_ledger.csv")
     assert not (tpl / "data").exists(), "the template must carry no data"
     return tpl
 

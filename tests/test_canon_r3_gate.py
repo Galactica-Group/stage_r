@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       test_canon_r3_gate.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Canon Read 3
 Purpose:      The gate's guards: the seal sha check, the data pins, the controls
               receipt, the single-run lock, and that world 0 is reachable only
               through the whole chain.
 Entry Point:  No — pytest
 Dependencies: stdlib, numpy, pandas; tools/canon_r3_gate.py
-Last Sprint:  Sprint STOCK-1 — Canon read 3 built and controlled (2026-11-21)
+Last Sprint:  Sprint STOCK-2 — Canon read 3: seal and read (2026-11-21)
 ================================================================================
 """
 
@@ -46,6 +46,10 @@ def synthetic(tmp_path):
     (tmp_path / "derived" / "features_20261004p_halfA_v2.parquet").write_text("feat")
     (tmp_path / "scratch" / "pool").mkdir()
     (tmp_path / "scratch" / "pool" / "pool_manifest.json").write_text("{}")
+    (fake_repo / "requirements.lock").write_text("numpy==2.5.3\n")
+    (fake_repo / "registrations" / "canon_r3").mkdir(parents=True)
+    (fake_repo / "registrations" / "canon_r3" / "pool_v1.json").write_text('{"n": 60}')
+    (fake_repo / "registrations" / "canon_r3" / "controls_v2.json").write_text("{}")
     P.set_roots(repo=fake_repo, snapshot=tmp_path,
                 banked_panel=tmp_path / "panel.parquet",
                 derived=tmp_path / "derived", scratch=tmp_path / "scratch",
@@ -94,9 +98,13 @@ def test_a_byte_flip_in_the_seal_breaks_the_binding(synthetic):
 def test_the_pinned_set_covers_every_canon_tool_and_the_harness(synthetic):
     names = set(G.pinned_paths())
     assert "xs_triage.py" in names
-    assert {"banked_panel", "feature_file", "pool_manifest"} <= names
+    assert {"banked_panel", "feature_file", "pool_v1", "controls_v2",
+            "requirements_lock"} <= names
+    assert "pool_manifest" not in names, \
+        "the scratch manifest must not be a pin: the scratch volume is not tracked"
     for n in ("canon_r3_features.py", "canon_r3_world.py", "canon_r3_machine.py",
               "canon_r3_gate.py", "canon_r3_paths.py", "canon_r3_tripwire.py",
+              "canon_r3_mutants.py", "canon_r3_rehearsal.py",
               "run_canon_r3.py"):
         assert n in names, n
 
@@ -234,3 +242,51 @@ def test_the_controls_stage_never_asks_for_world_zero():
                     and n.func.attr in ("run_world", "build_world"):
                 for a in n.args[1:2]:
                     assert not (isinstance(a, ast.Constant) and a.value == 0), fname
+
+
+# ----------------------------------------------------------- the spent marker
+def test_the_spent_marker_refuses_a_second_read(synthetic):
+    G.refuse_if_spent()                        # absent: no refusal
+    G.write_spent_marker("a" * 64, "deadbeef")
+    with pytest.raises(G.AlreadySpent):
+        G.refuse_if_spent()
+
+
+def test_the_spent_marker_records_the_seal_the_time_and_the_head(synthetic):
+    p = G.write_spent_marker("b" * 64, "cafebabe")
+    body = json.loads(p.read_text())
+    assert body["registration_sha256"] == "b" * 64
+    assert body["head"] == "cafebabe"
+    assert body["look"] == "CANON-R3"
+    assert body["utc"].endswith("Z") and len(body["utc"]) == 20
+
+
+def test_the_spent_marker_leaves_no_temporary_behind(synthetic):
+    p = G.write_spent_marker("c" * 64, "x")
+    assert p.exists()
+    assert not p.with_suffix(".json.tmp").exists()
+
+
+def test_the_runner_writes_the_spent_marker_after_the_gate_and_before_world_zero():
+    """Structural: order matters, so assert it in the source."""
+    src = (ROOT / "tools" / "run_canon_r3.py").read_text()
+    tree = ast.parse(src)
+    fn = next(n for n in ast.walk(tree)
+              if isinstance(n, ast.FunctionDef) and n.name == "stage_observed")
+    seq = [n.func.attr for n in ast.walk(fn)
+           if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)]
+    order = [s for s in seq if s in ("refuse_if_spent", "open_the_gate",
+                                     "single_run_lock", "write_spent_marker",
+                                     "run_world")]
+    assert order.index("open_the_gate") < order.index("write_spent_marker")
+    assert order.index("single_run_lock") < order.index("write_spent_marker")
+    assert order.index("write_spent_marker") < order.index("run_world")
+    assert order[0] == "refuse_if_spent"
+
+
+def test_the_runner_refuses_if_spent_before_it_opens_the_gate():
+    src = (ROOT / "tools" / "run_canon_r3.py").read_text()
+    fn = src[src.index("def stage_observed"):src.index("def append_ledger_row")]
+    assert fn.index("refuse_if_spent") < fn.index("open_the_gate")
+    assert fn.count("refuse_if_spent") == 2, \
+        "refuse_if_spent must be checked once before the lock and once inside it"

@@ -1,7 +1,7 @@
 """
 ================================================================================
 Script:       test_canon_r3_env.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Canon Read 3
 Purpose:      Environment guards for the scikit-learn install: the live venv
               equals the tracked lock; the certified harness and both panel
@@ -21,6 +21,7 @@ property it names, and each is shown to fail against a mutant of its guard.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import pathlib
 import subprocess
@@ -211,10 +212,12 @@ def test_the_vendor_value_check_rejects_a_constructed_artifact():
 
 
 def test_tracked_canon_artifacts_carry_no_vendor_value():
-    d = REPO / "registrations" / "canon_r3"
-    if not d.exists():
+    dirs = [REPO / "registrations" / "canon_r3", REPO / "reports" / "canon_r3"]
+    dirs = [d for d in dirs if d.exists()]
+    if not dirs:
         pytest.skip("no canon_r3 artifacts yet")
-    files = sorted(list(d.glob("*.json")) + list(d.glob("*.md")))
+    files = sorted(f for d in dirs
+                   for f in list(d.glob("*.json")) + list(d.glob("*.md")))
     assert files, "the guard would be vacuous"
     for f in files:
         assert IDENTITY_TOKEN not in f.read_text().lower(), \
@@ -224,20 +227,75 @@ def test_tracked_canon_artifacts_carry_no_vendor_value():
             assert not bad, "%s uses vendor columns as keys: %s" % (f.name, sorted(bad))
 
 
-def test_the_controls_artifact_reports_only_whitelisted_world_statistics():
-    c = REPO / "registrations" / "canon_r3" / "controls_v1.json"
-    if not c.exists():
+def test_the_controls_artifacts_report_only_whitelisted_world_statistics():
+    cs = sorted((REPO / "registrations" / "canon_r3").glob("controls_v*.json")) \
+        if (REPO / "registrations" / "canon_r3").exists() else []
+    if not cs:
         pytest.skip("no controls artifact yet")
-    blob = json.loads(c.read_text())
-    worlds = blob["pool"]["worlds"]
-    assert len(worlds) == 60
-    for w in worlds:
-        assert set(w) <= WORLD_STAT_KEYS, set(w) - WORLD_STAT_KEYS
+    for c in cs:
+        blob = json.loads(c.read_text())
+        worlds = blob["pool"]["worlds"]
+        assert len(worlds) == 60, c.name
+        for w in worlds:
+            assert set(w) <= WORLD_STAT_KEYS, (c.name, set(w) - WORLD_STAT_KEYS)
 
 
-def test_no_tracked_file_name_contains_sealed():
-    """R4: nothing in this sprint is a seal."""
-    hits = [p for p in REPO.rglob("*")
-            if "sealed" in p.name.lower()
-            and ".git" not in p.parts and "venv" not in p.parts]
-    assert not hits, hits
+def test_the_tracked_pool_reports_only_whitelisted_statistics():
+    f = REPO / "registrations" / "canon_r3" / "pool_v1.json"
+    if not f.exists():
+        pytest.skip("no tracked pool yet")
+    blob = json.loads(f.read_text())
+    assert blob["n_worlds"] == 60
+    leg_keys = {"mean", "sd", "t", "sharpe"}
+    for w in blob["worlds"]:
+        assert set(w) == {"k", "gross", "net_base", "net_stress",
+                          "turnover_mean", "months", "label_rows"}, set(w)
+        for leg in ("gross", "net_base", "net_stress"):
+            assert set(w[leg]) == leg_keys, (leg, set(w[leg]))
+        assert "wall_seconds" not in json.dumps(w)
+
+
+def test_at_most_one_file_is_named_sealed_and_it_is_the_registration():
+    """
+    2.5: holds before AND after the seal. At most one file may carry "sealed" in
+    its name, it must be registrations/canon_r3/registration_sealed.md, and a
+    receipt, when present, must name that file's sha256.
+    """
+    hits = sorted(p for p in REPO.rglob("*")
+                  if "sealed" in p.name.lower()
+                  and ".git" not in p.parts and "venv" not in p.parts
+                  and "__pycache__" not in p.parts)
+    assert len(hits) <= 1, [str(h.relative_to(REPO)) for h in hits]
+    want = REPO / "registrations" / "canon_r3" / "registration_sealed.md"
+    if hits:
+        assert hits[0] == want, str(hits[0].relative_to(REPO))
+
+    receipt = REPO / "registrations" / "canon_r3" / "controls_receipt.json"
+    if receipt.exists():
+        assert want.exists(), "a receipt exists but the seal it names does not"
+        rec = json.loads(receipt.read_text())
+        got = rec.get("registration_sha")
+        live = hashlib.sha256(want.read_bytes()).hexdigest()
+        assert got == live, ("the receipt names %s but the seal hashes to %s"
+                             % (got, live))
+
+
+def test_the_sealed_name_rule_rejects_a_constructed_second_file(tmp_path):
+    """Positive control for the rule above, on a constructed tree."""
+    (tmp_path / "a_sealed_thing.md").write_text("x")
+    (tmp_path / "another_sealed.md").write_text("y")
+    hits = [p for p in tmp_path.rglob("*") if "sealed" in p.name.lower()]
+    assert len(hits) == 2            # the rule's predicate would fail on this
+
+
+def test_the_spent_marker_is_not_pinned_and_the_pool_is(tmp_path):
+    """The read writes the spent marker, so it cannot be a pinned artifact."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "canon_r3_gate_probe", REPO / "tools" / "canon_r3_gate.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    names = set(mod.pinned_paths())
+    assert "pool_v1" in names and "requirements_lock" in names
+    assert not any("spent" in n for n in names)
+    assert not any("read3" in n for n in names)

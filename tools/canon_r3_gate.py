@@ -1,14 +1,14 @@
 """
 ================================================================================
 Script:       canon_r3_gate.py
-Version:      1.0.0
+Version:      1.1.0
 Phase:        Stage R — Canon Read 3
 Purpose:      The gate: seal verification, data pins, the controls receipt and
               the single-run lock, on the R4/R5/R6 pattern. The only place a
               VerifiedRegistration is minted, and so the only route to world 0.
 Entry Point:  No — used by tools/run_canon_r3.py
 Dependencies: stdlib; tools/canon_r3_paths.py, tools/canon_r3_world.py
-Last Sprint:  Sprint STOCK-1 — Canon read 3 built and controlled (2026-11-21)
+Last Sprint:  Sprint STOCK-2 — Canon read 3: seal and read (2026-11-21)
 ================================================================================
 
 A read that can be taken without its seal is not sealed. Every refusal below is
@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import canon_r3_paths as P  # noqa: E402
 import canon_r3_world as W  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # Every canon_r3 tool, plus the certified harness, is pinned by the seal.
 PINNED_CODE_NAMES = (
@@ -40,6 +40,7 @@ PINNED_CODE_NAMES = (
     "canon_r3_machine.py",
     "canon_r3_gate.py",
     "canon_r3_mutants.py",
+    "canon_r3_rehearsal.py",
     "canon_r3_tripwire.py",
     "run_canon_r3.py",
 )
@@ -75,7 +76,11 @@ def pinned_paths() -> dict[str, Path]:
     out = {n: tools / n for n in PINNED_CODE_NAMES}
     out["banked_panel"] = P.banked_panel()
     out["feature_file"] = P.feature_file()
-    out["pool_manifest"] = P.pool_manifest()
+    # The TRACKED pool, not the scratch manifest: the scratch volume is not
+    # under version control and the read's 60 world statistics come from here.
+    out["pool_v1"] = P.pool_v1()
+    out["controls_v2"] = P.controls_v2()
+    out["requirements_lock"] = P.requirements_lock()
     return out
 
 
@@ -160,6 +165,49 @@ class single_run_lock:
         except FileNotFoundError:
             pass
         return False
+
+
+class AlreadySpent(RuntimeError):
+    """The one read has already been taken."""
+
+
+def refuse_if_spent(path=None) -> None:
+    p = Path(path or P.spent_marker())
+    if p.exists():
+        raise AlreadySpent(
+            "read 3 is already spent: %s" % p)
+
+
+def write_spent_marker(registration_sha: str, head: str, path=None) -> Path:
+    """
+    Written atomically AFTER the seal, the pins and the receipt verify and
+    BEFORE world 0 is built, so a crash between the two leaves the look spent
+    rather than repeatable.
+    """
+    import datetime
+    p = Path(path or P.spent_marker())
+    p.parent.mkdir(parents=True, exist_ok=True)
+    body = json.dumps({
+        "look": "CANON-R3",
+        "registration_sha256": registration_sha,
+        "utc": datetime.datetime.now(datetime.timezone.utc)
+                        .strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "head": head,
+    }, indent=2)
+    tmp = p.with_suffix(".json.tmp")
+    tmp.write_text(body)
+    os.replace(tmp, p)                      # atomic within the filesystem
+    return p
+
+
+def git_head(repo=None) -> str:
+    import subprocess
+    try:
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(repo or P.repo()),
+                              capture_output=True, text=True,
+                              check=True).stdout.strip()
+    except Exception:
+        return "unknown"
 
 
 def open_the_gate(registration, sha, receipt_path=None) -> dict:
