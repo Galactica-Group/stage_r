@@ -120,7 +120,8 @@ def draft_registration() -> Path:
 
 
 def sealed_registration() -> Path:
-    return canon_dir() / "registration.json"
+    """R5: the seal is registration_v1.json; no new file has "sealed" in its name."""
+    return canon_dir() / "registration_v1.json"
 
 
 def controls_receipt() -> Path:

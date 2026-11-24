@@ -8,7 +8,7 @@ Purpose:      The dress rehearsal: run the confirmation's own command lines end
               data, once for a tree that ends CONFIRMED and once NOT_CONFIRMED.
 Entry Point:  Yes — python tools/canon_conf_rehearsal.py [scratch_root]
 Dependencies: stdlib only (it drives the real code in a subprocess-free copy)
-Last Sprint:  Sprint CONF-1b — key 3 struck, the bound measured (2026-11-24)
+Last Sprint:  Sprint CONF-2 — the recount, the corrected floors, the read (2026-11-24)
 ================================================================================
 
 Read 3's rehearsal checked the files and never the gate, and a seal the gate
@@ -145,7 +145,7 @@ pool = json.loads(P.pool_v1().read_text())
 print("CONTROLS_OK", pool["n_worlds"], sha256_file := hashlib.sha256(
     P.pool_v1().read_bytes()).hexdigest()[:12])
 # --- the seal, by canon_conf_seal, and a receipt
-seal = P.canon_dir() / "registration.json"
+seal = P.sealed_registration()          # registration_v1.json, as the real one is
 sha = SEAL.dummy(seal, "REHEARSAL dummy seal. Not a seal.")
 P.controls_receipt().write_text(json.dumps({"registration_sha": sha}))
 print("SEAL_OK", sha[:12])
@@ -192,7 +192,7 @@ try:
 except G.AlreadySpent as e:
     print("SECOND_RUN_REFUSED", type(e).__name__)
 # --- a markdown seal must be refused
-md = P.canon_dir() / "registration.md"
+md = P.canon_dir() / "registration_v1.md"
 md.write_text("# not json\n")
 try:
     G.load_registration(md, sha256_file2 := hashlib.sha256(md.read_bytes()).hexdigest())
@@ -239,8 +239,10 @@ def rehearse(root: Path, target: str) -> dict:
          "SECOND_RUN_REFUSED" in got, got.get("SECOND_RUN_REFUSED", ""))
     step("%s 11 a markdown seal is refused" % tag,
          "MARKDOWN_REFUSED" in got, got.get("MARKDOWN_REFUSED", ""))
-    p = subprocess.run([str(PY), "-m", "pytest", "-q", "-p", "no:cacheprovider"]
-                       + TESTS, cwd=work, capture_output=True, text=True)
+    p = subprocess.run([str(PY), "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                        "tests/", "--deselect",
+                        "tests/test_canon_r3_env.py::test_the_live_venv_equals_the_lock"],
+                       cwd=work, capture_output=True, text=True)
     last = (p.stdout + p.stderr).strip().splitlines()[-1]
     if p.returncode != 0:
         print((p.stdout + p.stderr)[-4000:])

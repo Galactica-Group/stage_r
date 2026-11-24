@@ -288,50 +288,24 @@
         "share_pass_key2": 1.0
       }
     },
-    "stopped_bound_s3": {
-      "action_window_days_either_side": 45,
-      "ends_inside_the_holding_month": {
-        "for_cause": 3,
-        "rows": 1394,
-        "share_of_scored_rows": 0.014521,
-        "takeover": 398
-      },
-      "for_cause_types": [
-        "bankruptcyliquidation",
-        "regulatorydelisting",
-        "voluntarydelisting"
-      ],
-      "in_universe_scored_rows": 96000,
-      "scored_months": 96,
-      "stopped": {
-        "for_cause": 1,
-        "rows": 163,
-        "share_of_scored_rows": 0.001698,
-        "takeover": 161
-      },
-      "takeover_prefixes": [
-        "acquisition",
-        "merger"
-      ]
-    },
     "t3": {
       "identical": true,
       "mismatches": 0
     },
     "wall_seconds": 4914.1
   },
-  "correction_to_the_record": "The factory's decision log (D-CANON-READ3) said a stopped stock is scored at zero for its last month, flattering a book that buys what has fallen, and that the confirmation would address this in its vote. Measured before any half-B alignment, the first statement is wrong in its mechanism and the second is withdrawn. The builder calls a stock stopped precisely when it has NO observation in the next month, so there is no later trade to recover; a stock's fall to its last trade is already inside its ordinary monthly return; and a stopped row earns exactly zero under the registered scoring, so no part of a gross result can come from stopped names. 163 stopped rows fall in the 96 scored months, 0.17 per cent of 96,000, and of those 161 carry an acquisition or merger action within 45 days of the last price date while exactly 1 carries a for-cause type: the cohort is taken over, not wound up, so a flat loss would have had the wrong sign. A key that moves the vote by a few basis points on an assumed loss is not a test. The exposure is reported by S1 to S3 and never voted.",
+  "correction_to_the_record": "The factory's decision log (D-CANON-READ3) said a stopped stock is scored at zero for its last month, flattering a book that buys what has fallen, and that the confirmation would address this in its vote. The first statement is wrong in its mechanism and the second is withdrawn. The builder calls a stock stopped precisely when it has NO observation in the next month, so there is no later trade to recover; a stock's fall to its last trade is already inside its ordinary monthly return; and a stopped row earns exactly zero under the registered scoring, so no part of a gross result can come from stopped names. 163 stopped rows fall in the 96 scored months, 0.17 per cent of 96,000, and 161 of them are the target of a takeover against 1 carrying a for-cause action: the cohort is bought, not wound up, so a flat assumed loss has the wrong sign. A key that moves the vote by a few basis points on an assumed loss is not a test. The exposure is reported by S1 to S3 and never voted.",
   "data_pins": {
     "canon_conf_copies.py": "3a0bf2084dac82e9644e49c727b6cb8fbaaa64369d96f385832c005f122f8007",
     "canon_conf_features.py": "645c0660fa244da20bed2ae4d2159cff947d870442f707e497a953dbb43e44fd",
     "canon_conf_gate.py": "efdf6d27ed501336c847e76958a0ac0e6ec61384e959b4f3f269f5bff7b8cafc",
     "canon_conf_mutants.py": "400c5eb33ab77d09090785313600bf31ff8865f2cb89a77c2da252a1bb4ea760",
     "canon_conf_panel.py": "ef07bdc022f13e2ecc1a0f988eecb42a5e5690e591669fe1e0828de651f7ea35",
-    "canon_conf_paths.py": "06170d8972fd90efdffa4c49325997540d860dad38396547fcfcd71991234b4e",
+    "canon_conf_paths.py": "cf3868f9f80b3fe223618dec53619ecb5a4c993c444ff0bc26f005ea58dcc892",
     "canon_conf_pipeline.py": "be1fa95a6d76b8b02064363d9e445e5898c88059b38c0a47b6ecb3893d66a8a3",
     "canon_conf_rehearsal.py": "1628021f849e6d9e343a20127e1a1f7be7c709c58f50937fb42d98e390662299",
-    "canon_conf_seal.py": "048823c30b11d694f62fc75e1ff0beda9445b9ba8dcef9317da5958bd709e6fb",
-    "canon_conf_stopped.py": "5c92e2bed6d30fac4b6d6e571003e591de3931bb5b33a6faf7679f7acab1cf77",
+    "canon_conf_seal.py": "348fb8f2060074caf68374fb3b1d824b28085dea0fc4b0ae1202e7f7584c6cee",
+    "canon_conf_stopped.py": "013b58e2a78b8fd645cb2045912d590172ff4901635fbfea80fcdfb5a18ba565",
     "canon_conf_tripwires.py": "3a9def77af10713178404cdc9cb83af6cb2b16d31677a78275ee3b87a3ac5920",
     "canon_r3_features.py": "3329eff5e10307f96dc4ae00cf6e884ca33c8a5d31521076f09ad7d0c8b92220",
     "canon_r3_machine.py": "4d1cc4a3204db43dfe66c6866340d9f20008c57faa2926e214a9d2b38c67095d",
@@ -438,6 +412,136 @@
       "seed_base": 17000
     }
   },
+  "floors_in_units_that_carry": {
+    "key1": {
+      "analytic_gross_sharpe_80pc_power_96_months": 0.8791016175633343,
+      "median_gross_sharpe_there": 1.0893136967711978,
+      "passed_12_of_12_from_rho": 0.02
+    },
+    "planted_by_rho": [
+      {
+        "implied_monthly_volatility": 0.005581612931676054,
+        "median_gross_sharpe": 0.05947569538284685,
+        "median_net_base_sharpe": -0.7523414885296135,
+        "median_sharpe_lost_to_costs": 0.8023461119158766,
+        "median_turnover": 2.5855970358257343,
+        "n_confirmed": 0,
+        "n_pass_key1": 2,
+        "rho": 0.005
+      },
+      {
+        "implied_monthly_volatility": 0.005720103492443804,
+        "median_gross_sharpe": 0.2151447505359427,
+        "median_net_base_sharpe": -0.6353308850513364,
+        "median_sharpe_lost_to_costs": 0.7888802413292906,
+        "median_turnover": 2.6052795933170927,
+        "n_confirmed": 0,
+        "n_pass_key1": 4,
+        "rho": 0.01
+      },
+      {
+        "implied_monthly_volatility": 0.005850096268553922,
+        "median_gross_sharpe": 1.0893136967711978,
+        "median_net_base_sharpe": 0.23131548474448574,
+        "median_sharpe_lost_to_costs": 0.7968345085421397,
+        "median_turnover": 2.6913521039376307,
+        "n_confirmed": 2,
+        "n_pass_key1": 12,
+        "rho": 0.02
+      },
+      {
+        "implied_monthly_volatility": 0.005736081642062749,
+        "median_gross_sharpe": 1.4183845708179401,
+        "median_net_base_sharpe": 0.5959804338254436,
+        "median_sharpe_lost_to_costs": 0.8224041369924964,
+        "median_turnover": 2.723579038181029,
+        "n_confirmed": 9,
+        "n_pass_key1": 12,
+        "rho": 0.025
+      },
+      {
+        "implied_monthly_volatility": 0.0056135677676913825,
+        "median_gross_sharpe": 1.9572409357535563,
+        "median_net_base_sharpe": 1.1061328801960864,
+        "median_sharpe_lost_to_costs": 0.8479894610157677,
+        "median_turnover": 2.7483294860048755,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.03
+      },
+      {
+        "implied_monthly_volatility": 0.005888275234271641,
+        "median_gross_sharpe": 2.5803375917339793,
+        "median_net_base_sharpe": 1.7212756602568795,
+        "median_sharpe_lost_to_costs": 0.818573911791735,
+        "median_turnover": 2.782821653476501,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.035
+      },
+      {
+        "implied_monthly_volatility": 0.005707022336648371,
+        "median_gross_sharpe": 3.1184470955756836,
+        "median_net_base_sharpe": 2.213016014994702,
+        "median_sharpe_lost_to_costs": 0.8486666356300072,
+        "median_turnover": 2.79631487987749,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.04
+      },
+      {
+        "implied_monthly_volatility": 0.006167173149585128,
+        "median_gross_sharpe": 6.677283844505949,
+        "median_net_base_sharpe": 5.882407027443501,
+        "median_sharpe_lost_to_costs": 0.803898080797036,
+        "median_turnover": 2.862374843295319,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.08
+      }
+    ],
+    "pool_worlds": {
+      "max_monthly_volatility": 0.008076106329609312,
+      "median_monthly_volatility": 0.007099176859749933,
+      "median_sharpe_lost_to_costs": 0.8161160024669314,
+      "median_turnover": 2.5195101865251557,
+      "min_monthly_volatility": 0.0057597159233910315
+    },
+    "read_3_real_book": {
+      "gross_sharpe": 1.8304229333286266,
+      "monthly_volatility": 0.012446484499921869,
+      "net_base_sharpe": 1.408272451396245,
+      "sharpe_lost_to_costs": 0.4221504819323816,
+      "turnover": 2.1999002584021725
+    },
+    "statement": "A gross-Sharpe floor measured in the planted worlds OVERSTATES what a real book needs to clear key 2. The planted books are much less volatile than read 3's, so the same cost in basis points costs them far more Sharpe: their median monthly volatility is about 0.57 to 0.62 per cent against read 3's 1.24 per cent, and they lose a median 0.79 to 0.85 of annualised Sharpe to costs against read 3's 0.42. Key 2 is a bar on a real book's NET Sharpe, so it must be read in net units, not inferred from a gross floor.",
+    "verdict_counts_by_net_sharpe": [
+      {
+        "median_net_base_sharpe": 0.23131548474448574,
+        "n_confirmed": 2,
+        "rho": 0.02
+      },
+      {
+        "median_net_base_sharpe": 0.5959804338254436,
+        "n_confirmed": 9,
+        "rho": 0.025
+      },
+      {
+        "median_net_base_sharpe": 1.1061328801960864,
+        "n_confirmed": 12,
+        "rho": 0.03
+      }
+    ],
+    "what_a_real_book_needs": {
+      "fraction_of_read_3_that_sits_on_the_bar": 0.35504493431244094,
+      "half_clears_key2": true,
+      "half_of_read_3_net_base_sharpe": 0.7041362256981225,
+      "key2_bar_on_net_base_sharpe": 0.5,
+      "read_3_clears_key2": true,
+      "read_3_net_base_sharpe": 1.408272451396245,
+      "statement": "A book repeating read 3's half-A sizes clears both keys: its net BASE Sharpe was 1.4083 against a bar of 0.50. A book at HALF those sizes reads 0.7041 and still clears the bar \u2014 the brief's phrase 'sits on the key 2 bar' is arithmetically wrong at one half, and the bar is in fact reached at 0.355 of read 3's net Sharpe. The CONF-1b report's warning that a faithful replication would read NOT_CONFIRMED on key 2 is WITHDRAWN: it compared a gross floor from the low-volatility planted worlds with a gross number from a real book, which is not a like comparison."
+    }
+  },
   "known_before_the_read": {
     "notes": [
       "read 3's best years were 2002 to 2006",
@@ -521,6 +625,7 @@
         }
       ],
       "gross_mean_bps_per_month": 65.76692371961583,
+      "gross_monthly_sd": 0.012446484499921869,
       "gross_sharpe": 1.8304229333286266,
       "gross_t": 6.0708260775127725,
       "net_base_sharpe": 1.408272451396245,
@@ -539,21 +644,67 @@
   "limits": [
     "read 3's limits, unchanged",
     "a stock's return after its last trade is not observed, for a stopped name or for one that ends inside the holding month, and S2 bounds only the first",
-    "1,394 scored rows (1.45 per cent) have a last price date inside the holding month; that cohort is not bounded here",
+    "the second cohort is 398 scored rows, 0.41 per cent, of which 393 are takeover targets and 3 carry a for-cause action; it is not bounded here",
     "sector and share class are today's values",
     "a data flaw common to every world cannot be ruled out by this instrument",
-    "costs are provisional constants and no certified equity cost row exists"
+    "costs are provisional constants and no certified equity cost row exists",
+    "read 3's key functions bind their bars as DEFAULT ARGUMENTS, so moving the module constant changes nothing; the confirmation's bars are the same values and are stated as numbers in this seal",
+    "half B of the stock panel is opened by this read, once",
+    "config/windows.json's half_b status line still reads UNOPENED; it is left as written here and corrected in a later, separate commit"
   ],
   "look": "CANON-R3C",
-  "prior_stated_before_the_data": "About four in ten that it is CONFIRMED. Edges of this kind are documented to have weakened after 2010; at half its half-A size the book sits on the key 2 bar.",
+  "prior_stated_before_the_data": "About four in ten that it is CONFIRMED. Edges of this kind are documented to have weakened after 2010. A book repeating read 3's half-A sizes clears both keys, and one at half those sizes still clears key 2 at a net Sharpe of 0.70; the bar is reached only at 0.355 of read 3's net Sharpe. The prior is about the edge surviving eight unseen years, not about the bar being hard to clear.",
   "provenance": {
     "read_3_result_sha256": "c6c094b7a10b7d0b7f91e3bfad71f98dd26bdf61872c72d990b125742eba223f",
     "read_3_seal_sha256": "491b278c96134bbda604b32298f0921e6a6988a6aaea95ee7d42014e51ecb11c"
   },
   "read": "the confirmation of canon read 3",
   "status": "DRAFT, UNSEALED",
-  "stopped_bound_note": "S1 is the book's own weight in stopped names each month; S2 charges L times the positive weight only, shorts gaining nothing, at L = 0.30 and L = 1.00; S3 counts the action table around each name's last price date. Across the 60 scrambled worlds the median fall in net BASE Sharpe under S2 is 0.244 at L = 0.30 and 0.750 at L = 1.00, so the bound is not negligible and is reported beside every Sharpe.",
-  "utc": "2026-11-24T05:42:28Z",
+  "stopped_stock_bound": {
+    "by_L": {
+      "L_0.30": {
+        "L": 0.3,
+        "cost_bps_per_month_max": 6.261544757558653,
+        "cost_bps_per_month_median": 5.164839440285247,
+        "cost_bps_per_month_min": 3.5524574211241737,
+        "median_sharpe_fall_in_the_null_worlds": 0.24396631722118517,
+        "same_cost_on_read_3_volatility_sharpe_fall": 0.1437476473548142
+      },
+      "L_1.00": {
+        "L": 1.0,
+        "cost_bps_per_month_max": 20.871815858528844,
+        "cost_bps_per_month_median": 17.216131467617494,
+        "cost_bps_per_month_min": 11.84152473708058,
+        "median_sharpe_fall_in_the_null_worlds": 0.7504478096786695,
+        "same_cost_on_read_3_volatility_sharpe_fall": 0.4791588245160475
+      }
+    },
+    "counts": {
+      "cohort_a_stopped": {
+        "for_cause": 1,
+        "neither": 1,
+        "rows": 163,
+        "takeover_target": 161
+      },
+      "cohort_b_ends_inside_the_holding_month": {
+        "for_cause": 3,
+        "neither": 2,
+        "rows": 398,
+        "takeover_target": 393
+      },
+      "conf_1b_recheck": {
+        "note": "CONF-1b reported 1,394 here; the share still trading is the error, and the redefined cohort B above replaces it",
+        "of_which_still_trading_at_the_cutoff": 996,
+        "rows_under_conf_1b_definition": 1394
+      },
+      "in_universe_scored_rows": 96000,
+      "last_price_date_definition": "the tickers master's lastpricedate field (a dated field of the master); CONF-1b used the maximum daily date observed before the cutoff, which pins a live name to the 2020 edge"
+    },
+    "statement": "The stopped cohort is almost wholly the TARGET of a takeover, not a failure, so S2's assumed loss is adverse by construction and its sign is against the evidence. It is reported, never voted.",
+    "unit_caveat": "A Sharpe fall measured in the null worlds OVERSTATES the fall for a book with read 3's volatility, for the same reason the floors do: at L = 1.00 the bound costs a median 17.216 basis points a month, which is 0.7504 of Sharpe in the null worlds but 0.4792 on read 3's monthly volatility of 0.0124.",
+    "withdrawn": "CONF-1b's 'nine times' comparison is WITHDRAWN. It rested on a cohort of 1,394 rows built from the last daily date observed before the cutoff, which pins every name still trading to the 2020 edge: 996 of those 1,394 were names still trading. Under the tickers master's own lastpricedate the cohort is 398 rows, 0.41 per cent of the 96000 scored rows, of which 393 are takeover targets and 3 carry a for-cause action."
+  },
+  "utc": "2026-11-24T07:31:39Z",
   "what_each_verdict_will_mean": {
     "CONFIRMED": "The candidate held on eight unseen years at provisional costs. A research finding, not a money finding; the 2021 holdout stays sealed for a decision of its own, and no money test follows without a certified equity cost row (D-P01-CLOSE).",
     "NOT_CONFIRMED": "The keys that failed are named. The candidate is closed; half A stands in the record as a discovery that did not replicate; nothing is re-specified and re-read on half B."

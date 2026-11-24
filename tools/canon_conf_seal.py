@@ -7,7 +7,7 @@ Purpose:      Build a registration for the confirmation from its parts. The ONLY
               writer of one, draft or sealed.
 Entry Point:  Yes — python tools/canon_conf_seal.py draft
 Dependencies: stdlib, numpy, pandas; tools/canon_conf_*.py
-Last Sprint:  Sprint CONF-1b — key 3 struck, the bound measured (2026-11-24)
+Last Sprint:  Sprint CONF-2 — the recount, the corrected floors, the read (2026-11-24)
 ================================================================================
 
 A registration is JSON, because that is the form its gate reads — the lesson of
@@ -131,6 +131,23 @@ def build(out_path: Path, prose: dict, draft: bool = True,
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(body, indent=2, sort_keys=True))
     return G.sha256_file(out_path)
+
+
+def seal(out_path: Path | None = None) -> str:
+    """
+    Write the real registration from the corrected parts. The prose comes from
+    canon_conf_prose, which derives every figure from the measured artifacts, so
+    no number in the seal is hand-entered.
+    """
+    import canon_conf_prose as PR
+    out_path = Path(out_path or P.sealed_registration())
+    return build(out_path, PR.build_prose(), draft=False)
+
+
+def draft(out_path: Path | None = None) -> str:
+    import canon_conf_prose as PR
+    out_path = Path(out_path or P.draft_registration())
+    return build(out_path, PR.build_prose(), draft=True)
 
 
 def dummy(out_path: Path, note: str = "REHEARSAL dummy seal. Not a seal.") -> str:

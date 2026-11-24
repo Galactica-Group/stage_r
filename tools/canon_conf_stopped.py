@@ -45,7 +45,9 @@ VERSION = "1.0.0"
 L_VALUES = (0.30, 1.00)
 FOR_CAUSE_ACTIONS = ("bankruptcyliquidation", "regulatorydelisting",
                      "voluntarydelisting")
-TAKEOVER_PREFIXES = ("acquisition", "merger")
+# the TARGET side only: CONF-1b's prefixes also matched the
+# acquirer's side (acquisitionof, mergerfrom)
+TAKEOVER_TARGET_ACTIONS = ("acquisitionby", "mergerto")
 ACTION_WINDOW_DAYS = 45
 
 
@@ -170,11 +172,87 @@ def s1_summary(s1_table: pd.DataFrame) -> dict:
 
 
 # -------------------------------------------------------------------------- S3
+def _master_last_price_dates() -> dict:
+    """
+    Per permaticker, the tickers master's OWN lastpricedate field, a dated
+    field of the master (R1 permits reading it). This is the definition the
+    recount uses.
+
+    CONF-1b instead took the maximum DAILY date observed before the cutoff,
+    which pins every name still trading at the 2021 cutoff to the 2020 edge and
+    so counted live names as "ending inside the holding month". That is the
+    error section 1 corrects.
+    """
+    tk = pq.read_table(P.bulk_tickers(),
+                       columns=["table", "permaticker", "ticker",
+                                "lastpricedate"]).to_pandas()
+    sep = xt.sep_ticker_map(tk)
+    d = pd.to_datetime(sep["lastpricedate"], errors="coerce")
+    return dict(zip(sep["permaticker"].astype(np.int64), d))
+
+
+def _observed_last_price_dates() -> dict:
+    """CONF-1b's definition, kept only to measure how wrong it was (clause 1.4)."""
+    return _last_price_dates()
+
+
+def _action_index() -> dict:
+    cut = json.loads(P.windows_json().read_text())["holdout"]["start"]
+    a = pq.read_table(P.bulk_actions(),
+                      columns=["date", "action", "ticker"]).to_pandas()
+    a["action"] = a["action"].astype(str)
+    a["ticker"] = a["ticker"].astype(str)
+    a["date"] = pd.to_datetime(a["date"], errors="coerce")
+    a = a.loc[a["date"].notna()]
+    a = xt.filter_to_half_a(a, "date", cut, "canon_conf recount actions")
+    out: dict[str, list] = {}
+    for t, ac, dt in a[["ticker", "action", "date"]].itertuples(index=False):
+        out.setdefault(t, []).append((ac, dt))
+    return out
+
+
+def _census(rows, pm2t, lastp, acts) -> dict:
+    """
+    For a cohort of (permaticker, month) rows: every action type dated within 45
+    days either side of the name's last price date, counted by ROWS carrying it;
+    then for-cause, target-of-a-takeover, and neither.
+    """
+    from collections import Counter
+    by_type = Counter()
+    n_fc = n_tk = n_neither = 0
+    unresolved = 0
+    for k, _t in rows:
+        k = int(k)
+        tick = pm2t.get(k)
+        lp = lastp.get(k)
+        if tick is None or lp is None or pd.isna(lp):
+            unresolved += 1
+            continue
+        lo = pd.Timestamp(lp) - pd.Timedelta(days=ACTION_WINDOW_DAYS)
+        hi = pd.Timestamp(lp) + pd.Timedelta(days=ACTION_WINDOW_DAYS)
+        types = {ac for ac, dt in acts.get(tick, ()) if lo <= dt <= hi}
+        for ty in types:
+            by_type[ty] += 1
+        fc = bool(types & set(FOR_CAUSE_ACTIONS))
+        tk_ = bool(types & set(TAKEOVER_TARGET_ACTIONS))
+        n_fc += int(fc)
+        n_tk += int(tk_)
+        n_neither += int(not (fc or tk_))
+    return {"rows": len(rows), "unresolved": unresolved,
+            "action_type_census_by_rows": dict(sorted(by_type.items(),
+                                                      key=lambda kv: -kv[1])),
+            "for_cause": n_fc, "takeover_target": n_tk,
+            "neither": n_neither}
+
+
 def s3_counts(panel: pd.DataFrame | None = None) -> dict:
     """
-    Counts only, on the scored months. Two cohorts: rows the builder calls
-    stopped, and rows whose name's LAST PRICE DATE falls inside the holding
-    month t+1 — the stock that ends mid-holding, which fwd_stopped does not see.
+    Counts only, on the scored months. Two cohorts:
+      A  rows the builder calls stopped (fwd_stopped true)
+      B  rows whose name's MASTER lastpricedate falls inside the holding month
+         t+1 — the stock that ends mid-holding, which fwd_stopped cannot see
+    Clause 1.4 also recomputes CONF-1b's cohort B under its own definition and
+    says how many of it were names still trading at the cutoff.
     """
     import canon_conf_pipeline as PL
     if panel is None:
@@ -188,70 +266,62 @@ def s3_counts(panel: pd.DataFrame | None = None) -> dict:
     sep = xt.sep_ticker_map(tk)
     pm2t = dict(zip(sep["permaticker"].astype(np.int64), sep["ticker"].astype(str)))
 
-    cut = json.loads(P.windows_json().read_text())["holdout"]["start"]
-    a = pq.read_table(P.bulk_actions(),
-                      columns=["date", "action", "ticker"]).to_pandas()
-    a["action"] = a["action"].astype(str)
-    a["ticker"] = a["ticker"].astype(str)
-    a["date"] = pd.to_datetime(a["date"], errors="coerce")
-    a = a.loc[a["date"].notna()]
-    a = xt.filter_to_half_a(a, "date", cut, "canon_conf stopped S3")
-    acts: dict[str, list] = {}
-    for t, ac, dt in a[["ticker", "action", "date"]].itertuples(index=False):
-        acts.setdefault(t, []).append((ac, dt))
+    master = _master_last_price_dates()
+    acts = _action_index()
+    cut_ts = pd.Timestamp(json.loads(P.windows_json().read_text())["holdout"]["start"])
 
-    lastp = _last_price_dates()
+    rows_a = [(int(k), int(t)) for k, t in
+              zip(u.loc[u["fwd_stopped"].astype(bool), "permaticker"],
+                  u.loc[u["fwd_stopped"].astype(bool), "month"])]
 
-    def classify(k: int) -> tuple[bool, bool]:
-        t = pm2t.get(int(k))
-        lp = lastp.get(int(k))
-        if t is None or lp is None:
-            return False, False
-        lo = pd.Timestamp(lp) - pd.Timedelta(days=ACTION_WINDOW_DAYS)
-        hi = pd.Timestamp(lp) + pd.Timedelta(days=ACTION_WINDOW_DAYS)
-        fc = tk_ = False
-        for ac, dt in acts.get(t, ()):
-            if lo <= dt <= hi:
-                if ac in FOR_CAUSE_ACTIONS:
-                    fc = True
-                if ac.startswith(TAKEOVER_PREFIXES):
-                    tk_ = True
-        return fc, tk_
-
-    res = {"scored_months": len(scored),
-           "in_universe_scored_rows": int(len(u)),
-           "action_window_days_either_side": ACTION_WINDOW_DAYS,
-           "for_cause_types": list(FOR_CAUSE_ACTIONS),
-           "takeover_prefixes": list(TAKEOVER_PREFIXES)}
-
-    st = u.loc[u["fwd_stopped"].astype(bool)]
-    fc = tko = 0
-    for k in st["permaticker"]:
-        f, t = classify(int(k))
-        fc += int(f); tko += int(t)
-    res["stopped"] = {"rows": int(len(st)), "for_cause": fc, "takeover": tko,
-                      "share_of_scored_rows": round(len(st) / max(len(u), 1), 6)}
-
-    # the stock that ends INSIDE the holding month t+1
-    ends = []
+    rows_b = []
     for k, t in zip(u["permaticker"], u["month"]):
-        lp = lastp.get(int(k))
+        lp = master.get(int(k))
+        if lp is None or pd.isna(lp):
+            continue
+        if pd.Period(pd.Timestamp(lp), freq="M").ordinal == int(t) + 1:
+            rows_b.append((int(k), int(t)))
+
+    # clause 1.4: CONF-1b's cohort B, and how much of it was alive at the cutoff
+    observed = _observed_last_price_dates()
+    old_b, old_b_alive = [], 0
+    for k, t in zip(u["permaticker"], u["month"]):
+        lp = observed.get(int(k))
         if lp is None:
             continue
         if pd.Period(pd.Timestamp(lp), freq="M").ordinal == int(t) + 1:
-            ends.append(int(k))
-    fc2 = tko2 = 0
-    for k in ends:
-        f, t = classify(k)
-        fc2 += int(f); tko2 += int(t)
-    res["ends_inside_the_holding_month"] = {
-        "rows": len(ends), "for_cause": fc2, "takeover": tko2,
-        "share_of_scored_rows": round(len(ends) / max(len(u), 1), 6)}
-    return res
+            old_b.append((int(k), int(t)))
+            m = master.get(int(k))
+            if m is not None and not pd.isna(m) and pd.Timestamp(m) >= cut_ts:
+                old_b_alive += 1
+
+    return {
+        "scored_months": len(scored),
+        "in_universe_scored_rows": int(len(u)),
+        "action_window_days_either_side": ACTION_WINDOW_DAYS,
+        "for_cause_types": list(FOR_CAUSE_ACTIONS),
+        "takeover_target_types": list(TAKEOVER_TARGET_ACTIONS),
+        "last_price_date_definition":
+            "the tickers master's lastpricedate field (a dated field of the "
+            "master); CONF-1b used the maximum daily date observed before the "
+            "cutoff, which pins a live name to the 2020 edge",
+        "cohort_a_stopped": _census(rows_a, pm2t, master, acts),
+        "cohort_b_ends_inside_the_holding_month": _census(rows_b, pm2t, master, acts),
+        "conf_1b_cohort_b_recheck": {
+            "rows_under_conf_1b_definition": len(old_b),
+            "of_which_still_trading_at_the_cutoff": old_b_alive,
+            "note": "CONF-1b reported 1,394 here; the share still trading is the "
+                    "error, and the redefined cohort B above replaces it",
+        },
+    }
 
 
 def _last_price_dates() -> dict:
-    """Per permaticker, its last observed price date before the cutoff."""
+    """
+    CONF-1b's definition: per permaticker, the last price date OBSERVED in the
+    daily data before the cutoff. Retained only so clause 1.4 can measure how
+    much of CONF-1b's cohort B was an artefact of it.
+    """
     import pyarrow as pa
     import pyarrow.dataset as ds
     cut = json.loads(P.windows_json().read_text())["holdout"]["start"]
