@@ -1,0 +1,68 @@
+{
+  "look": "CANON-R3C",
+  "stage": "controls",
+  "registration": "registrations/canon_r3c/registration_v1.json",
+  "registration_sha": "0ad6336cbe07d0525001149bd420499476a889310e2237084c8ed38689f2864a",
+  "controls_v2_sha256": "11cb3ee30596f08a5e2cdd7a2abbae22642a6bf52a3a4e9ad2fbc96981999b74",
+  "pool_v1_sha256": "f425db2a2b29119433a59cebdc2e18e3948933bbad55a3e1b8268018874fdaa2",
+  "utc": "2026-11-24T08:59:05Z",
+  "controls_utc": "2026-11-24T08:51:48Z",
+  "t3": {
+    "identical": true,
+    "mismatches": 0
+  },
+  "known_null": {
+    "share_significant": 0.06666666666666667,
+    "accept_band": [
+      0.01,
+      0.1
+    ],
+    "pass": true,
+    "worlds_called_confirmed": 0
+  },
+  "floors": {
+    "key1_floor": {
+      "rho": 0.02,
+      "median_gross_sharpe": 1.0893136967711978,
+      "median_net_base_sharpe": 0.23131548474448574,
+      "detected": true
+    },
+    "verdict_floor": {
+      "rho": 0.03,
+      "median_gross_sharpe": 1.9572409357535563,
+      "median_net_base_sharpe": 1.1061328801960864,
+      "detected": true
+    }
+  },
+  "bars": {
+    "key1a_centre_pool_median_gross_mean": 7.27080838465634e-05,
+    "key1a_centre_bps": 0.727080838465634,
+    "key1b_third_largest_pool_gross_t": 1.6435290216168652,
+    "key1b_rule": "the read's gross t must exceed the third-largest pool gross t, so at most 2 of 60 equal or exceed it",
+    "n_worlds": 60
+  },
+  "plants_key1_pass_counts": {
+    "0.005": 2,
+    "0.010": 4,
+    "0.020": 12,
+    "0.025": 12,
+    "0.030": 12,
+    "0.035": 12,
+    "0.040": 12,
+    "0.080": 12
+  },
+  "plants_confirmed_counts": {
+    "0.005": 0,
+    "0.010": 0,
+    "0.020": 2,
+    "0.025": 9,
+    "0.030": 12,
+    "0.035": 12,
+    "0.040": 12,
+    "0.080": 12
+  },
+  "determinism_bit_identical": true,
+  "pool_reproduced_byte_for_byte": true,
+  "both_controls_pass": true,
+  "note": "Statistics only. The observed stage refuses unless registration_sha equals the live seal's sha256."
+}
