@@ -1,0 +1,712 @@
+{
+  "bars": {
+    "available": true,
+    "key1a_centre_bps": 0.727080838465634,
+    "key1a_centre_pool_median_gross_mean": 7.27080838465634e-05,
+    "key1b_max_exceedances": 2,
+    "key1b_third_largest_pool_gross_t": 1.6435290216168652,
+    "key2_sharpe_bar": 0.5,
+    "level": 0.05,
+    "n_worlds": 60,
+    "source": "pool_v1.json, as the read computes them"
+  },
+  "controls": {
+    "bars": {
+      "key1a_centre_bps": 0.727080838465634,
+      "key1a_centre_pool_median_gross_mean": 7.27080838465634e-05,
+      "key1b_rule": "the read's gross t must exceed the third-largest pool gross t, so at most 2 of 60 equal or exceed it",
+      "key1b_third_largest_pool_gross_t": 1.6435290216168652,
+      "n_worlds": 60
+    },
+    "determinism": {
+      "bit_identical": true,
+      "cross_section_mean": 986.8229166666666,
+      "cross_section_min": 977,
+      "k": 1,
+      "per_series": {
+        "gross": true,
+        "net_base": true,
+        "net_stress": true,
+        "turnover": true
+      }
+    },
+    "fit_diagnostics_world_01": [
+      {
+        "cut": "2012-12",
+        "fit_seconds": 2.96,
+        "score_first": "2012-12",
+        "score_last": "2013-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2012-10",
+        "train_rows": 164133
+      },
+      {
+        "cut": "2013-12",
+        "fit_seconds": 3.12,
+        "score_first": "2013-12",
+        "score_last": "2014-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2013-10",
+        "train_rows": 175966
+      },
+      {
+        "cut": "2014-12",
+        "fit_seconds": 3.23,
+        "score_first": "2014-12",
+        "score_last": "2015-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2014-10",
+        "train_rows": 187780
+      },
+      {
+        "cut": "2015-12",
+        "fit_seconds": 3.36,
+        "score_first": "2015-12",
+        "score_last": "2016-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2015-10",
+        "train_rows": 199630
+      },
+      {
+        "cut": "2016-12",
+        "fit_seconds": 3.51,
+        "score_first": "2016-12",
+        "score_last": "2017-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2016-10",
+        "train_rows": 211526
+      },
+      {
+        "cut": "2017-12",
+        "fit_seconds": 3.59,
+        "score_first": "2017-12",
+        "score_last": "2018-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2017-10",
+        "train_rows": 223358
+      },
+      {
+        "cut": "2018-12",
+        "fit_seconds": 3.7,
+        "score_first": "2018-12",
+        "score_last": "2019-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2018-10",
+        "train_rows": 235234
+      },
+      {
+        "cut": "2019-12",
+        "fit_seconds": 3.77,
+        "score_first": "2019-12",
+        "score_last": "2020-11",
+        "score_rows": 12000,
+        "skipped": false,
+        "train_first": "1998-12",
+        "train_last": "2019-10",
+        "train_rows": 247064
+      }
+    ],
+    "floors": {
+      "analytic_gross_sharpe_80pc_power_96_months": 0.8791016175633343,
+      "grid": [
+        0.005,
+        0.01,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.08
+      ],
+      "key1_floor": {
+        "detected": true,
+        "label": "key 1 floor",
+        "median_gross_sharpe": 1.0893136967711978,
+        "median_net_base_sharpe": 0.23131548474448574,
+        "n_confirmed": 2,
+        "n_pass_key1": 12,
+        "rho": 0.02,
+        "rule": "smallest rho with key 1 passing in >= 10 of 12"
+      },
+      "key2_sharpe_bar": 0.5,
+      "verdict_floor": {
+        "detected": true,
+        "label": "verdict floor",
+        "median_gross_sharpe": 1.9572409357535563,
+        "median_net_base_sharpe": 1.1061328801960864,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.03,
+        "rule": "smallest rho with CONFIRMED in >= 10 of 12"
+      }
+    },
+    "known_null": {
+      "accept_band": [
+        0.01,
+        0.1
+      ],
+      "gross_t": {
+        "max": 3.259542935320223,
+        "median": 0.09599302839140382,
+        "min": -2.364399307164821,
+        "sd": 1.03200996593923
+      },
+      "net_base_sharpe": {
+        "max": 0.25447775232897857,
+        "median": -0.7579018887960951,
+        "min": -1.6536846462131043,
+        "sd": 0.36979316774446697
+      },
+      "pass": true,
+      "s2_median_fall": {
+        "L_0.30": {
+          "L": 0.3,
+          "max_fall": 0.3351944308121597,
+          "median_fall_in_net_base_sharpe": 0.24396631722118517
+        },
+        "L_1.00": {
+          "L": 1.0,
+          "max_fall": 1.027178756510446,
+          "median_fall_in_net_base_sharpe": 0.7504478096786695
+        }
+      },
+      "share_significant": 0.06666666666666667,
+      "verdict_counts": {
+        "NOT_CONFIRMED": 60
+      },
+      "worlds_called_confirmed": 0
+    },
+    "plants_by_rho": {
+      "0.005": {
+        "median_gross_sharpe": 0.05947569538284685,
+        "median_net_base_sharpe": -0.7523414885296135,
+        "median_turnover": 2.5855970358257343,
+        "n_confirmed": 0,
+        "n_pass_key1": 2,
+        "rho": 0.005,
+        "seed_index": 0,
+        "share_pass_1a": 0.16666666666666666,
+        "share_pass_1b": 0.16666666666666666,
+        "share_pass_key2": 0.0
+      },
+      "0.010": {
+        "median_gross_sharpe": 0.2151447505359427,
+        "median_net_base_sharpe": -0.6353308850513364,
+        "median_turnover": 2.6052795933170927,
+        "n_confirmed": 0,
+        "n_pass_key1": 4,
+        "rho": 0.01,
+        "seed_index": 1,
+        "share_pass_1a": 0.3333333333333333,
+        "share_pass_1b": 0.3333333333333333,
+        "share_pass_key2": 0.0
+      },
+      "0.020": {
+        "median_gross_sharpe": 1.0893136967711978,
+        "median_net_base_sharpe": 0.23131548474448574,
+        "median_turnover": 2.6913521039376307,
+        "n_confirmed": 2,
+        "n_pass_key1": 12,
+        "rho": 0.02,
+        "seed_index": 2,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 0.16666666666666666
+      },
+      "0.025": {
+        "median_gross_sharpe": 1.4183845708179401,
+        "median_net_base_sharpe": 0.5959804338254436,
+        "median_turnover": 2.723579038181029,
+        "n_confirmed": 9,
+        "n_pass_key1": 12,
+        "rho": 0.025,
+        "seed_index": 3,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 0.75
+      },
+      "0.030": {
+        "median_gross_sharpe": 1.9572409357535563,
+        "median_net_base_sharpe": 1.1061328801960864,
+        "median_turnover": 2.7483294860048755,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.03,
+        "seed_index": 4,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 1.0
+      },
+      "0.035": {
+        "median_gross_sharpe": 2.5803375917339793,
+        "median_net_base_sharpe": 1.7212756602568795,
+        "median_turnover": 2.782821653476501,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.035,
+        "seed_index": 5,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 1.0
+      },
+      "0.040": {
+        "median_gross_sharpe": 3.1184470955756836,
+        "median_net_base_sharpe": 2.213016014994702,
+        "median_turnover": 2.79631487987749,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.04,
+        "seed_index": 6,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 1.0
+      },
+      "0.080": {
+        "median_gross_sharpe": 6.677283844505949,
+        "median_net_base_sharpe": 5.882407027443501,
+        "median_turnover": 2.862374843295319,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.08,
+        "seed_index": 7,
+        "share_pass_1a": 1.0,
+        "share_pass_1b": 1.0,
+        "share_pass_key2": 1.0
+      }
+    },
+    "t3": {
+      "identical": true,
+      "mismatches": 0
+    },
+    "wall_seconds": 4693.8
+  },
+  "correction_to_the_record": "The factory's decision log (D-CANON-READ3) said a stopped stock is scored at zero for its last month, flattering a book that buys what has fallen, and that the confirmation would address this in its vote. The first statement is wrong in its mechanism and the second is withdrawn. The builder calls a stock stopped precisely when it has NO observation in the next month, so there is no later trade to recover; a stock's fall to its last trade is already inside its ordinary monthly return; and a stopped row earns exactly zero under the registered scoring, so no part of a gross result can come from stopped names. 163 stopped rows fall in the 96 scored months, 0.17 per cent of 96,000, and 161 of them are the target of a takeover against 1 carrying a for-cause action: the cohort is bought, not wound up, so a flat assumed loss has the wrong sign. A key that moves the vote by a few basis points on an assumed loss is not a test. The exposure is reported by S1 to S3 and never voted.",
+  "data_pins": {
+    "canon_conf_copies.py": "3a0bf2084dac82e9644e49c727b6cb8fbaaa64369d96f385832c005f122f8007",
+    "canon_conf_features.py": "645c0660fa244da20bed2ae4d2159cff947d870442f707e497a953dbb43e44fd",
+    "canon_conf_gate.py": "5ae6d44ad673182b75dbf94f6458201e52a99690123b76df9983442155395114",
+    "canon_conf_mutants.py": "400c5eb33ab77d09090785313600bf31ff8865f2cb89a77c2da252a1bb4ea760",
+    "canon_conf_panel.py": "ef07bdc022f13e2ecc1a0f988eecb42a5e5690e591669fe1e0828de651f7ea35",
+    "canon_conf_paths.py": "e16292d66548bbb87ec1da32fbc093250c48b041468655ddedeb1db96ac84b60",
+    "canon_conf_pipeline.py": "be1fa95a6d76b8b02064363d9e445e5898c88059b38c0a47b6ecb3893d66a8a3",
+    "canon_conf_rehearsal.py": "71aa9b777efc4257520932394e935198350fcb5377f8f68b5f61f964fddb562e",
+    "canon_conf_seal.py": "348fb8f2060074caf68374fb3b1d824b28085dea0fc4b0ae1202e7f7584c6cee",
+    "canon_conf_stopped.py": "013b58e2a78b8fd645cb2045912d590172ff4901635fbfea80fcdfb5a18ba565",
+    "canon_conf_tripwires.py": "3a9def77af10713178404cdc9cb83af6cb2b16d31677a78275ee3b87a3ac5920",
+    "canon_r3_features.py": "3329eff5e10307f96dc4ae00cf6e884ca33c8a5d31521076f09ad7d0c8b92220",
+    "canon_r3_machine.py": "4d1cc4a3204db43dfe66c6866340d9f20008c57faa2926e214a9d2b38c67095d",
+    "conf_controls_v2": "11cb3ee30596f08a5e2cdd7a2abbae22642a6bf52a3a4e9ad2fbc96981999b74",
+    "conf_feature_file": "f2dd5f52ef28e31c5698bd96c6d88eb94e5e91f5434c39a75d52fa1783ce3b86",
+    "conf_panel": "340bf67f9f12c549ab9f64c200ff98b76cfec773062b7b5db1ffbcb238dd0779",
+    "conf_pool_v1": "f425db2a2b29119433a59cebdc2e18e3948933bbad55a3e1b8268018874fdaa2",
+    "r3_result": "c6c094b7a10b7d0b7f91e3bfad71f98dd26bdf61872c72d990b125742eba223f",
+    "r3_seal": "491b278c96134bbda604b32298f0921e6a6988a6aaea95ee7d42014e51ecb11c",
+    "requirements_lock": "6badb3b4490e577e3dec649644ef948da9dda0f9751be6282136919d783512e9",
+    "run_canon_conf.py": "1df2dcd8b1e45f65898a3d2a990f8c38b2b3add130794ed111850b20fe9286a8",
+    "xs_triage.py": "72faead7f18c091f7ef085980fc5a97af5e39fff6c4cd1e90ba819f5f3ac5b3c"
+  },
+  "design": {
+    "book": "read 3's: the raw prediction into build_series_v2, direction HIGH, harness v2's slope book",
+    "costs": "read 3's COST_BASE and COST_STRESS, unchanged",
+    "features": [
+      "REV1",
+      "MOM3_1",
+      "MOM6_1",
+      "MOM12_1",
+      "MOM12_7",
+      "SEAS12",
+      "REV5",
+      "VOL21",
+      "VOL63",
+      "VOL252",
+      "DOWNVOL63",
+      "MAX1",
+      "MIN1",
+      "SKEW63",
+      "UPFRAC63",
+      "HI52",
+      "LO52",
+      "AGEHI",
+      "HI63",
+      "DVTREND",
+      "AMIHUD21",
+      "VOLVOL63",
+      "PRC",
+      "BETA",
+      "LOGDV"
+    ],
+    "label": "read 3's: the world's fwd_ret residualised within the month on [1, sector dummies, beta, log dollar volume], then a within-month normal score",
+    "model": {
+      "early_stopping": false,
+      "l2_regularization": 10.0,
+      "learning_rate": 0.05,
+      "loss": "squared_error",
+      "max_bins": 255,
+      "max_features": 0.5,
+      "max_iter": 300,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 200
+    },
+    "seeds": [
+      20261121,
+      20261122,
+      20261123
+    ],
+    "verdict": {
+      "key1a": "stationary bootstrap of months on the gross series less the median gross mean of the 60 worlds; one-sided p <= 0.05",
+      "key1b": "the gross t equalled or exceeded by at most 2 of the 60 worlds' gross t",
+      "key2": "annualised net BASE Sharpe >= 0.5",
+      "key3": "STRUCK by ruling (CONF-1b); the stopped-stock exposure is reported as a bound and never voted",
+      "ladder": "CONFIRMED if both keys hold; otherwise NOT_CONFIRMED, naming each key that failed"
+    },
+    "voting": {
+      "R": 10000,
+      "level": 0.05,
+      "mean_block": 3.0,
+      "seed": 20261123
+    },
+    "window": {
+      "cuts": [
+        "2012-12",
+        "2013-12",
+        "2014-12",
+        "2015-12",
+        "2016-12",
+        "2017-12",
+        "2018-12",
+        "2019-12"
+      ],
+      "daily_cutoff_source": "config/windows.json holdout.start",
+      "formation_months": [
+        "1998-12",
+        "2020-11",
+        264
+      ],
+      "returns_realised": [
+        "2013-01",
+        "2020-12"
+      ],
+      "scored_months": [
+        "2012-12",
+        "2020-11",
+        96
+      ]
+    },
+    "worlds": {
+      "n": 60,
+      "rule": "in every formation month of the window, in-universe names in key order each take the next name's fwd_ret and fwd_stopped, the last takes the first's",
+      "seed_base": 17000
+    }
+  },
+  "floors_in_units_that_carry": {
+    "key1": {
+      "analytic_gross_sharpe_80pc_power_96_months": 0.8791016175633343,
+      "median_gross_sharpe_there": 1.0893136967711978,
+      "passed_12_of_12_from_rho": 0.02
+    },
+    "planted_by_rho": [
+      {
+        "implied_monthly_volatility": 0.005581612931676054,
+        "median_gross_sharpe": 0.05947569538284685,
+        "median_net_base_sharpe": -0.7523414885296135,
+        "median_sharpe_lost_to_costs": 0.8023461119158766,
+        "median_turnover": 2.5855970358257343,
+        "n_confirmed": 0,
+        "n_pass_key1": 2,
+        "rho": 0.005
+      },
+      {
+        "implied_monthly_volatility": 0.005720103492443804,
+        "median_gross_sharpe": 0.2151447505359427,
+        "median_net_base_sharpe": -0.6353308850513364,
+        "median_sharpe_lost_to_costs": 0.7888802413292906,
+        "median_turnover": 2.6052795933170927,
+        "n_confirmed": 0,
+        "n_pass_key1": 4,
+        "rho": 0.01
+      },
+      {
+        "implied_monthly_volatility": 0.005850096268553922,
+        "median_gross_sharpe": 1.0893136967711978,
+        "median_net_base_sharpe": 0.23131548474448574,
+        "median_sharpe_lost_to_costs": 0.7968345085421397,
+        "median_turnover": 2.6913521039376307,
+        "n_confirmed": 2,
+        "n_pass_key1": 12,
+        "rho": 0.02
+      },
+      {
+        "implied_monthly_volatility": 0.005736081642062749,
+        "median_gross_sharpe": 1.4183845708179401,
+        "median_net_base_sharpe": 0.5959804338254436,
+        "median_sharpe_lost_to_costs": 0.8224041369924964,
+        "median_turnover": 2.723579038181029,
+        "n_confirmed": 9,
+        "n_pass_key1": 12,
+        "rho": 0.025
+      },
+      {
+        "implied_monthly_volatility": 0.0056135677676913825,
+        "median_gross_sharpe": 1.9572409357535563,
+        "median_net_base_sharpe": 1.1061328801960864,
+        "median_sharpe_lost_to_costs": 0.8479894610157677,
+        "median_turnover": 2.7483294860048755,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.03
+      },
+      {
+        "implied_monthly_volatility": 0.005888275234271641,
+        "median_gross_sharpe": 2.5803375917339793,
+        "median_net_base_sharpe": 1.7212756602568795,
+        "median_sharpe_lost_to_costs": 0.818573911791735,
+        "median_turnover": 2.782821653476501,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.035
+      },
+      {
+        "implied_monthly_volatility": 0.005707022336648371,
+        "median_gross_sharpe": 3.1184470955756836,
+        "median_net_base_sharpe": 2.213016014994702,
+        "median_sharpe_lost_to_costs": 0.8486666356300072,
+        "median_turnover": 2.79631487987749,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.04
+      },
+      {
+        "implied_monthly_volatility": 0.006167173149585128,
+        "median_gross_sharpe": 6.677283844505949,
+        "median_net_base_sharpe": 5.882407027443501,
+        "median_sharpe_lost_to_costs": 0.803898080797036,
+        "median_turnover": 2.862374843295319,
+        "n_confirmed": 12,
+        "n_pass_key1": 12,
+        "rho": 0.08
+      }
+    ],
+    "pool_worlds": {
+      "max_monthly_volatility": 0.008076106329609312,
+      "median_monthly_volatility": 0.007099176859749933,
+      "median_sharpe_lost_to_costs": 0.8161160024669314,
+      "median_turnover": 2.5195101865251557,
+      "min_monthly_volatility": 0.0057597159233910315
+    },
+    "read_3_real_book": {
+      "gross_sharpe": 1.8304229333286266,
+      "monthly_volatility": 0.012446484499921869,
+      "net_base_sharpe": 1.408272451396245,
+      "sharpe_lost_to_costs": 0.4221504819323816,
+      "turnover": 2.1999002584021725
+    },
+    "statement": "A gross-Sharpe floor measured in the planted worlds OVERSTATES what a real book needs to clear key 2. The planted books are much less volatile than read 3's, so the same cost in basis points costs them far more Sharpe: their median monthly volatility is about 0.57 to 0.62 per cent against read 3's 1.24 per cent, and they lose a median 0.79 to 0.85 of annualised Sharpe to costs against read 3's 0.42. Key 2 is a bar on a real book's NET Sharpe, so it must be read in net units, not inferred from a gross floor.",
+    "verdict_counts_by_net_sharpe": [
+      {
+        "median_net_base_sharpe": 0.23131548474448574,
+        "n_confirmed": 2,
+        "rho": 0.02
+      },
+      {
+        "median_net_base_sharpe": 0.5959804338254436,
+        "n_confirmed": 9,
+        "rho": 0.025
+      },
+      {
+        "median_net_base_sharpe": 1.1061328801960864,
+        "n_confirmed": 12,
+        "rho": 0.03
+      }
+    ],
+    "what_a_real_book_needs": {
+      "fraction_of_read_3_that_sits_on_the_bar": 0.35504493431244094,
+      "half_clears_key2": true,
+      "half_of_read_3_net_base_sharpe": 0.7041362256981225,
+      "key2_bar_on_net_base_sharpe": 0.5,
+      "read_3_clears_key2": true,
+      "read_3_net_base_sharpe": 1.408272451396245,
+      "statement": "A book repeating read 3's half-A sizes clears both keys: its net BASE Sharpe was 1.4083 against a bar of 0.50. A book at HALF those sizes reads 0.7041 and still clears the bar \u2014 the brief's phrase 'sits on the key 2 bar' is arithmetically wrong at one half, and the bar is in fact reached at 0.355 of read 3's net Sharpe. The CONF-1b report's warning that a faithful replication would read NOT_CONFIRMED on key 2 is WITHDRAWN: it compared a gross floor from the low-volatility planted worlds with a gross number from a real book, which is not a like comparison."
+    }
+  },
+  "known_before_the_read": {
+    "notes": [
+      "read 3's best years were 2002 to 2006",
+      "the half-A result has not been cut further and this specification was fixed without doing so",
+      "the first build of this confirmation halted on a third key that could not differ from the second"
+    ],
+    "read_3": {
+      "break_even_bps_per_side": 29.895411607153292,
+      "by_year": [
+        {
+          "gross_mean_bps": 41.71098597326752,
+          "months": 1,
+          "net_base_mean_bps": 27.544319306600855,
+          "year": 2001
+        },
+        {
+          "gross_mean_bps": 100.34961404749193,
+          "months": 12,
+          "net_base_mean_bps": 84.46984841865445,
+          "year": 2002
+        },
+        {
+          "gross_mean_bps": 93.79950808889215,
+          "months": 12,
+          "net_base_mean_bps": 77.81673156331064,
+          "year": 2003
+        },
+        {
+          "gross_mean_bps": 121.93138393574847,
+          "months": 12,
+          "net_base_mean_bps": 106.52733661670474,
+          "year": 2004
+        },
+        {
+          "gross_mean_bps": 88.87586273629098,
+          "months": 12,
+          "net_base_mean_bps": 73.78319526129741,
+          "year": 2005
+        },
+        {
+          "gross_mean_bps": 75.91346453488067,
+          "months": 12,
+          "net_base_mean_bps": 61.25663076949365,
+          "year": 2006
+        },
+        {
+          "gross_mean_bps": 7.293822383397109,
+          "months": 12,
+          "net_base_mean_bps": -7.772140786168,
+          "year": 2007
+        },
+        {
+          "gross_mean_bps": 64.28925891233578,
+          "months": 12,
+          "net_base_mean_bps": 49.591149237718206,
+          "year": 2008
+        },
+        {
+          "gross_mean_bps": -12.776910850273131,
+          "months": 12,
+          "net_base_mean_bps": -27.955357459718417,
+          "year": 2009
+        },
+        {
+          "gross_mean_bps": 46.409543810491115,
+          "months": 12,
+          "net_base_mean_bps": 31.45330216536892,
+          "year": 2010
+        },
+        {
+          "gross_mean_bps": 63.81866637648604,
+          "months": 12,
+          "net_base_mean_bps": 48.73246718515816,
+          "year": 2011
+        },
+        {
+          "gross_mean_bps": 76.42476157337552,
+          "months": 11,
+          "net_base_mean_bps": 61.537953225038166,
+          "year": 2012
+        }
+      ],
+      "gross_mean_bps_per_month": 65.76692371961583,
+      "gross_monthly_sd": 0.012446484499921869,
+      "gross_sharpe": 1.8304229333286266,
+      "gross_t": 6.0708260775127725,
+      "net_base_sharpe": 1.408272451396245,
+      "net_stress_sharpe": 0.679965276238453,
+      "turnover": 2.1999002584021725,
+      "verdict": "SURVIVOR"
+    }
+  },
+  "ledger": {
+    "batch_id": "CANON-R3C",
+    "harness": "tools/canon_conf_pipeline.py",
+    "signal": "MACHINE_HGB_25PV_CONF",
+    "universe_string": "top1000_tight_v2_halfB_96mo",
+    "vintage_string": "20261004p"
+  },
+  "limits": [
+    "read 3's limits, unchanged",
+    "a stock's return after its last trade is not observed, for a stopped name or for one that ends inside the holding month, and S2 bounds only the first",
+    "the second cohort is 398 scored rows, 0.41 per cent, of which 393 are takeover targets and 3 carry a for-cause action; it is not bounded here",
+    "sector and share class are today's values",
+    "a data flaw common to every world cannot be ruled out by this instrument",
+    "costs are provisional constants and no certified equity cost row exists",
+    "read 3's key functions bind their bars as DEFAULT ARGUMENTS, so moving the module constant changes nothing; the confirmation's bars are the same values and are stated as numbers in this seal",
+    "half B of the stock panel is opened by this read, once",
+    "config/windows.json's half_b status line still reads UNOPENED; it is left as written here and corrected in a later, separate commit"
+  ],
+  "look": "CANON-R3C",
+  "prior_stated_before_the_data": "About four in ten that it is CONFIRMED. Edges of this kind are documented to have weakened after 2010. A book repeating read 3's half-A sizes clears both keys, and one at half those sizes still clears key 2 at a net Sharpe of 0.70; the bar is reached only at 0.355 of read 3's net Sharpe. The prior is about the edge surviving eight unseen years, not about the bar being hard to clear.",
+  "provenance": {
+    "read_3_result_sha256": "c6c094b7a10b7d0b7f91e3bfad71f98dd26bdf61872c72d990b125742eba223f",
+    "read_3_seal_sha256": "491b278c96134bbda604b32298f0921e6a6988a6aaea95ee7d42014e51ecb11c"
+  },
+  "read": "the confirmation of canon read 3",
+  "status": "SEALED",
+  "stopped_stock_bound": {
+    "by_L": {
+      "L_0.30": {
+        "L": 0.3,
+        "cost_bps_per_month_max": 6.261544757558653,
+        "cost_bps_per_month_median": 5.164839440285247,
+        "cost_bps_per_month_min": 3.5524574211241737,
+        "median_sharpe_fall_in_the_null_worlds": 0.24396631722118517,
+        "same_cost_on_read_3_volatility_sharpe_fall": 0.1437476473548142
+      },
+      "L_1.00": {
+        "L": 1.0,
+        "cost_bps_per_month_max": 20.871815858528844,
+        "cost_bps_per_month_median": 17.216131467617494,
+        "cost_bps_per_month_min": 11.84152473708058,
+        "median_sharpe_fall_in_the_null_worlds": 0.7504478096786695,
+        "same_cost_on_read_3_volatility_sharpe_fall": 0.4791588245160475
+      }
+    },
+    "counts": {
+      "cohort_a_stopped": {
+        "for_cause": 1,
+        "neither": 1,
+        "rows": 163,
+        "takeover_target": 161
+      },
+      "cohort_b_ends_inside_the_holding_month": {
+        "for_cause": 3,
+        "neither": 2,
+        "rows": 398,
+        "takeover_target": 393
+      },
+      "conf_1b_recheck": {
+        "note": "CONF-1b reported 1,394 here; the share still trading is the error, and the redefined cohort B above replaces it",
+        "of_which_still_trading_at_the_cutoff": 996,
+        "rows_under_conf_1b_definition": 1394
+      },
+      "in_universe_scored_rows": 96000,
+      "last_price_date_definition": "the tickers master's lastpricedate field (a dated field of the master); CONF-1b used the maximum daily date observed before the cutoff, which pins a live name to the 2020 edge"
+    },
+    "statement": "The stopped cohort is almost wholly the TARGET of a takeover, not a failure, so S2's assumed loss is adverse by construction and its sign is against the evidence. It is reported, never voted.",
+    "unit_caveat": "A Sharpe fall measured in the null worlds OVERSTATES the fall for a book with read 3's volatility, for the same reason the floors do: at L = 1.00 the bound costs a median 17.216 basis points a month, which is 0.7504 of Sharpe in the null worlds but 0.4792 on read 3's monthly volatility of 0.0124.",
+    "withdrawn": "CONF-1b's 'nine times' comparison is WITHDRAWN. It rested on a cohort of 1,394 rows built from the last daily date observed before the cutoff, which pins every name still trading to the 2020 edge: 996 of those 1,394 were names still trading. Under the tickers master's own lastpricedate the cohort is 398 rows, 0.41 per cent of the 96000 scored rows, of which 393 are takeover targets and 3 carry a for-cause action."
+  },
+  "utc": "2026-11-24T08:58:12Z",
+  "what_each_verdict_will_mean": {
+    "CONFIRMED": "The candidate held on eight unseen years at provisional costs. A research finding, not a money finding; the 2021 holdout stays sealed for a decision of its own, and no money test follows without a certified equity cost row (D-P01-CLOSE).",
+    "NOT_CONFIRMED": "The keys that failed are named. The candidate is closed; half A stands in the record as a discovery that did not replicate; nothing is re-specified and re-read on half B."
+  }
+}
