@@ -97,14 +97,22 @@ def write_provenance(tmp: Path) -> dict:
     """Stand-ins for read 3's seal and result, which the pins name."""
     (tmp / "registrations" / "canon_r3").mkdir(parents=True, exist_ok=True)
     (tmp / "reports" / "canon_r3").mkdir(parents=True, exist_ok=True)
-    P.r3_seal().write_text(json.dumps({"look": "CANON-R3", "synthetic": True}))
-    P.r3_result().write_text(json.dumps({
-        "verdict": "SURVIVOR",
-        "reported": {"series_statistics": {
-            "gross": {"sharpe": 1.8304}, "net_base": {"sharpe": 1.4083},
-            "net_stress": {"sharpe": 0.6800}}}}))
-    (tmp / "requirements.lock").write_text("numpy==2.5.3\n")
-    (tmp / "reports").mkdir(exist_ok=True)
+    # STAND-INS ONLY. If a real artifact is already there — as it is in the
+    # rehearsal's copy, which carries the tracked trees so the whole suite can
+    # run — it is left exactly as it is. A fixture that overwrites the thing
+    # other tests pin is a fixture that breaks them.
+    if not P.r3_seal().exists():
+        P.r3_seal().write_text(json.dumps({"look": "CANON-R3", "synthetic": True}))
+    if not P.r3_result().exists():
+        P.r3_result().write_text(json.dumps({
+            "verdict": "SURVIVOR",
+            "reported": {"series_statistics": {
+                "gross": {"sharpe": 1.8304}, "net_base": {"sharpe": 1.4083},
+                "net_stress": {"sharpe": 0.6800}},
+                "turnover_mean": 2.1999, "break_even_bps_per_side": 29.8954,
+                "by_year": []}}))
+    if not (tmp / "requirements.lock").exists():
+        (tmp / "requirements.lock").write_text("numpy==2.5.3\n")
     return {"r3_seal": P.r3_seal(), "r3_result": P.r3_result()}
 
 

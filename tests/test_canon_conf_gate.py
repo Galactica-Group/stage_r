@@ -42,7 +42,7 @@ def synthetic(tmp_path):
     SY.write_panel_and_features(tmp_path, frame)
     P.canon_dir().mkdir(parents=True, exist_ok=True)
     P.pool_v1().write_text(json.dumps({"n_worlds": 60, "worlds": []}))
-    P.controls_v1().write_text("{}")
+    P.controls_v2().write_text("{}")
     yield info
     SY.restore_state(st)
 
@@ -86,7 +86,7 @@ def test_a_byte_flip_breaks_the_binding(synthetic):
 def test_the_pinned_set_is_the_registered_one(synthetic):
     names = set(G.pinned_paths())
     for n in ("conf_panel", "conf_feature_file", "conf_pool_v1",
-              "conf_controls_v1", "requirements_lock", "r3_seal", "r3_result"):
+              "conf_controls_v2", "requirements_lock", "r3_seal", "r3_result"):
         assert n in names, n
     for n in G.R3_TOOLS:
         assert n in names, n
@@ -112,7 +112,7 @@ def test_matching_pins_pass_and_a_mismatch_is_refused(synthetic):
 def test_a_moved_artifact_is_refused_against_a_good_seal(synthetic):
     p, sha = write_seal(synthetic["tmp"])
     reg = G.load_registration(p, sha)
-    P.controls_v1().write_text('{"moved": true}')
+    P.controls_v2().write_text('{"moved": true}')
     with pytest.raises(G.DataPinMismatch):
         G.verify_data_pins(reg)
 

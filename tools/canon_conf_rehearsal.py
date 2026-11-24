@@ -54,14 +54,17 @@ def build_copy(root: Path, tag: str) -> Path:
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
-    for d in ("tools", "tests", "config"):
-        shutil.copytree(REPO / d, work / d,
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    # the WHOLE suite runs in this copy (clause 4), so it needs every tracked
+    # tree the pre-existing Stage R tests read — registrations, reports, logs and
+    # manifests — and still no data symlink.
+    for d in ("tools", "tests", "config", "registrations", "reports", "logs",
+              "manifests"):
+        src = REPO / d
+        if src.exists():
+            shutil.copytree(src, work / d,
+                            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     for f in ("requirements.lock", "README.md"):
         shutil.copy2(REPO / f, work / f)
-    (work / "reports").mkdir(exist_ok=True)
-    shutil.copy2(REPO / "reports" / "triage_ledger.csv",
-                 work / "reports" / "triage_ledger.csv")
     assert not (work / "data").exists()
     return work
 

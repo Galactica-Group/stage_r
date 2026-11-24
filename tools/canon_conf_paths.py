@@ -112,7 +112,18 @@ def pool_v1() -> Path:
 
 
 def controls_v1() -> Path:
+    """CONF-1b's controls artifact, kept as the record."""
     return canon_dir() / "controls_v1.json"
+
+
+def controls_v2() -> Path:
+    """
+    The controls artifact the seal pins. CONF-2 re-ran the whole stage on the
+    committed code: the pool reproduced byte for byte, and this file differs from
+    controls_v1 only by the recounted S3 census and the run's own timing, so it
+    is tracked under a new name rather than overwriting the record.
+    """
+    return canon_dir() / "controls_v2.json"
 
 
 def draft_registration() -> Path:

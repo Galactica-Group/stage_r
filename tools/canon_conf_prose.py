@@ -34,7 +34,8 @@ SQRT12 = float(np.sqrt(12.0))
 
 
 def _load() -> tuple[dict, dict, dict, dict]:
-    c = json.loads(P.controls_v1().read_text())
+    cf = P.controls_v2() if P.controls_v2().exists() else P.controls_v1()
+    c = json.loads(cf.read_text())
     pool = json.loads(P.pool_v1().read_text())
     r3 = json.loads(P.r3_result().read_text())
     s3 = json.loads((P.derived() / "s3_counts.json").read_text())

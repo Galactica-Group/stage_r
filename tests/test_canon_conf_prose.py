@@ -112,7 +112,7 @@ def test_the_recheck_explains_conf_1bs_number():
 
 # -------------------------------------------------- the floors in net units
 def _prose():
-    for f in (P.controls_v1(), P.pool_v1(), P.r3_result(),
+    for f in (P.controls_v2(), P.pool_v1(), P.r3_result(),
               P.derived() / "s3_counts.json"):
         if not f.exists():
             pytest.skip("the measured artifacts are not all present")
@@ -150,7 +150,7 @@ def test_the_half_size_arithmetic_is_stated_correctly():
 
 def test_the_key1_and_verdict_counts_are_the_measured_ones():
     p = _prose()["floors_in_units_that_carry"]
-    c = json.loads(P.controls_v1().read_text())
+    c = json.loads(P.controls_v2().read_text())
     assert p["key1"]["median_gross_sharpe_there"] == \
         c["plants"]["by_rho"]["0.020"]["median_gross_sharpe"]
     for rec in p["verdict_counts_by_net_sharpe"]:

@@ -348,9 +348,9 @@ def stage_controls() -> int:
         "wall_seconds": round(time.time() - t0, 1),
     }
     P.canon_dir().mkdir(parents=True, exist_ok=True)
-    P.controls_v1().write_text(json.dumps(out, indent=2, default=_json))
+    P.controls_v2().write_text(json.dumps(out, indent=2, default=_json))
     log("controls written: %s sha %s"
-        % (P.controls_v1().name, G.sha256_file(P.controls_v1())[:16]))
+        % (P.controls_v2().name, G.sha256_file(P.controls_v2())[:16]))
     log("DONE wall %.1fs" % (time.time() - t0))
     return 0
 

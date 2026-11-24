@@ -80,7 +80,7 @@ def pinned_paths() -> dict[str, Path]:
     out["conf_panel"] = P.panel_file()
     out["conf_feature_file"] = P.feature_file()
     out["conf_pool_v1"] = P.pool_v1()
-    out["conf_controls_v1"] = P.controls_v1()
+    out["conf_controls_v2"] = P.controls_v2()
     out["requirements_lock"] = P.requirements_lock()
     # provenance: read 3's seal and its result
     out["r3_seal"] = P.r3_seal()
