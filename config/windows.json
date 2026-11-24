@@ -11,7 +11,8 @@
     "label": "half_B",
     "start": "2013-01-01",
     "end": "2020-12-31",
-    "status": "UNOPENED"
+    "status": "SPENT",
+    "note": "Opened once, by the confirmation of Canon read 3 (ledger id CANON-R3C, registration sha256 prefix 0ad6336c, read 2026-11-24): NOT_CONFIRMED. No further read of half B is taken on this panel. Until this change the file's sha256 began f8b5394a, the value T-R3b's registration and report of 2026-10-05 record; they stand as dated records."
   },
   "holdout": {
     "label": "holdout",

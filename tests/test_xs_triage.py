@@ -7,6 +7,7 @@ them carries a price.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -25,9 +26,92 @@ def test_windows_config_pins_half_a_and_seals_the_rest():
     w = json.loads((ROOT / "config" / "windows.json").read_text())
     assert w["half_a"]["return_months_through"] == "2012-12"
     assert w["half_a"]["daily_row_exclusive_max"] == "2013-01-01"
-    assert w["half_b"]["status"] == "UNOPENED"
+    assert w["half_b"]["status"] == "SPENT"
     assert w["holdout"]["status"] == "SEALED"
     assert w["vintage"] == "20261004p"
+
+
+# Sprint R-HK-1b: half B is spent. The three tests below bind the file to the
+# ledger row that spent it, hold every other field still, and keep the two dated
+# T-R3b records readable as history rather than as a live claim.
+
+WINDOWS_SHA_BEFORE_R_HK_1B = (
+    "f8b5394ae3dadabdd2c8112c3da2cde6120718d18b6e7029997da50eb512e73c")
+R3B_REGISTRATION_SHA = (
+    "55a0ff2735214f858c0fb0f22592e9f73bc00621bfce56de859c95670b88352e")
+R3B_REPORT_SHA = (
+    "dca84e51dd757a4c38785c0dd24834355896c7d83f2bccd9d592dfe56204c77e")
+
+
+def _windows():
+    return json.loads((ROOT / "config" / "windows.json").read_text())
+
+
+def _sha256(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def test_half_b_note_names_the_ledger_row_that_spent_it():
+    """2.2 — the file's note and the ledger agree on who opened half B."""
+    note = _windows()["half_b"]["note"]
+    assert "CANON-R3C" in note
+    assert "0ad6336c" in note
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    import ledger_chain as lc  # noqa: PLC0415
+
+    header, rows = lc.read_rows(ROOT / "reports" / "triage_ledger.csv")
+    col = {name: i for i, name in enumerate(header)}
+    mine = [r for r in rows if r[col["batch_id"]] == "CANON-R3C"]
+    assert len(mine) == 1, "half B is opened once, so exactly one row spends it"
+    row = mine[0]
+    assert row[col["registration_sha"]].startswith("0ad6336c")
+    assert row[col["verdict"]] == "NOT_CONFIRMED"
+
+
+def test_everything_but_half_b_status_and_note_is_unchanged():
+    """2.3 — a literal copy of every other field, as it stands today."""
+    w = _windows()
+    assert list(w) == ["_comment", "vintage", "half_a", "half_b", "holdout"]
+    assert w["_comment"] == (
+        "Stage R window split. Fixed by Sprint R1 (T-R1). The Stage R charter "
+        "(D-STAGE-R-CHARTER) fixes NO window split; this file is the authority.")
+    assert w["vintage"] == "20261004p"
+    assert w["half_a"] == {
+        "label": "half_A",
+        "return_months_through": "2012-12",
+        "daily_row_exclusive_max": "2013-01-01",
+        "note": ("No daily row dated on or after daily_row_exclusive_max may be "
+                 "loaded anywhere in Sprint R1. Filter at read time AND assert "
+                 "the max date after every load."),
+    }
+    assert list(w["half_b"]) == ["label", "start", "end", "status", "note"]
+    assert {k: v for k, v in w["half_b"].items() if k not in ("status", "note")} == {
+        "label": "half_B",
+        "start": "2013-01-01",
+        "end": "2020-12-31",
+    }
+    assert w["holdout"] == {
+        "label": "holdout",
+        "start": "2021-01-01",
+        "status": "SEALED",
+    }
+
+
+def test_the_two_t_r3b_records_are_untouched_and_read_as_history():
+    """2.4 — T-R3b's dated records still carry the old sha; the note says so."""
+    reg = ROOT / "registrations" / "r3b" / "registration_v5.json"
+    rep = ROOT / "reports" / "t_r3b_20261005.json"
+    assert _sha256(reg) == R3B_REGISTRATION_SHA
+    assert _sha256(rep) == R3B_REPORT_SHA
+
+    assert WINDOWS_SHA_BEFORE_R_HK_1B in reg.read_text()
+    assert json.loads(rep.read_text())["windows_json_sha256"] == (
+        WINDOWS_SHA_BEFORE_R_HK_1B)
+
+    # the live file has moved on, and its note carries the superseded prefix
+    assert _sha256(ROOT / "config" / "windows.json") != WINDOWS_SHA_BEFORE_R_HK_1B
+    assert WINDOWS_SHA_BEFORE_R_HK_1B[:8] in _windows()["half_b"]["note"]
 
 
 def test_window_guard_accepts_half_a_and_raises_on_a_constructed_late_row():
