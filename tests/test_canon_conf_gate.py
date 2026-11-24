@@ -217,6 +217,21 @@ def test_the_controls_stage_runs_t3_first_and_refuses_on_a_mismatch():
     assert "refuses" in fn and "AssertionError" in fn
 
 
+def test_the_pool_size_is_resolved_at_call_time_not_bound_at_import():
+    """
+    PL.N_WORLDS must be the single source of truth for BOTH the pool and the
+    observed stage's check on it. A default argument computed at import time
+    silently decouples them, which the dress rehearsal caught.
+    """
+    import inspect
+    import run_canon_conf as R
+    d = inspect.signature(R.run_pool).parameters["worlds"].default
+    assert d is None, "the pool size must not be bound at import: got %r" % (d,)
+    src = inspect.getsource(R.run_pool)
+    assert "if worlds is None:" in src
+    assert "range(1, PL.N_WORLDS + 1)" in src
+
+
 def test_the_controls_stage_never_asks_for_world_zero():
     src = (ROOT / "tools" / "run_canon_conf.py").read_text()
     tree = ast.parse(src)
@@ -274,12 +289,44 @@ def test_the_seals_bars_and_the_runners_bars_agree_on_the_same_pool(synthetic):
     assert a["n_worlds"] == b["n_worlds"] == 60
 
 
+def _registration_writes(src: str) -> list[str]:
+    """Every `<something registration-ish>.write_text(...)` in the source."""
+    import ast as _ast
+    out = []
+    for n in _ast.walk(_ast.parse(src)):
+        if (isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+                and n.func.attr == "write_text"):
+            target = _ast.dump(n.func.value).lower()
+            if "registration" in target or "seal" in target:
+                out.append(target[:80])
+    return out
+
+
+def test_the_write_check_bites_on_a_constructed_writer():
+    """Non-vacuity: a tool that writes a registration itself must be caught."""
+    bad = "P.sealed_registration().write_text('{}')\n"
+    assert _registration_writes(bad)
+    good = "sha = SEAL.build(P.sealed_registration(), {})\n"
+    assert _registration_writes(good) == []
+
+
 def test_no_other_tool_writes_a_registration():
-    import re
-    for p in sorted((ROOT / "tools").glob("canon_conf_*.py")):
+    """
+    canon_conf_seal is the only WRITER. Another tool may name a registration
+    path, and may ask the seal builder to write one — the rehearsal does exactly
+    that — but it may not write one itself.
+    """
+    checked = 0
+    for p in sorted((ROOT / "tools").glob("canon_conf_*.py")) + \
+            [ROOT / "tools" / "run_canon_conf.py"]:
         if p.name == "canon_conf_seal.py":
             continue
-        src = p.read_text()
-        assert "registration.json" not in src or "sealed_registration" in src, p.name
-        assert not re.search(r"registration_v1_draft\.json[\"']\s*\)?\s*\.write_text",
-                             src), p.name
+        checked += 1
+        hits = _registration_writes(p.read_text())
+        assert not hits, "%s writes a registration itself: %s" % (p.name, hits)
+    assert checked >= 8, checked
+
+
+def test_the_seal_builder_is_named_as_the_only_writer_in_its_own_docstring():
+    import canon_conf_seal as S
+    assert "ONLY" in (S.__doc__ or "")

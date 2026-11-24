@@ -97,7 +97,11 @@ def failed_keys(k1a, k1b, k2) -> list[str]:
 
 
 # ------------------------------------------------------------------- 4.1 pool
-def run_pool(feats, allpm, worlds=range(1, PL.N_WORLDS + 1)) -> dict:
+def run_pool(feats, allpm, worlds=None) -> dict:
+    # resolved at CALL time, not bound at import: PL.N_WORLDS is the single
+    # source of truth for both the pool and the observed stage's check on it.
+    if worlds is None:
+        worlds = range(1, PL.N_WORLDS + 1)
     P.pool_dir().mkdir(parents=True, exist_ok=True)
     rows = []
     for k in worlds:
